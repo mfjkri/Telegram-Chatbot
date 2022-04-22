@@ -1,4 +1,4 @@
-#!D:\repos\py\_csa\CSA_Academy_CTF_v4\bot\venv\Scripts\python.exe
+#shebang
 import sys, logging, os, shutil
 from typing import (Union)
 
