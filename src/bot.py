@@ -16,15 +16,14 @@ class Bot(object):
         Internal private function to add a state to bot's states.
         This function is normally called from Bot.add_stage.
         
+        :param stage_id: Stage identifier, this is the unique name of the stage that the state is part of. (Required)
+        :param state_name: State identifier, this is the name of the state. (Required)
+        :param callbacks: List of the callback handlers that are active during the state. (Required)
             callbacks = [
                 CallbackQueryHandler(...),
                 CallbackQueryHandler(...),
                 MessageHandler(...)
             ]
-        
-        :param stage_id: Stage identifier, this is the unique name of the stage that the state is part of. (Required)
-        :param state_name: State identifier, this is the name of the state. (Required)
-        :param callbacks: List of the callback handlers that are active during the state. (Required)
         
         :return: Returns a USERSTATE that is associated with the created state.
         """
@@ -43,20 +42,19 @@ class Bot(object):
         Helper function to create a stage.
         Use this in your custom_stage.setup to create your stage and add it to the global stages.
         
-            states = {
-                "STAGE_ONE" = [
-                    CallbackQueryHandler(...)
-                ],
-                "STAGE_TWO" = [
-                    MessageHandler(...),
-                    CallbackQueryHandler(...)
-                ]
-            }
-        
         :param stage_id: Stage identifier, this is the unique name of your stage. (Required)
         :param entry: The function called when the stage is being loaded (either from another stage or from /start) (Required)
         :param exit: A function that is useful to have logic for, but it is not accessed outside of the stage logic. (Required)
         :param states: States of the stage which also contains any handlers needed. (Required)
+            states = {
+                "STATE_ONE" = [
+                    CallbackQueryHandler(...)
+                ],
+                "STATE_TWO" = [
+                    MessageHandler(...),
+                    CallbackQueryHandler(...)
+                ]
+            }
         
         :return: Returns the stage as a dictionary.
         """
