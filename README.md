@@ -1,6 +1,6 @@
 # STATES & STAGES 
 
-Throughout this project, you will see a lot of references about stages and states.\
+Throughout this project, you will see a lot of references to stages and states.\
 Below is a brief explanation for them however it does not cover the implementation details behind them.
 
 A `state` is a single situation that the `User` can be in. A User can be in only one given state at any time.
