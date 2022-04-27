@@ -4,7 +4,7 @@ from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
 from telegram.ext import (CallbackQueryHandler, CallbackContext)
 
 from user import Users, User
-from bot import (Bot, USERSTATE)
+from bot import (MESSAGE_DIVIDER, Bot, USERSTATE)
 import utils.utils as utils
 
 PASSCODES = {
@@ -118,9 +118,14 @@ class Authenticate(object):
             
         context.user_data.update({"pending_name" : name})
         
+        confirmation_text = f"Please confirm your identity.\n\n Are you the person below?\n"
+        confirmation_text += MESSAGE_DIVIDER
+        confirmation_text += f"<b>{name}</b>\n"
+        confirmation_text += MESSAGE_DIVIDER
+        
         self.bot.edit_or_reply_message(
             update, context,
-            f"Please confirm your identity.\n\n Are you <b>{name}</b>",
+            text=confirmation_text,
             reply_markup=InlineKeyboardMarkup([
                 [
                     InlineKeyboardButton("Yes", callback_data="auth_accept_identity"),
