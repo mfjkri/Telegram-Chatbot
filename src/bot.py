@@ -481,6 +481,23 @@ class Bot(object):
         return stage_id
         
     
+    def end_of_chatbot(self, update : Update, context : CallbackContext) -> None:
+        """
+        Default function that is called in conversation_exit, when user reaches end of conversation.
+        
+        :param update: (Required)
+        :param context: (Required)
+
+        :return: None
+        """
+        
+        self.edit_or_reply_message(
+            update, context, 
+            text="Find out more about what we do at www.csa.gov.sg!"
+            "\n\nUse /start to resume where you left off."
+        )
+        
+    
     def conversation_entry(self, update : Update, context : CallbackContext) -> USERSTATE:
         if update.message:
             chatid = str(update.message.chat_id)
@@ -514,11 +531,8 @@ class Bot(object):
             user.logger.info(True, "USER_REACHED_END_OF_CONVERSATION", f"User:{user.chatid} has reached the end of the conversation")
         else:
             self.logger.info(True, "UNREGISTERED_USER_END_OF_CONVERSATION", f"Unregistered or banned user has reached the end of the conversation")
-        self.edit_or_reply_message(
-            update, context, 
-            text="Find out more about what we do at www.csa.gov.sg!"
-            "\n\nUse /start to resume where you left off."
-        )
+        
+        self.end_of_chatbot(update, context)
         return ConversationHandler.END
     
     
@@ -573,6 +587,16 @@ class Bot(object):
         
         self.first_stage = stage_id
     
+    
+    def set_end_of_chatbot(self, end_of_chatbot : Callable) -> None:
+        """
+        Overrides the default bot.end_of_chatbot with a custom one.
+        
+        :param end_of_chatbot: Custom function to replace default end_of_chatbot (Required)
+        :return: None
+        """
+        self.end_of_chatbot = end_of_chatbot
+        
         
     def init(self, token : str, logger : Log) -> None:
         """

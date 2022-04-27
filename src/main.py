@@ -68,7 +68,11 @@ def main():
     logger.info(False, "")
     logger.info(False, "Initializing...")
     logger.info(False, "")
+    
     bot.set_first_stage(STAGE_ADMIN)
+    bot.set_end_of_chatbot(
+        lambda update, context : bot.edit_or_reply_message(update, context, "You have stopped the conversation. \n\nUse /start to begin a new one.")
+    )
     bot.start(live_mode=LIVE_MODE)
 
 
