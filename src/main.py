@@ -7,6 +7,7 @@ from user import Users
 import utils.utils as utils
 from utils.log import Log 
 from stages.admin import AdminConsole
+from stages.authenticate import Authenticate
 from stages.ctf import Ctf
 
 LIVE_MODE = True
@@ -34,6 +35,7 @@ def main():
 
 
     STAGE_ADMIN = "admin"
+    STAGE_AUTHENTICATE = "authenticate"
     STAGE_CTF = "CTF"
     STAGE_END = "end"
 
@@ -42,6 +44,14 @@ def main():
     admin : AdminConsole = AdminConsole(bot)
     admin.setup(
         stage_id=STAGE_ADMIN,
+        next_stage_id=STAGE_AUTHENTICATE
+    )
+    
+    
+    # Stage authenticate
+    authenticate : Authenticate = Authenticate(bot)
+    authenticate.setup(
+        stage_id=STAGE_AUTHENTICATE,
         next_stage_id=STAGE_CTF
     )
     
