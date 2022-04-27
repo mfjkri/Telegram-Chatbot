@@ -437,7 +437,7 @@ class Ctf(object):
         self.bot.edit_or_reply_message(
             update, context,
             text=text_body,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Back to Menu", callback_data="ctf_return_to_menu")]])
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("« Back to Menu", callback_data="ctf_return_to_menu")]])
         )
         return self.LEADERBOARD_VIEW
     # -    
@@ -486,7 +486,7 @@ class Ctf(object):
                         InlineKeyboardButton(f"""Hint {t_idx+1} (-{hint["deduction"]} points)""", callback_data=f"ctf_view_hint_{t_idx}:{challenge_number}")
                     )
         # Create the BackToMenu button
-        keyboard.append([InlineKeyboardButton("Back", callback_data="ctf_return_to_menu")])    
+        keyboard.append([InlineKeyboardButton("« Back", callback_data="ctf_return_to_menu")])    
                     
 
         total_points_deduction = int(challenge["total_hints_deduction"])
@@ -610,7 +610,7 @@ class Ctf(object):
             self.bot.edit_or_reply_message(
                 update, context,
                 text=text_body,
-                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Back to Menu", callback_data="ctf_return_to_menu")]])
+                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("« Back to Menu", callback_data="ctf_return_to_menu")]])
             )
             return self.CHALLENGE_SUCCESS
         else:
@@ -638,7 +638,7 @@ class Ctf(object):
                     keyboard.append([InlineKeyboardButton(f"Retry challenge", callback_data=f"ctf_return_to_challenge_{challenge_number}")])
                 else:
                     keyboard.append([InlineKeyboardButton(f"Retry challenge", callback_data=f"ctf_submit_answer_{challenge_number}")])
-            keyboard.append([InlineKeyboardButton("Back to Menu", callback_data="ctf_return_to_menu")])
+            keyboard.append([InlineKeyboardButton("« Back to Menu", callback_data="ctf_return_to_menu")])
                         
             self.bot.edit_or_reply_message(
                 update, context,
