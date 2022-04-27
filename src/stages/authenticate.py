@@ -1,4 +1,3 @@
-from curses.panel import update_panels
 from typing import (Union)
 
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
@@ -30,7 +29,11 @@ class Authenticate(object):
         user : User = context.user_data.get("user")
         # TODO : Prompt verfication
         
-        return self.exit_authenticate(update, context)
+        return self.bot.proceed_next_stage(
+            current_stage_id=self.stage_id,
+            next_stage_id=self.PROMPT_AUTHENTICATION,
+            update=update, context=context
+        )
     
     
     def exit_authenticate(self, update: Update, context: CallbackContext) -> USERSTATE:
@@ -54,5 +57,20 @@ class Authenticate(object):
             }
         )
         
+        self.PROMPT_AUTHENTICATION = self.bot.get_input_from_user(
+            input_label="authenticate:passcode",
+            input_text="Please enter your passcode:",
+            input_handler=self.check_passcode
+        )
+        
         self.states = self.stage["states"]
 
+
+    def check_passcode(self, input_passcode : str, update : Update, context : CallbackContext) -> USERSTATE:
+        print(input_passcode)
+        
+        return self.bot.proceed_next_stage(
+            current_stage_id=self.stage_id,
+            next_stage_id=self.PROMPT_AUTHENTICATION,
+            update=update, context=context
+        )
