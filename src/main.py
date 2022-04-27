@@ -7,7 +7,6 @@ from user import Users
 import utils.utils as utils
 from utils.log import Log 
 from stages.admin import AdminConsole
-from stages.guardian import Guardian
 from stages.ctf import Ctf
 
 LIVE_MODE = True
