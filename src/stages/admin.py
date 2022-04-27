@@ -6,7 +6,7 @@ from telegram.ext import (CallbackQueryHandler, CallbackContext)
 from user import Users, User
 from bot import (Bot, USERSTATE)
 
-ADMIN_USERS = ["1026217187"]
+ADMIN_USERS = [] #"1026217187"
 
 class AdminConsole(object):
     def __init__(self, bot : Bot):
