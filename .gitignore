@@ -1,6 +1,7 @@
 temp/
 exports/
 logs/
+archives/
 users/*/
 project_setup.log
 config.yaml
