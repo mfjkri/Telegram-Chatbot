@@ -67,9 +67,13 @@ class Authenticate(object):
             exit=self.exit_authenticate,
             states={
                 # TODO : Add States and stages for verification process
-                "CONFIRMATION_CHOICE" : [
-                    CallbackQueryHandler(self.accept_identity, pattern=f"^auth_accept_identity$", run_async=True),
+                "IDENTITY_CONFIRMATION" : [
+                    CallbackQueryHandler(self.confirm_choice, pattern=f"^auth_accept_identity$", run_async=True),
                     CallbackQueryHandler(self.decline_identity, pattern=f"^auth_decline_identity$", run_async=True)
+                ],
+                "CONFIRM_CHOICE" : [
+                    CallbackQueryHandler(self.accept_identity, pattern=f"^auth_confirm_choice$", run_async=True),
+                    CallbackQueryHandler(self.decline_identity, pattern=f"^auth_cancel_choice$", run_async=True)
                 ]
             }
         )
@@ -81,7 +85,7 @@ class Authenticate(object):
         )
         
         self.states = self.stage["states"]
-        self.CONFIRMATION_CHOICE = self.bot.unpack_states(self.states)[0]
+        self.IDENTITY_CONFIRMATION,self.CONFIRM_CHOICE = self.bot.unpack_states(self.states)
 
 
     def check_passcode(self, input_passcode : str, update : Update, context : CallbackContext) -> USERSTATE:
@@ -118,7 +122,7 @@ class Authenticate(object):
             
         context.user_data.update({"pending_name" : name})
         
-        confirmation_text = f"Please confirm your identity.\n\n Are you the person below?\n"
+        confirmation_text = f"Please confirm your identity.\n\n"
         confirmation_text += MESSAGE_DIVIDER
         confirmation_text += f"<b>{name}</b>\n"
         confirmation_text += MESSAGE_DIVIDER
@@ -128,13 +132,13 @@ class Authenticate(object):
             text=confirmation_text,
             reply_markup=InlineKeyboardMarkup([
                 [
-                    InlineKeyboardButton("Yes", callback_data="auth_accept_identity"),
-                    InlineKeyboardButton("No", callback_data="auth_decline_identity")
+                    InlineKeyboardButton("Yes it's me", callback_data="auth_accept_identity"),
+                    InlineKeyboardButton("❌", callback_data="auth_decline_identity")
                 ]
             ]) 
         )
         
-        return self.CONFIRMATION_CHOICE
+        return self.IDENTITY_CONFIRMATION
     
     def accept_identity(self, update : Update, context : CallbackContext) -> USERSTATE:
         query = update.callback_query
@@ -148,9 +152,32 @@ class Authenticate(object):
         context.user_data.pop("pending_name")
         return self.exit_authenticate(update, context) 
     
-    def decline_identity(self, update : Update, context :CallbackContext) -> USERSTATE:
+    def decline_identity(self, update : Update, context : CallbackContext) -> USERSTATE:
+        query = update.callback_query
+        if query:
+            query.answer()
+            
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
             next_stage_id=self.PROMPT_AUTHENTICATION,
             update=update, context=context
         )
+        
+        
+    def confirm_choice(self, update : Update, context : CallbackContext) -> USERSTATE:
+        query = update.callback_query
+        if query:
+            query.answer()
+        
+        self.bot.edit_or_reply_message(
+            update, context,
+            text="Are you sure?",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton("Yes", callback_data="auth_confirm_choice"),
+                    InlineKeyboardButton("❌", callback_data="auth_cancel_choice")
+                ]
+            ]) 
+        )
+        
+        return self.CONFIRM_CHOICE
