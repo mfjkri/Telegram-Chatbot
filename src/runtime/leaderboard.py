@@ -1,5 +1,7 @@
 import os, time, yaml
 
+from typing import Union
+
 # from ctf import MAX_LEADERBOARD_VIEW
 MAX_LEADERBOARD_VIEW = 5
 TEAMS_DESC = {
@@ -11,7 +13,7 @@ TEAMS_DESC = {
 users_directory = os.path.join(os.getcwd(), "users")
 export_file = os.path.join(os.getcwd(), "exports", "export.csv")
 
-def load_yaml_file(file_path : str):
+def load_yaml_file(file_path : str) -> Union[bool, dict]:
     with open(file_path, 'r') as stream:
         config = {}
         try:
