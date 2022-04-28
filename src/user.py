@@ -13,9 +13,8 @@ class User():
             name=f"user:{chatid}",
             stream_handle=sys.stdout,
             log_level=logging.INFO
-        )                
-        self.logger.add_filehandler(application_logfilehandler)
-        
+        )   
+                     
         self.chatid = chatid
         self.data = None
         self.is_banned = False
@@ -34,6 +33,8 @@ class User():
             self.yaml_file = self.create_new_user()
         
         self.save_user_to_file()
+        if UsersManager.log_user_logs_to_app_logs:
+            self.logger.add_filehandler(application_logfilehandler)
         
     
     def create_new_user(self) -> None:
@@ -171,12 +172,13 @@ class Users(object):
         self.data_fields.update({key : copy.deepcopy(value)})
 
 
-    def init(self, logger: Log):
+    def init(self, logger: Log, log_user_logs_to_app_logs : bool = False):
         self.application_logfilehandler = logger.file_handlers[0]
         self.logger = logger
         self.users = {}
         self.data_fields = {}
         self.banned_users = []
+        self.log_user_logs_to_app_logs = log_user_logs_to_app_logs
         
         self.update_banned_list()
         

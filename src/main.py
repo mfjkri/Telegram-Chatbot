@@ -28,7 +28,7 @@ def main():
     )
     
     users = Users()    
-    users.init(logger)
+    users.init(logger, "LOG_USER_TO_APP_LOGS" in CONFIG)
     
     bot = Bot()
     bot.init(BOT_TOKEN, logger)
