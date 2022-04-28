@@ -65,6 +65,28 @@ if __name__ == "__main__":
         subprocess.run([python_ver_keyword, "-m", "venv", "venv"])
         # ------------------------------------- - ------------------------------------ #
         
+        
+        # ------------------------- Creating config.yaml file ------------------------ #
+        try:
+            with open("config.yaml") as config_file:
+                log.info("config.yaml file already exits. Skipping this part...")
+        except IOError:
+            log.info(f"No config.yaml file found! Creating one with default template...")
+            with open("config.yaml", "w") as config_file:
+                config_file.writelines(
+                    [
+                        "# -------------------------------- BOT TOKENS -------------------------------- #\n",
+                        "BOT_TOKENS:\n",
+                        "  LIVE: TOKEN_HERE\n",
+                        "  TEST: TOKEN_HERE\n\n"
+                        
+                        "# -------------------------------- LOG CONFIG -------------------------------- #\n",
+                        "LOG_USER_TO_APP_LOGS: False\n",
+                    ]
+                )
+        # ------------------------------------- - ------------------------------------ #
+        
+        
         # ----------------- Modify shebang in main.py to relativepath ---------------- #
         log.info(f"Setting shebang of src/main.py to venv intepreter...")    
         data = None
