@@ -9,7 +9,7 @@ import utils.utils as utils
 
 PASSCODES = {
     # START_OF_PASSCODES_MARKER
-    "A123" : "Johnny",
+    "A123" : ["Johnny", "test"],
     # END_OF_PASSCODES_MARKER
 }
 
@@ -30,6 +30,7 @@ class Authenticate(object):
         
     def init_users_data(self) -> None:
         self.users.add_data_field("name", None)
+        self.users.add_data_field("user_group", None)
     
     
     def entry_authenticate(self, update: Update, context: CallbackContext) -> USERSTATE:
@@ -95,11 +96,16 @@ class Authenticate(object):
         
         if sanitized_input in PASSCODES:
             # This check is actually redundant since we already bypassed authenticated for users with a valid name field.
-            if user.data.get("name") == PASSCODES[sanitized_input]:
+            
+            lookup, is_lookup_an_array = PASSCODES[sanitized_input], type(PASSCODES[sanitized_input]) is list
+            name = lookup[0] if is_lookup_an_array else lookup
+            user_group = lookup[1] if is_lookup_an_array else "default"
+            
+            if user.data.get("name") == name:
                 return self.exit_authenticate(update, context) 
             else:
                 return self.confirm_identify(
-                    PASSCODES[sanitized_input],
+                    name, user_group,
                     update, context
                 )
         else:    
@@ -115,12 +121,13 @@ class Authenticate(object):
         
         
         
-    def confirm_identify(self, name : str, update : Update, context : CallbackContext) -> USERSTATE:
+    def confirm_identify(self, name : str, user_group : str, update : Update, context : CallbackContext) -> USERSTATE:
         query = update.callback_query
         if query:
             query.answer()
             
         context.user_data.update({"pending_name" : name})
+        context.user_data.update({"pending_user_group" : user_group})
         
         confirmation_text = f"Please confirm your identity.\n\n"
         confirmation_text += MESSAGE_DIVIDER
@@ -146,17 +153,25 @@ class Authenticate(object):
             query.answer()
             
         user : User = context.user_data.get("user")
-        pending_name = context.user_data.get("pending_name")
         
-        user.update_user_data("name", pending_name)
-        context.user_data.pop("pending_name")
+        user.update_user_data(
+            "name", 
+            context.user_data.pop("pending_name")
+        )
+        user.update_user_data(
+            "user_group",
+            context.user_data.pop("pending_user_group")
+        )
+        
         return self.exit_authenticate(update, context) 
     
     def decline_identity(self, update : Update, context : CallbackContext) -> USERSTATE:
         query = update.callback_query
         if query:
             query.answer()
-            
+        
+        context.user_data.pop("pending_name")
+        context.user_data.pop("pending_user_group")
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
             next_stage_id=self.PROMPT_AUTHENTICATION,
