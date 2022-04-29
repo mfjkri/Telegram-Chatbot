@@ -52,6 +52,9 @@ class User():
       
                 
     def load_user_from_file(self) -> None:
+        self.logger.info(False, "\n")
+        self.logger.info(True, "NEW_SESSION", f"User:{self.chatid} is starting a new session and resuming their progress...")
+        
         user_yaml_file = os.path.join(self.directory, f"{self.chatid}.yaml")
         user_yaml_file_exists = os.path.isfile(user_yaml_file)
 
