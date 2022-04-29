@@ -8,6 +8,7 @@ import yaml
 # Just store all the usernames at runtime instead of per user and caching the result
 # Add ability of export logs -> question data instead of user-centric
     # So something like  { challenge_number | action_keywords | attempts | solved | hint_1| hint_2 }"
+    
 
 def get_dir_or_create(dir_path : str) -> str:
     if not os.path.isdir(dir_path):
@@ -25,7 +26,8 @@ def load_yaml_file(file_path : str) -> Union[bool, dict]:
         return config
         
 
-patterns = {
+EXPORTS_DIRECTORY = get_dir_or_create("exports")
+LOGS_PATTERNS = {
     "date" : r"\b[0-9]+-[0-9]+-[0-9]+",
     "time" : r"\b[0-9]+:[0-9]+:[0-9]+",
     "date_time" : r"\b[0-9]+-[0-9]+-[0-9]+ +[0-9]+:[0-9]+:[0-9]+", 
@@ -33,11 +35,13 @@ patterns = {
     "chatid" : r"(?<=User:)[0-9]+",
     "total_score" : r"(?<=@)[0-9]+(?=@)",
 }
+
+
 def extract_data_type_from_line(data_type : str, log_line : str) -> Union[str, None]:
     # 2022-04-28 14:22:46,376 [INFO] $CODE::USER_CTF_CORRECT_ANSWER_1 || User:1026217187 @40@ ____
     
-    assert data_type in patterns, "UNKNOWN OR MALFORMED DATA_TYPE LOOKUP"
-    pattern = patterns[data_type]
+    assert data_type in LOGS_PATTERNS, "UNKNOWN OR MALFORMED DATA_TYPE LOOKUP"
+    pattern = LOGS_PATTERNS[data_type]
         
     matches = re.search(pattern, log_line)
     return matches.group(0) if matches else None
@@ -76,36 +80,43 @@ def get_users() -> dict:
 def export_log_files(export_file_name : str) -> None:
     users = get_users()
     
-    compiled_logs_by_time = {}
+    logs_by_time = {}
+    compiled_logs = []
     
     for chatid, user in users.items():
         for line in user["logs"]:
             log_time = extract_data_type_from_line("time", line)
-            
-            if not log_time in compiled_logs_by_time:
-                compiled_logs_by_time.update({log_time : []})
                 
             challenge_number = None
             action_keyword = extract_data_type_from_line("action_code", line)
             action_keys = action_keyword.split("_")
             
             if "WRONG_ANSWER" in action_keyword or "CORRECT_ANSWER" in action_keyword:
-                challenge_number = action_keys[2]
+                challenge_number = action_keys[4]
             elif "VIEW_HINT" in action_keyword:
-                challenge_number = action_keys[-3]
+                challenge_number = action_keys[4]
             elif "CREATING_NEW_USER" in action_keyword:
                 challenge_number = "INIT"
                 
             if challenge_number:
-                print(line)
+                if not log_time in logs_by_time:
+                    logs_by_time.update({log_time : []})
+                
+                logs_by_time[log_time].append(
+                   f"{chatid},{action_keyword},{challenge_number}"
+                )
     
+    for time, logs in logs_by_time.items():
+        compiled_logs.append(*[f"{time},{log}\n" for log in logs])
+    
+    compiled_logs.sort(key=lambda x : x.split(',')[0])
+    
+    with open(os.path.join(EXPORTS_DIRECTORY, f"{export_file_name}.csv"), "w") as export_file:
+        compiled_logs.insert(0, "TIME,CHATID,ACTION,CHALLENGE NUMBER\n")
+        export_file.writelines(compiled_logs)
+
     
 if __name__ == "__main__":
-    
-    exports_directory = get_dir_or_create("exports")
-    logs_directory = "logs"
-    if not os.path.isdir(logs_directory):
-        raise "Logs directory not found."    
     
     PARSER = argparse.ArgumentParser()
     PARSER.add_argument("--export", type=str, help="Exports the log file for visualization.", default="", required=False)
