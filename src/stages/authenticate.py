@@ -30,7 +30,7 @@ class Authenticate(object):
         
     def init_users_data(self) -> None:
         self.users.add_data_field("name", None)
-        self.users.add_data_field("user_group", None)
+        self.users.add_data_field("group", None)
     
     
     def entry_authenticate(self, update: Update, context: CallbackContext) -> USERSTATE:
@@ -99,13 +99,13 @@ class Authenticate(object):
             
             lookup, is_lookup_an_array = PASSCODES[sanitized_input], type(PASSCODES[sanitized_input]) is list
             name = lookup[0] if is_lookup_an_array else lookup
-            user_group = lookup[1] if is_lookup_an_array else "default"
+            group = lookup[1] if is_lookup_an_array else "default"
             
             if user.data.get("name") == name:
                 return self.exit_authenticate(update, context) 
             else:
                 return self.confirm_identify(
-                    name, user_group,
+                    name, group,
                     update, context
                 )
         else:    
@@ -121,13 +121,13 @@ class Authenticate(object):
         
         
         
-    def confirm_identify(self, name : str, user_group : str, update : Update, context : CallbackContext) -> USERSTATE:
+    def confirm_identify(self, name : str, group : str, update : Update, context : CallbackContext) -> USERSTATE:
         query = update.callback_query
         if query:
             query.answer()
             
         context.user_data.update({"pending_name" : name})
-        context.user_data.update({"pending_user_group" : user_group})
+        context.user_data.update({"pending_group" : group})
         
         confirmation_text = f"Please confirm your identity.\n\n"
         confirmation_text += MESSAGE_DIVIDER
@@ -159,8 +159,8 @@ class Authenticate(object):
             context.user_data.pop("pending_name")
         )
         user.update_user_data(
-            "user_group",
-            context.user_data.pop("pending_user_group")
+            "group",
+            context.user_data.pop("pending_group")
         )
         
         return self.exit_authenticate(update, context) 
@@ -171,7 +171,7 @@ class Authenticate(object):
             query.answer()
         
         context.user_data.pop("pending_name")
-        context.user_data.pop("pending_user_group")
+        context.user_data.pop("pending_group")
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
             next_stage_id=self.PROMPT_AUTHENTICATION,
