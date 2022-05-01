@@ -1,4 +1,4 @@
-import os, random, string
+import os, random, string, argparse
 
 from datetime import datetime
 
@@ -8,12 +8,12 @@ def strip_string_constructors(s : str) -> str:
     return ''.join([char for char in s if char not in '",'])
 
 def generate_passcodes(new_users : list) -> None:
-    authenticate_py_file = os.path.join(stages_folder, "authenticate.py")
+    config_yaml_file = os.path.join(os.getcwd(), "config.yaml")
     
-    assert os.path.isfile(authenticate_py_file), "authenticate.py not found"
+    assert os.path.isfile(config_yaml_file), "authenticate.py not found"
     
     raw_data = {}
-    with open(authenticate_py_file, 'r') as stream:
+    with open(config_yaml_file, 'r') as stream:
         raw_data = stream.readlines()
         
     start_marker_idx, end_marker_idx = False, False
@@ -41,7 +41,13 @@ def generate_passcodes(new_users : list) -> None:
             current_passcodes.update({passcode : registered_user})
     
     
-    for user in new_users:
+    for user_info in new_users:
+        user, group = None, None
+        if type(user_info) is list:
+            user, group = user_info
+        else:
+            user, group = user_info, "none"
+            
         random_passcode = ""
         
         while random_passcode == "" or random_passcode in current_passcodes:
@@ -53,23 +59,46 @@ def generate_passcodes(new_users : list) -> None:
             random_passcode = ''.join(letter) + ''.join(numbers)
         
         current_passcodes.update({user : random_passcode})
-        new_passcodes.update({user : random_passcode})
+        new_passcodes.update({user : [random_passcode, group]})
     
-    raw_data.insert(end_marker_idx, "\t#------\n")            
-    for user, new_passcode in new_passcodes.items():
-        raw_data.insert(end_marker_idx, f"""\t"{new_passcode}" : "{user}",\n""")
-    raw_data.insert(end_marker_idx, "\t# Refer to src.runtime.generate_passcodes for more details.\n\n")            
-    raw_data.insert(end_marker_idx, f"""\t# Generated at {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}\n""")            
-    raw_data.insert(end_marker_idx, "\n\t#------\n")            
+    raw_data.insert(end_marker_idx, "  #------\n\n")            
+    for user, info in new_passcodes.items():
+        new_passcode, group = info
+        raw_data.insert(end_marker_idx, f"""  {new_passcode}:\n    - {user}\n    - {group}\n\n""")
+    raw_data.insert(end_marker_idx, "  # Refer to src.runtime.generate_passcodes for more details.\n\n")            
+    raw_data.insert(end_marker_idx, f"""  # Generated at {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}\n""")            
+    raw_data.insert(end_marker_idx, "\n  #------\n")            
     
-    with open(authenticate_py_file, 'w') as active_ctf_file:
+    with open(config_yaml_file, 'w') as active_ctf_file:
         active_ctf_file.writelines(raw_data)
-            
+
+
+def get_new_users_from_file(file_name : str) -> list:
+    file = os.path.join(os.getcwd(), file_name)
+    
+    assert os.path.isfile(file), "THE INPUT FILE IS NOT FOUND. Please ensure that it is spelt correctly and is found in the root directory of the project."
+    new_users = []
+    with open(file, "r") as stream:
+        lines = list((line.rstrip() for  line in stream.readlines()))
+        for line in lines:
+            name, group = None, None
+            if line.find(',') > 0:
+                name, group = line.split(',')
+                group = group.strip()
+            else:
+                name, group = line, "none"
+            new_users.append([name, group])
+    
+    return new_users
         
 if __name__ == "__main__":
+    PARSER = argparse.ArgumentParser()
+    PARSER.add_argument("-i", type=str, help="Input file with users list.", default=None, required=False)
+    ARGS = PARSER.parse_args()
+    
     generate_passcodes(
-        [
-            "Johnny Smith",
-            "Muhammad Fikri"
+        get_new_users_from_file(ARGS.i) if ARGS.i else [
+            ["guest0", "guest"],
+            "guest1"
         ]
     )
