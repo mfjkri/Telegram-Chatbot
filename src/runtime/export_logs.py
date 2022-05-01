@@ -1,14 +1,91 @@
-from calendar import c
+"""
+We will be using this helper runtime script: export_logs.py
+This script will compile and export your individual users' logs as a csv file which can then be imported into Excel for visualisation purposes.
+
+I will be demonstrating both the exporting process as well as importing and using the data visualisation tool (excel file)
+
+-------------------------------------------------------------------------------------
+Exporting Process:
+
+    Prerequisites:
+        - You have the project set up and are using a virtual env (venv). 
+            This should be the case by default if you used setup.py
+            If you aren't using a venv you can skip the steps involving it
+            
+        - You have some existing users with their log files
+    
+    1) Activating venv in your CLI env
+        For windows:
+            venv/Scripts/activate
+        For Linux:
+            source venv/bin/activate
+    
+    2) Running the script
+        python src/runtime/export_logs.py --export "example_export"
+        
+        Argument is the name of the exported CSV file (it will be created if not found).
+        Do not include the file extension in the argument
+        The argument is optional and defaults to "exported_logs"
+    
+    3) TADA! We have the exported CSV file :)
+-------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------
+Importing Process:
+
+    Prerequisites:
+        - Excel
+        - Exported CSV file from earlier step
+    
+    1) Open the Excel file and import the CSV file
+        From the Menu Bar on top: -> Data -> From Text/CSV (in the Get & Transform section)-> Choose File
+    
+    2) Set Delimiter in menu and Transform data
+        Ensure that the delimiter is set to ',' in the import menu that pops up
+        Click "Transform data" to continue
+    
+    3) Select Time column and change type to Text
+        Select "Replace" to replace the existing transformation on the column time
+    
+    4) Save & Load
+    
+    5) You should now have a table with columns: 
+        TIME, NAME, GROUP, ACTION, CHALLENGE NUMBER, SCORE
+        
+    6) Select entire table and insert Pivot Table
+        Select all of table columns and rows
+        From Menu Bar on top: -> Insert -> Pivot Table (in the Tables section)
+        You can leave the fields in the pivot menu as default
+        
+    7) Setup the Pivot Table
+        Drag and drop TIME into Rows
+        Drag and drop NAME into Columns
+        Drag and drop Score into Values
+        
+    8) Select pivot table and insert Graph
+        From Menu bar on top: -> Insert -> Line Graphs (in the Charts section) -> 2D-Line -> Line
+    
+    9) Add Slicers
+        From Menu bar on top: -> Insert -> Slicer (in the Filters section)
+        Choose the following: GROUP, NAME, CHALLENGE NUMBER, SCORE
+    
+    10) Format and style as you please!
+-------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------
+Reading & Anaylzing the Visualised Data
+
+Unfortunately I am not sure how to put this into words without a video demonstration.
+
+Please watch the video (skip to the part where I show how to interpret the visualised data).
+-------------------------------------------------------------------------------------
+"""
+
+
 import os, argparse, re
 from typing import Union
 
 import yaml
-
-#TODO:
-# Allow export of logs -> data for BOTH archived_ctfs and active_ctf
-# Just store all the usernames at runtime instead of per user and caching the result
-# Add ability of export logs -> question data instead of user-centric
-    # So something like  { challenge_number | action_keywords | attempts | solved | hint_1| hint_2 }"
     
 
 def get_dir_or_create(dir_path : str) -> str:
@@ -158,14 +235,14 @@ def export_log_files(export_file_name : str) -> None:
     compiled_logs.sort(key=lambda x : x.split(',')[0])
     
     with open(os.path.join(EXPORTS_DIRECTORY, f"{export_file_name}.csv"), "w") as export_file:
-        compiled_logs.insert(0, "TIME,NAME,GROUP,ACTION,CHALLENGE NUMBER, SCORE\n")
+        compiled_logs.insert(0, "TIME,NAME,GROUP,ACTION,CHALLENGE NUMBER,SCORE\n")
         export_file.writelines(compiled_logs)
 
     
 if __name__ == "__main__":
     
     PARSER = argparse.ArgumentParser()
-    PARSER.add_argument("--export", type=str, help="Exports the log file for visualization.", default="", required=False)
+    PARSER.add_argument("--export", type=str, help="Exports the log file for visualisation.", default="", required=False)
     ARGS = PARSER.parse_args()
     
-    export_log_files(ARGS.export or "exported_logs")
+    export_log_files(ARGS.export or "exported_logs") # exported_logs is the default name if you don't use the argument variable
