@@ -1,3 +1,5 @@
+import os 
+
 from typing import (Union)
 
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
@@ -7,11 +9,8 @@ from user import Users, User
 from bot import (MESSAGE_DIVIDER, Bot, USERSTATE)
 import utils.utils as utils
 
-PASSCODES = {
-    # START_OF_PASSCODES_MARKER
-    "A123" : ["Johnny", "test"],
-    # END_OF_PASSCODES_MARKER
-}
+CONFIG = utils.load_yaml_file(os.path.join(os.getcwd(), "config.yaml"))
+PASSCODES = CONFIG["USER_PASSCODES"]
 
 
 class Authenticate(object):
@@ -99,7 +98,7 @@ class Authenticate(object):
             
             lookup, is_lookup_an_array = PASSCODES[sanitized_input], type(PASSCODES[sanitized_input]) is list
             name = lookup[0] if is_lookup_an_array else lookup
-            group = lookup[1] if is_lookup_an_array else "default"
+            group = lookup[1] if is_lookup_an_array else "none"
             
             if user.data.get("name") == name:
                 return self.exit_authenticate(update, context) 
