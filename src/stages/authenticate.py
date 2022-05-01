@@ -1,7 +1,5 @@
 import os 
 
-from typing import (Union)
-
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
 from telegram.ext import (CallbackQueryHandler, CallbackContext)
 
@@ -119,7 +117,6 @@ class Authenticate(object):
             )
         
         
-        
     def confirm_identify(self, name : str, group : str, update : Update, context : CallbackContext) -> USERSTATE:
         query = update.callback_query
         if query:
@@ -146,6 +143,7 @@ class Authenticate(object):
         
         return self.IDENTITY_CONFIRMATION
     
+    
     def accept_identity(self, update : Update, context : CallbackContext) -> USERSTATE:
         query = update.callback_query
         if query:
@@ -163,6 +161,7 @@ class Authenticate(object):
         )
         
         return self.exit_authenticate(update, context) 
+    
     
     def decline_identity(self, update : Update, context : CallbackContext) -> USERSTATE:
         query = update.callback_query

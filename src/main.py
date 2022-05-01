@@ -1,6 +1,5 @@
 #shebang
 import sys, logging, os, shutil
-from typing import (Union)
 
 from bot import Bot
 from user import Users
