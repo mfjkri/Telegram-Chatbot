@@ -10,11 +10,12 @@ from stages.admin import AdminConsole
 from stages.authenticate import Authenticate
 from stages.ctf import Ctf
 
-LIVE_MODE = True
-FRESH_START = True if not LIVE_MODE else False
 LOG_FILE = os.path.join("logs", f"csabot.log")
+
 CONFIG = utils.load_yaml_file(os.path.join("config.yaml"))
-BOT_TOKEN = CONFIG["BOT_TOKENS"]["LIVE"]
+LIVE_MODE = CONFIG["RUNTIME"]["LIVE_MODE"]
+FRESH_START = CONFIG["RUNTIME"]["FRESH_START"] if not LIVE_MODE else False
+BOT_TOKEN = CONFIG["BOT_TOKENS"]["LIVE"] if LIVE_MODE else CONFIG["BOT_TOKENS"]["TEST"]
 
 
 def main():
