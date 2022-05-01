@@ -79,7 +79,8 @@ class Authenticate(object):
         self.PROMPT_AUTHENTICATION = self.bot.get_input_from_user(
             input_label="authenticate:passcode",
             input_text="Please enter your passcode:",
-            input_handler=self.check_passcode
+            input_handler=self.check_passcode,
+            exitable=True
         )
         
         self.states = self.stage["states"]

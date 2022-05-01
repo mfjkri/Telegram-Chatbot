@@ -4,6 +4,7 @@ from typing import (Any, Callable, Union)
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, ParseMode, ReplyMarkup, Update)
 from telegram.ext import (Updater, CommandHandler, ConversationHandler, CallbackQueryHandler, MessageHandler, CallbackContext, Filters)
 
+import utils.utils as utils
 from user import Users, User
 from utils.log import Log 
 
@@ -242,7 +243,8 @@ class Bot(object):
     def get_input_from_user(self, 
                             input_label : str,
                             input_text : str,
-                            input_handler : Callable) -> str:
+                            input_handler : Callable,
+                            exitable : bool = False) -> str:
         """
         In-built function to create a stage that collects a user input.
         stage_id of the stage created is of the format {input:INPUT_LABEL}
@@ -251,6 +253,7 @@ class Bot(object):
         :param input_text: The text displayed before prompting to enter their input. (Required)
         :param input_handler: A callback function that is called with the user input. (Required)
             input_handler(input : str, update : Update, context : Context)
+        :param exitable: Whether to allow the user to abort the input by sending /cancel. (Optional, Defaults to False)
 
         :return: Returns the stage_id of the stage created.
         """
@@ -279,7 +282,10 @@ class Bot(object):
             nonlocal debounce
             if not debounce and update.message:
                 debounce = True
-                return input_handler(update.message.text, update, context)
+                if utils.format_input_str(update.message.text, False, "/cancel") == "/cancel" and exitable:
+                    return self.conversation_exit(update, context)
+                else:
+                    return input_handler(update.message.text, update, context)
 
         
         stage = self.add_stage(
