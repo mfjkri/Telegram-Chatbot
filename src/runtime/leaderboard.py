@@ -55,6 +55,8 @@ def update_leaderboard(top_placing : int = MAX_LEADERBOARD_VIEW) -> None:
                                 if user_teams:
                                     for idx, team in enumerate(user_teams):
                                         user_teams[idx] = TEAMS_DESC.get(team, "no_team_found")
+                                else:
+                                    user_teams = []
                                 
                                 if user_name and user_name != '':
                                     scoring_dict[user_total_score].append(
