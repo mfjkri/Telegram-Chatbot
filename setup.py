@@ -75,10 +75,20 @@ if __name__ == "__main__":
             with open("config.yaml", "w") as config_file:
                 config_file.writelines(
                     [
+                        "# ---------------------------------- RUNTIME --------------------------------- #\n"
+                        "RUNTIME:\n"
+                        "    LIVE_MODE: False\n",
+                        "    FRESH_START: False\n\n",
+                        
                         "# -------------------------------- BOT TOKENS -------------------------------- #\n",
                         "BOT_TOKENS:\n",
                         "  LIVE: TOKEN_HERE\n",
-                        "  TEST: TOKEN_HERE\n\n"
+                        "  TEST: TOKEN_HERE\n\n",
+                        
+                        "# ------------------------------ USER PASSCODES ------------------------------ #\n"
+                        "USER_PASSCODES:\n",
+                        "  # START_OF_PASSCODES_MARKER\n"
+                        "  # END_OF_PASSCODES_MARKER\n\n"
                         
                         "# -------------------------------- LOG CONFIG -------------------------------- #\n",
                         "LOG_USER_TO_APP_LOGS: False\n",
