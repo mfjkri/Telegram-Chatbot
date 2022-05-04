@@ -18,17 +18,17 @@ def generate_passcodes(new_users : list) -> None:
         
     start_marker_idx, end_marker_idx = False, False
     for idx, line in enumerate(raw_data):
-        if "# START_OF_PASSCODES_MARKER" in line:
+        if "# START_PASSCODES_MARKER" in line:
             start_marker_idx = idx
-        elif "# END_OF_PASSCODES_MARKER" in line:
+        elif "# END_PASSCODES_MARKER" in line:
             end_marker_idx = idx
             break
     
+    assert start_marker_idx is not False, "START marker missing from config.yaml->USER_PASSCODES"
+    assert end_marker_idx is not False, "END marker missing from config.yaml->USER_PASSCODES"
+
     current_passcodes = {}
     new_passcodes = {}
-    
-    assert start_marker_idx is not False, "START marker missing from Authenticate.PASSCODES"
-    assert end_marker_idx is not False, "END marker missing from Authenticate.PASSCODES"
     
     for idx in range(start_marker_idx + 1, end_marker_idx - 1):
         line = raw_data[idx]
