@@ -1,4 +1,4 @@
-import os, copy, time, datetime
+import os, copy, time, datetime, re, functools, operator
 
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, ParseMode, Update)
 from telegram.ext import (CallbackQueryHandler, MessageHandler, CallbackContext, Filters)
@@ -51,8 +51,19 @@ class Ctf(object):
         :return: None
         """
         self.challenges = []
-        for challenge_idx, _ in enumerate(os.listdir(self.challenges_directory)):
-            challenge_directory = os.path.join(self.challenges_directory, str(challenge_idx + 1))
+        
+        challenges_names = os.listdir(self.challenges_directory)
+        assert functools.reduce(
+            operator.and_, 
+            [re.search(r"[0-9]+", cn) is not None for cn in challenges_names]
+        ), "Please ensure that the directory names of the challenges in active_ctf/challenges"\
+        " are of the format:\n\tNUMBER-ChallengeName\n\te.g. 13-Decryption"
+        
+        challenges_names.sort(
+            key=lambda a: int(re.search(r"[0-9]+", a).group(0))
+        )
+        for _, name in enumerate(challenges_names):
+            challenge_directory = os.path.join(self.challenges_directory, name)
             challenge_yaml_file = os.path.join(challenge_directory, "challenge.yaml")
 
             if os.path.isfile(challenge_yaml_file):
