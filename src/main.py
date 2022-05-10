@@ -57,7 +57,7 @@ def main():
     
     
     # Stage ctf
-    ctf : Ctf = Ctf(os.path.join(os.getcwd(), "active_ctf"), bot)
+    ctf : Ctf = Ctf(os.path.join(os.getcwd(), "ctf"), bot)
     ctf.setup( # This stage id is CTF
         stage_id=STAGE_CTF,
         next_stage_id=STAGE_END,
