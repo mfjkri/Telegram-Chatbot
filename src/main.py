@@ -1,10 +1,13 @@
-#shebang
-import sys, logging, os, shutil
+# shebang
+import sys
+import logging
+import os
+import shutil
 
 from bot import Bot
 from user import Users
 import utils.utils as utils
-from utils.log import Log 
+from utils.log import Log
 from stages.admin import AdminConsole
 from stages.authenticate import Authenticate
 from stages.ctf import Ctf
@@ -24,54 +27,51 @@ def main():
         name=__name__,
         stream_handle=sys.stdout,
         file_handle=LOG_FILE,
-        log_level= logging.DEBUG
+        log_level=logging.DEBUG
     )
-    
-    users = Users()    
-    users.init(logger, "LOG_USER_TO_APP_LOGS" in CONFIG and CONFIG["LOG_USER_TO_APP_LOGS"])
-    
+
+    users = Users()
+    users.init(
+        logger, "LOG_USER_TO_APP_LOGS" in CONFIG and CONFIG["LOG_USER_TO_APP_LOGS"])
+
     bot = Bot()
     bot.init(BOT_TOKEN, logger)
-
 
     STAGE_ADMIN = "admin"
     STAGE_AUTHENTICATE = "authenticate"
     STAGE_CTF = "CTF"
     STAGE_END = "end"
 
-
     # Stage admin
-    admin : AdminConsole = AdminConsole(bot)
+    admin: AdminConsole = AdminConsole(bot)
     admin.setup(
         stage_id=STAGE_ADMIN,
         next_stage_id=STAGE_AUTHENTICATE
     )
-    
-    
+
     # Stage authenticate
-    authenticate : Authenticate = Authenticate(bot)
+    authenticate: Authenticate = Authenticate(bot)
     authenticate.setup(
         stage_id=STAGE_AUTHENTICATE,
         next_stage_id=STAGE_CTF
     )
-    
-    
+
     # Stage ctf
-    ctf : Ctf = Ctf(os.path.join(os.getcwd(), "ctf"), bot)
-    ctf.setup( # This stage id is CTF
+    ctf: Ctf = Ctf(os.path.join(os.getcwd(), "ctf"), bot)
+    ctf.setup(  # This stage id is CTF
         stage_id=STAGE_CTF,
         next_stage_id=STAGE_END,
     )
-        
-    
+
     # Start Bot
     logger.info(False, "")
     logger.info(False, "Initializing...")
     logger.info(False, "")
-    
+
     bot.set_first_stage(STAGE_ADMIN)
     bot.set_end_of_chatbot(
-        lambda update, context : bot.edit_or_reply_message(update, context, "You have exited the conversation. \n\nUse /start to begin a new one.")
+        lambda update, context: bot.edit_or_reply_message(
+            update, context, "You have exited the conversation. \n\nUse /start to begin a new one.")
     )
     bot.start(live_mode=LIVE_MODE)
 
@@ -80,22 +80,20 @@ def setup():
     utils.get_dir_or_create(os.path.join(os.getcwd(), "logs"))
     if FRESH_START:
         users_directory = os.path.join(os.getcwd(), "users")
-            
+
         for chatid in os.listdir(users_directory):
             user_directory = os.path.join(users_directory, chatid)
-            if os.path.isdir(user_directory): 
+            if os.path.isdir(user_directory):
                 shutil.rmtree(user_directory)
-        
+
         if os.path.isfile(LOG_FILE):
             os.remove(LOG_FILE)
-    
+
 
 if __name__ == "__main__":
     main()
-    
-    
-    
-    
+
+
 # def for_reference():
 #     STAGE_COLLECT_NAME = "collect:name"
 #     STAGE_COLLECT_PHONENUMBER = "collect:phone number"
@@ -114,8 +112,8 @@ if __name__ == "__main__":
 #         input_formatter=format_name_input,
 #         allow_update=True
 #     )
-    
-    
+
+
 #     # Stage collect:phone number
 #     def format_number_input(input_str : Union[str, bool]):
 #         if input_str is True:
@@ -128,38 +126,38 @@ if __name__ == "__main__":
 #                 len(input_str) == 8 and "689".find(input_str[0]) >= 0
 #             ) else False
 #     bot.get_info_from_user( # This stage id is collect:phone number
-#         data_label="phone number", 
-#         next_stage_id=STAGE_COLLECT_EMAIL, 
-#         input_formatter=format_number_input, 
+#         data_label="phone number",
+#         next_stage_id=STAGE_COLLECT_EMAIL,
+#         input_formatter=format_number_input,
 #         additional_text="⚠ We will only use this to contact prize winners.",
 #         allow_update=True
 #     )
 
-    
+
 #     # Stage collect:email
 #     def format_email_input(input_str : Union[str, bool]):
 #         if input_str is True:
 #             return "example@domain.com"
 #         else:
 #             input_str = utils.format_input_str(input_str, True, "@.")
-#             return utils.check_if_valid_email_format(input_str)            
+#             return utils.check_if_valid_email_format(input_str)
 #     bot.get_info_from_user( # This stage id is collect:email
-#         data_label="email", 
-#         next_stage_id=STAGE_GUARDIAN, 
-#         input_formatter=format_email_input, 
+#         data_label="email",
+#         next_stage_id=STAGE_GUARDIAN,
+#         input_formatter=format_email_input,
 #         additional_text=None, #"⚠ This will be the only channel that we use to contact or share opportunities via.",
 #         allow_update=True
 #     )
-    
-    
+
+
 #     # Stage guardian
 #     guardian : Guardian = Guardian(bot)
 #     guardian.setup( # This stage id is guardian
 #         stage_id=STAGE_GUARDIAN,
 #         next_stage_id=STAGE_ENTER_CTF
 #     )
-    
-    
+
+
 #     # Stage enter_ctf
 #     stage4_choice_text = "Want to win a prize 🎁?\n\n"
 #     stage4_choice_text += "Take part in the Capture the Flag (CTF) Challenge and win a prize if you top the leaderboard!\n\n"
