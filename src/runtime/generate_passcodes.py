@@ -69,8 +69,8 @@ def generate_passcodes(new_users : list) -> None:
     raw_data.insert(end_marker_idx, f"""  # Generated at {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}\n""")            
     raw_data.insert(end_marker_idx, "\n  #------\n")            
     
-    with open(config_yaml_file, 'w') as active_ctf_file:
-        active_ctf_file.writelines(raw_data)
+    with open(config_yaml_file, 'w') as config_file:
+        config_file.writelines(raw_data)
 
 
 def get_new_users_from_file(file_name : str) -> list:
