@@ -414,7 +414,7 @@ class Ctf(object):
             return self.check_answer(
                 update, context,
                 challenge_number,
-                utils.format_input_str(update.message.text.lower(), True, "@")
+                utils.format_input_str(update.message.text.lower(), True, "@_")
             )
         else:
             return self.SUBMIT_CHALLENGE
