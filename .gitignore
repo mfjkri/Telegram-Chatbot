@@ -2,6 +2,7 @@ temp/
 exports/
 logs/
 archives/
+ctf/challenges/*
 users/*/
 project_setup.log
 config.yaml
