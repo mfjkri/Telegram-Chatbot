@@ -100,9 +100,14 @@ class Ctf(object):
             challenge_data.update({"completed": False})
             challenge_data.update({"total_hints_deduction": 0})
 
-            if challenge_data["time_based"]:
-                challenge_data["time_based"].update({"start_time": False})
-                challenge_data["time_based"].update({"end_time": False})
+            if type(challenge_data["time_based"]) is int:
+                challenge_data["time_based"] = {
+                    "limit": int(challenge_data["time_based"]),
+                    "start_time": False,
+                    "end_time": False
+                }
+            else:
+                challenge_data["time_based"] = None
 
             max_hints_deduction = 0
             for hint in challenge_data["hints"]:
