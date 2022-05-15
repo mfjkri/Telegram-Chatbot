@@ -21,7 +21,7 @@ The number preceeding the challenge name will determine the **order of the chall
 
 `challenge.yaml`:
 
-```
+```yaml
 description: "Can you find the flag in this file?"
 additional_info: null
 answer: "flag@answer"
@@ -42,7 +42,7 @@ files: []
 
   Challenge text displayed when viewing challenge.
 
-  ```
+  ```yaml
   description: "Can you find the flag in this file?"
   ```
 
@@ -53,13 +53,13 @@ files: []
 
   If you wish to have additional information displayed:
 
-  ```
+  ```yaml
   additional_info: "Please do not run the files from this challenge as admin."
   ```
 
   Else:
 
-  ```
+  ```yaml
   additional_info: null
   ```
 
@@ -68,7 +68,7 @@ files: []
   The accepted answer of the challenge. Casing will be ignored when validating users answers.\
   Please ensure that the answer only contains `alphanumeric _ @` characters.
 
-  ```
+  ```yaml
   # If answer is preceeded by "flag@..." then a warning will be given
   # to user when their answer does not begin with flag@.
   answer: "flag@answer"
@@ -78,7 +78,7 @@ files: []
 
   The total score for the challenge before deductions. This should reflect the difficulty of the challenge.
 
-  ```
+  ```yaml
   points: 40
   ```
 
@@ -88,15 +88,16 @@ files: []
 
   If you wish to set the time limit to 300 `seconds`:
 
-  ```
-  # Points is calculated by: (max(time_taken, time_based) / time_based) * challenge_points_after_hints_deduction
-  # If time taken to complete challenge exceed time_based, then a score of 0 is awarded.
+  ```yaml
+  # Points is calculated by:
+  #     (max(time_taken, time_based) / time_based) * challenge_points_after_hints_deduction
+  # If time taken to complete challenge exceeds time_based, then a score of 0 is awarded.
   time_based: 300
   ```
 
   If you don't wish to enable this:
 
-  ```
+  ```yaml
   time_based: null
   ```
 
@@ -106,13 +107,13 @@ files: []
 
   If you wish to only allow the user to attempt the challenge once:
 
-  ```
+  ```yaml
   one_try: true
   ```
 
   Else:
 
-  ```
+  ```yaml
   one_try: false
   ```
 
@@ -122,8 +123,9 @@ files: []
 
   If it, you have to provide the possible OPTIONS:
 
-  ```
-  # Points is calculated by: challenge_points_before_hints_deduction / number_of_attempts
+  ```yaml
+  # Points is calculated by:
+  #     challenge_points_before_hints_deduction / number_of_attempts
   # Ensure that the correct option matches the CHALLENGE:answer (answer checking ignores casing).
   # You can have as many options as you want.
   # Options will be displayed as rows of 2 when possible.
@@ -136,7 +138,7 @@ files: []
 
   Else:
 
-  ```
+  ```yaml
   multiple_choices: null
   ```
 
@@ -144,27 +146,27 @@ files: []
 
   The list of hints provided for your challenge.
 
-  ```
+  ```yaml
   hints:
-    - text : "Hint here"
-      deduction: 5 # Score deducted from challenge score for using hint
+    - text: "Hint here"
+      deduction: 5
   ```
 
   You can have as many hints as needed:
 
-  ```
+  ```yaml
   hints:
-    - text : "Hint One"
+    - text: "Hint One"
       deduction: 5
-    - text : "Hint Two"
+    - text: "Hint Two"
       deduction: 5
-    - text : "Hint Three"
+    - text: "Hint Three"
       deduction: 5
   ```
 
   Or none at all:
 
-  ```
+  ```yaml
   hints: []
   ```
 
@@ -172,14 +174,14 @@ files: []
 
   The list of file links to download the files needed for your challenge.
 
-  ```
+  ```yaml
   files:
     - "https://url-to-file.com"
   ```
 
   You can have as many file links as needed:
 
-  ```
+  ```yaml
   files:
     - "https://first-file.com"
     - "https://second-file.com"
@@ -188,7 +190,7 @@ files: []
 
   Or none at all:
 
-  ```
+  ```yaml
   files: []
   ```
 
@@ -228,7 +230,7 @@ Below is a brief explanation for them however it does not cover the implementati
       This is an dictionary of states that the stage can be in.\
        Each state has callback handlers to handle any action done in that state.\
 
-      ```
+      ```python
         {
             "STATE_NAME" : [
                 CallbackQueryHandler(callback_function, pattern=state_pattern, run_async=True),
@@ -244,36 +246,34 @@ For a more detailed explanation, please refer to the [Implementation Documentati
 
 ## Inbuilt stages
 
-#### let_user_choose
+### let_user_choose
 
 Presents a variable number of choices to the user. The choices are in the form of buttons (ReplyMarkupButton).
 
-````
-
+```python
 def callback(choice_selected : str, update : Update, context : CallbackContext) -> USERSTATE:
-print("Choice selected was:", choice_selected)
-return Bot.proceed_next_stage(
-current_stage_id="choose:example_choice",
-next_stage_id=NEXT_STAGE_ID,
-update=update, context=context
-)
+    print("Choice selected was:", choice_selected)
+    return Bot.proceed_next_stage(
+        current_stage_id="choose:example_choice",
+        next_stage_id=NEXT_STAGE_ID,
+        update=update, context=context
+    )
 
 example_choose = Bot.let_user_choose(
-choice_label="example_choice",
-choice_text="Please choose from the following:",
-choices = [
-{"text" : "Choice A", "callback" : lambda update, context : callback("A", update, context)},
-{"text" : "Choice B", "callback" : lambda update, context : callback("B", update, context)},
-{"text" : "Choice C", "callback" : lambda update, context : callback("C", update, context)}
-],
-choices_per_row=2
+    choice_label="example_choice",
+    choice_text="Please choose from the following:",
+    choices = [
+        {"text" : "Choice A", "callback" : lambda update, context : callback("A", update, context)},
+        {"text" : "Choice B", "callback" : lambda update, context : callback("B", update, context)},
+        {"text" : "Choice C", "callback" : lambda update, context : callback("C", update, context)}
+    ],
+    choices_per_row=2
 )
 
 # Proceeding to the stage:
-
 def some_state_or_stage(update : Update, context : CallbackContext) -> USERSTATE:
-query = update.callback_query
-query.answer()
+    query = update.callback_query
+    query.answer()
 
     return Bot.proceed_next_stage(
         current_stage_id=CURRENT_SOME_STATE_OR_STAGE_ID,
@@ -289,91 +289,85 @@ fruit_choices = ["Apple", "Pear", "Oranges]
 
 choices = []
 for fruit in fruit_choices:
-choices.append({
-"text": fruit, "callback" : lambda update, context, fruit=fruit : callback(fruit, update, context)
-})
+    choices.append({
+        "text": fruit, "callback" : lambda update, context, fruit=fruit : callback(fruit, update, context)
+    })
 example_choose = Bot.let_user_choose(
-choice_label="example_choice",
-choice_text="Please choose from the following:",
-choices = choices,
-choices_per_row=2
+    choice_label="example_choice",
+    choice_text="Please choose from the following:",
+    choices = choices,
+    choices_per_row=2
 )
 
 ```
 
-#### get_input_from_user
+### get_input_from_user
 
 Presents an input field to the user. Input is capture through the next valid message sent from input prompt.
 
-```
-
+```python
 def callback(input_given : str, update : Update, context : CallbackContext) -> USERSTATE:
-print("Input given was:", input_given)
-return Bot.proceed_next_stage(
-current_stage_id="input:example_input",
-next_stage_id=NEXT_STAGE_ID,
-update=update, context=context
-)
+    print("Input given was:", input_given)
+    return Bot.proceed_next_stage(
+        current_stage_id="input:example_input",
+        next_stage_id=NEXT_STAGE_ID,
+        update=update, context=context
+    )
 
 example_input = Bot.get_input_from_user(
-input_label="example_input",
-input_text="Please input your \_\_\_\_:",
-input_handler=callback
+    input_label="example_input",
+    input_text="Please input your \_\_\_\_:",
+    input_handler=callback
 )
 
 # Proceeding to the stage:
 
 def some_state_or_stage(update : Update, context : CallbackContext) -> USERSTATE:
-query = update.callback_query
-query.answer()
+    query = update.callback_query
+    query.answer()
 
     return Bot.proceed_next_stage(
         current_stage_id=CURRENT_SOME_STATE_OR_STAGE_ID,
         next_stage_id=example_input or "input:example_input",
         update=update, context=context
-
-)
-
+    )
 ```
 
-#### get_info_from_user
+### get_info_from_user
 
 Similar to `get_input_from_user` except that the input is a user information and is stored globally in the userdata. No additional logic implementation is required.
 
-```
-
+```python
 def format_number_input(input_str : Union[str, bool]):
-if input_str is True:
-return "91234567"
-else:
-if input_str.find("+65") >= 0:
-input_str = input_str[3:]
-input_str = utils.format_input_str(input_str, False, "0123456789")
-return input_str if (
-len(input_str) == 8 and "689".find(input_str[0]) >= 0
-) else False
+    if input_str is True:
+        return "91234567"
+    else:
+        if input_str.find("+65") >= 0:
+            input_str = input_str[3:]
+            input_str = utils.format_input_str(input_str, False, "0123456789")
+            return input_str if (
+                len(input_str) == 8 and "689".find(input_str[0]) >= 0
+            ) else False
 
 example_info = bot.get_info_from_user( # This stage id is collect:phone number
-data_label="phonenumber",
-next_stage_id=NEXT_STAGE_ID,
-input_formatter=format_number_input,
-additional_text="We will not use this to contact you.",
-allow_update=True
+    data_label="phonenumber",
+    next_stage_id=NEXT_STAGE_ID,
+    input_formatter=format_number_input,
+    additional_text="We will not use this to contact you.",
+    allow_update=True
 )
 
 # Proceeding to the stage: (for get_info_from_user this is usually done at the start of the chatbot flow path)
 
 def some_state_or_stage(update : Update, context : CallbackContext) -> USERSTATE:
-query = update.callback_query
-query.answer()
+    query = update.callback_query
+    query.answer()
 
     return Bot.proceed_next_stage(
         current_stage_id=CURRENT_SOME_STATE_OR_STAGE_ID,
         next_stage_id=example_info or "collect:phonenumber",
         update=update, context=context
-
 )
-
 ```
 
 ---
@@ -384,8 +378,7 @@ query.answer()
 
 src/stages/example.py
 
-```
-
+```python
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
 from telegram.ext import (CallbackQueryHandler, CallbackContext)
 
@@ -393,9 +386,9 @@ from bot import (Bot, USERSTATE)
 from user import (User, Users)
 
 class Example(object):
-def **init**(self, bot : Bot):
-self.bot : Bot = bot
-self.users : Users = Users()
+    def init(self, bot : Bot):
+        self.bot : Bot = bot
+        self.users : Users = Users()
 
         self.stage = None
         self.states = []
@@ -562,8 +555,7 @@ self.users : Users = Users()
 
 src/main.py
 
-```
-
+```python
 #!path\to\venv\bin\python.exe
 import sys, logging, os
 from typing import (Union)
@@ -579,12 +571,12 @@ CONFIG = utils.load_yaml_file(os.path.join("config.yaml"))
 BOT_TOKEN = CONFIG["BOT_TOKENS"]["live"]
 
 def main():
-logger = Log(
-name=**name**,
-stream_handle=sys.stdout,
-file_handle=LOG_FILE,
-log_level= logging.DEBUG
-)
+    logger = Log(
+        name=**name**,
+        stream_handle=sys.stdout,
+        file_handle=LOG_FILE,
+        log_level= logging.DEBUG
+    )
 
     users = Users()
     users.init(logger)
@@ -639,29 +631,9 @@ log_level= logging.DEBUG
     bot.start()
 
 if **name** == "**main**":
-main()
-
+    main()
 ```
 
-<hr>
+---
 
 # TECHNICAL DOCUMENTATION
-
-```
-
-```
-
-```
-
-```
-
-```
-
-```
-
-```
-
-```
-
-```
-````
