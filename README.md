@@ -12,14 +12,14 @@ Each challenge will be a subdirectory with the following format as its name:
 
 ![challenge_format](docs/img/2022-05-15%2018-08.png)
 
-The number preceeding the challenge name will determine the **order of the challenges** when displayed to the `User`.
+The number preceeding the challenge name will determine the **order of the challenges** when displayed to the `User` on Telegram.
 
 &nbsp;\
 **Each** challenge directory is expected to contain a `challenge.yaml` file of the following format:
 
-```
-Leave any unwanted OPTIONAL fields as: null
-```
+![challenge.yaml](docs/img/2022-05-15%2019-23.png)
+
+`challenge.yaml`:
 
 ```
 description: "Can you find the flag in this file?"
@@ -29,12 +29,14 @@ answer: "flag@answer"
 points: 40
 time_based: null
 one_try: false
-multiple_choices: null # OPTIONAL: [list, null]
+multiple_choices: null
 
 hints: []
 
 files: []
 ```
+
+### Challenge.yaml field reference:
 
 - `description` : Required [string]
 
