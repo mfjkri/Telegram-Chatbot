@@ -17,7 +17,7 @@ The number preceeding the challenge name will determine the **order of the chall
 &nbsp;\
 **Each** challenge directory is expected to contain a `challenge.yaml` file of the following format:
 
-![challenge.yaml](docs/img/2022-05-15%2019-23.png)
+![challenge_yaml](docs/img/2022-05-15%2019-23.png)
 
 `challenge.yaml`:
 
