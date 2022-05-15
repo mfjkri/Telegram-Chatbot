@@ -1,13 +1,207 @@
-# QUICKSTAR GUIDE
+# QUICKSTART REFERENCE
+
+---
+
+## Setting of CTF Challenges
+
+The default directory that the `ctf.py` stage looks for challenges in is at `${rootDir}/ctf/challenges`.
+
+Each challenge will be a subdirectory with the following format as its name:
+
+    {NUMBER}-CHALLENGE_NAME
+
+![challenge_format](docs/img/2022-05-15%2018-08.png)
+
+The number preceeding the challenge name will determine the **order of the challenges** when displayed to the `User`.
+
+&nbsp;\
+**Each** challenge directory is expected to contain a `challenge.yaml` file of the following format:
+
+```
+Leave any unwanted OPTIONAL fields as: null
+```
+
+```
+description: "Can you find the flag in this file?"
+additional_info: null
+answer: "flag@answer"
+
+points: 40
+time_based: null
+one_try: false
+multiple_choices: null # OPTIONAL: [list, null]
+
+hints: []
+
+files: []
+```
+
+- `description` : Required [string]
+
+  Challenge text displayed when viewing challenge.
+
+  ```
+  description: "Can you find the flag in this file?"
+  ```
+
+- `additional_info` : Optional [string, null]
+
+  Whether to display additional info when viewing the challenge.\
+  It will be displayed under the `Notes:` section of the challenge view.
+
+  If you wish to have additional information displayed:
+
+  ```
+  additional_info: "Please do not run the files from this challenge as admin."
+  ```
+
+  Else:
+
+  ```
+  additional_info: null
+  ```
+
+- `answer` : Required [string]
+
+  The accepted answer of the challenge. Casing will be ignored when validating users answers.\
+  Please ensure that the answer only contains `alphanumeric _ @` characters.
+
+  ```
+  # If answer is preceeded by "flag@..." then a warning will be given to user when their answer does not begin with flag@.
+  answer: "flag@answer"
+  ```
+
+- `points` : Required [integer]
+
+  The total score for the challenge. Should reflect the difficulty of the challenge.
+
+  ```
+  points: 40
+  ```
+
+- `time_based` : Optional [integer, null]
+
+  Whether to calculate the score based on time taken to complete challenge.
+
+  If you wish to set the time limit to 300 `seconds`:
+
+  ```
+  # Points is calculated by: (max(time_taken, time_based) / time_based) * challenge_points_after_hints_deduction
+  # If time taken to complete challenge exceed time_based, then a score of 0 is awarded.
+  time_based: 300
+  ```
+
+  If you don't wish to enable this:
+
+  ```
+  time_based: null
+  ```
+
+- `one_try` : Required [bool]
+
+  Whether to only allow one attempt for the challenge.
+
+  If you wish to only allow the user to attempt the challenge once:
+
+  ```
+  one_try: true
+  ```
+
+  Else:
+
+  ```
+  one_try: false
+  ```
+
+- `multiple_choices` : Optional [list]
+
+  Whether your challenge is a mutliple choice challenge.
+
+  If it, you have to provide the possible OPTIONS:
+
+  ```
+  # Points is calculated by: challenge_points_before_hints_deduction / number_of_attempts
+  # Ensure that the correct option matches the CHALLENGE:answer (answer checking ignores casing).
+  # You can have as many options as you want.
+  # Options will be displayed as rows of 2 when possible.
+  multiple_choices:
+    - Option One
+    - Option Two
+    - Option Three
+    - Option Four
+  ```
+
+  Else:
+
+  ```
+  multiple_choices: null
+  ```
+
+- `hints` : Required [list]
+
+  The list of hints provided for your challenge.
+
+  ```
+  hints:
+    - text : "Hint here"
+      deduction: 5 # Score deducted from challenge score for using hint
+  ```
+
+  You can have as many hints as needed:
+
+  ```
+  hints:
+    - text : "Hint One"
+      deduction: 5
+    - text : "Hint Two"
+      deduction: 5
+    - text : "Hint Three"
+      deduction: 5
+  ```
+
+  Or none at all:
+
+  ```
+  hints: []
+  ```
+
+- `files` : Required [list]
+
+  The list of file links to download the files needed for your challenge.
+
+  ```
+  files:
+    - "https://url-to-file.com"
+  ```
+
+  You can have as many file links as needed:
+
+  ```
+  files:
+    - "https://first-file.com"
+    - "https://second-file.com"
+    - "https://third-file.com"
+  ```
+
+  Or none at all:
+
+  ```
+  files: []
+  ```
+
+---
 
 # STATES & STAGES
 
 Throughout this project, you will see a lot of references to stages and states.\
 Below is a brief explanation for them however it does not cover the implementation details behind them.
 
-- A `state` is a single situation that the `User` can be in. A User can be in only one given state at any time.
+- A `state` is a condition of outcome that the `User` is in.
 
-  Each state will have some amount of `callback handlers`.
+  A state is identified as as a unique `integer` hence the user can only be ONE state at any given time.\
+  The actual integral value of the state has no meaning other than to signifiy the sequence of instantiation (order of which we defined the states).
+
+  When creating a state, we define a list of `callback handlers` to handle the next input provided by the user and decide on an outcome.
 
   There are two types of callback handlers:
 
@@ -21,14 +215,14 @@ Below is a brief explanation for them however it does not cover the implementati
 
   Each stage has:
 
-  1.  An `entry` function.  
+  1.  An `entry` function.
       This is the function called when loading the stage from another stage in `bot.proceed_next_stage`
 
-  2.  An `exit` function.  
+  2.  An `exit` function.
       This is an optional callback but good to have if the stage has multiple exit points that leads to the same outcome.
 
-  3.  States  
-       This is an dictionary of states that the stage can be in.\
+  3.  States
+      This is an dictionary of states that the stage can be in.\
        Each state has callback handlers to handle any action done in that state.\
 
       ```
@@ -51,7 +245,7 @@ For a more detailed explanation, please refer to the [Implementation Documentati
 
 Presents a variable number of choices to the user. The choices are in the form of buttons (ReplyMarkupButton).
 
-```
+````
 
 def callback(choice_selected : str, update : Update, context : CallbackContext) -> USERSTATE:
 print("Choice selected was:", choice_selected)
@@ -453,3 +647,18 @@ main()
 ```
 
 ```
+
+```
+
+```
+
+```
+
+```
+
+```
+
+```
+
+```
+````
