@@ -14,10 +14,6 @@ def get_dir_or_create(dir_str: str, to_log: bool = False) -> str:
     return dir_path
 
 
-def create_challenges(challenges: list) -> None:
-    pass
-
-
 if __name__ == "__main__":
 
     is_windows, is_linux = "win32" in sys.platform, "linux" in sys.platform
