@@ -48,7 +48,7 @@ files: []
 
 - `additional_info` : Optional [string, null]
 
-  Whether to display additional info when viewing the challenge.\
+  Additional info displayed when viewing the challenge.\
   It will be displayed under the `Notes:` section of the challenge view.
 
   If you wish to have additional information displayed:
@@ -69,13 +69,14 @@ files: []
   Please ensure that the answer only contains `alphanumeric _ @` characters.
 
   ```
-  # If answer is preceeded by "flag@..." then a warning will be given to user when their answer does not begin with flag@.
+  # If answer is preceeded by "flag@..." then a warning will be given
+  # to user when their answer does not begin with flag@.
   answer: "flag@answer"
   ```
 
 - `points` : Required [integer]
 
-  The total score for the challenge. Should reflect the difficulty of the challenge.
+  The total score for the challenge before deductions. This should reflect the difficulty of the challenge.
 
   ```
   points: 40
