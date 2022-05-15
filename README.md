@@ -1,35 +1,45 @@
+# QUICKSTAR GUIDE
+
 # STATES & STAGES
 
 Throughout this project, you will see a lot of references to stages and states.\
 Below is a brief explanation for them however it does not cover the implementation details behind them.
 
-A `state` is a single situation that the `User` can be in. A User can be in only one given state at any time.
+- A `state` is a single situation that the `User` can be in. A User can be in only one given state at any time.
 
-&emsp;Each state will have some amount of `callback handlers`. \
-&emsp;There are two types of callback handlers:\
- &emsp;&emsp;1) `CallbackQueryHandler` - called when user presses a given `InlineKeyboardButton` \
- &emsp;&emsp;&emsp;This handler is specific to the button meaning that the `pattern` of the CallbackQueryHandler must match the `callback_data` of the InlineKeyboardButton. \
- \
- &emsp;&emsp;2) `MessageHandler` - called when user sends a message \
- &emsp;&emsp;&emsp;This handler is non-specific and will be called for every message the user sends. Proper steps must be taken to prevent user from submitting data more than once.
+  Each state will have some amount of `callback handlers`.
 
-A `stage` is a essentially a collection of states with added functionality to allow the creation of complex logic. Stages can also be nested within stages allowing the use of inbuilt stages in your custom stages.
+  There are two types of callback handlers:
 
-&emsp;Each stage has:\
-&emsp;&emsp;1) An `entry` function.  
- &emsp;&emsp;&emsp;This is the function called when loading the stage from another stage in `bot.proceed_next_stage`
+  1. `CallbackQueryHandler` - called when user presses a given `InlineKeyboardButton` \
+     This handler is specific to the button meaning that the `pattern` of the CallbackQueryHandler must match the `callback_data` of the InlineKeyboardButton.
 
-&emsp;&emsp;2) An `exit` function.  
- &emsp;&emsp;&emsp;This is an optional callback but good to have if the stage has multiple exit points that leads to the same outcome.
+  2. `MessageHandler` - called when user sends a message \
+     This handler is non-specific and will be called for every message the user sends. Proper steps must be taken to prevent user from submitting data more than once.
 
-&emsp;&emsp;3) States  
- &emsp;&emsp;&emsp;This is an dictionary of states that the stage can be in. \
- &emsp;&emsp;&emsp;Each state has callback handlers to handle any action done in that state. \
- \
- &emsp;&emsp;&emsp;{ "STATE_NAME" : [
- &emsp;&emsp;&emsp;&emsp;CallbackQueryHandler(callback_function, pattern=state_pattern, run_async=True),
- &emsp;&emsp;&emsp;&emsp;MessageHandler(Filters.all, callback_function, run_async=True)
- &emsp;&emsp;&emsp;]}
+- A `stage` is a essentially a collection of states with added functionality to allow the creation of complex logic. Stages can also be nested within stages allowing the use of inbuilt stages in your custom stages.
+
+  Each stage has:
+
+  1.  An `entry` function.  
+      This is the function called when loading the stage from another stage in `bot.proceed_next_stage`
+
+  2.  An `exit` function.  
+      This is an optional callback but good to have if the stage has multiple exit points that leads to the same outcome.
+
+  3.  States  
+       This is an dictionary of states that the stage can be in.\
+       Each state has callback handlers to handle any action done in that state.\
+
+      ```
+        {
+            "STATE_NAME" : [
+                CallbackQueryHandler(callback_function, pattern=state_pattern, run_async=True),
+                MessageHandler(Filters.all, callback_function, run_async=True)
+            ],
+            ...
+        }
+      ```
 
 For a more detailed explanation, please refer to the [Implementation Documentation](www.google.com) page.
 
@@ -42,29 +52,31 @@ For a more detailed explanation, please refer to the [Implementation Documentati
 Presents a variable number of choices to the user. The choices are in the form of buttons (ReplyMarkupButton).
 
 ```
+
 def callback(choice_selected : str, update : Update, context : CallbackContext) -> USERSTATE:
-    print("Choice selected was:", choice_selected)
-    return Bot.proceed_next_stage(
-        current_stage_id="choose:example_choice",
-        next_stage_id=NEXT_STAGE_ID,
-        update=update, context=context
-    )
+print("Choice selected was:", choice_selected)
+return Bot.proceed_next_stage(
+current_stage_id="choose:example_choice",
+next_stage_id=NEXT_STAGE_ID,
+update=update, context=context
+)
 
 example_choose = Bot.let_user_choose(
-    choice_label="example_choice",
-    choice_text="Please choose from the following:",
-    choices = [
-        {"text" : "Choice A", "callback" : lambda update, context : callback("A", update, context)},
-        {"text" : "Choice B", "callback" : lambda update, context : callback("B", update, context)},
-        {"text" : "Choice C", "callback" : lambda update, context : callback("C", update, context)}
-    ],
-    choices_per_row=2
+choice_label="example_choice",
+choice_text="Please choose from the following:",
+choices = [
+{"text" : "Choice A", "callback" : lambda update, context : callback("A", update, context)},
+{"text" : "Choice B", "callback" : lambda update, context : callback("B", update, context)},
+{"text" : "Choice C", "callback" : lambda update, context : callback("C", update, context)}
+],
+choices_per_row=2
 )
 
 # Proceeding to the stage:
+
 def some_state_or_stage(update : Update, context : CallbackContext) -> USERSTATE:
-    query = update.callback_query
-    query.answer()
+query = update.callback_query
+query.answer()
 
     return Bot.proceed_next_stage(
         current_stage_id=CURRENT_SOME_STATE_OR_STAGE_ID,
@@ -73,20 +85,23 @@ def some_state_or_stage(update : Update, context : CallbackContext) -> USERSTATE
     )
 
 # -------------
+
 # A more dynamic choice stage
+
 fruit_choices = ["Apple", "Pear", "Oranges]
 
 choices = []
 for fruit in fruit_choices:
-    choices.append({
-        "text": fruit, "callback" : lambda update, context, fruit=fruit : callback(fruit, update, context)
-    })
+choices.append({
+"text": fruit, "callback" : lambda update, context, fruit=fruit : callback(fruit, update, context)
+})
 example_choose = Bot.let_user_choose(
-    choice_label="example_choice",
-    choice_text="Please choose from the following:",
-    choices = choices,
-    choices_per_row=2
+choice_label="example_choice",
+choice_text="Please choose from the following:",
+choices = choices,
+choices_per_row=2
 )
+
 ```
 
 #### get_input_from_user
@@ -94,30 +109,34 @@ example_choose = Bot.let_user_choose(
 Presents an input field to the user. Input is capture through the next valid message sent from input prompt.
 
 ```
+
 def callback(input_given : str, update : Update, context : CallbackContext) -> USERSTATE:
-    print("Input given was:", input_given)
-    return Bot.proceed_next_stage(
-        current_stage_id="input:example_input",
-        next_stage_id=NEXT_STAGE_ID,
-        update=update, context=context
-    )
+print("Input given was:", input_given)
+return Bot.proceed_next_stage(
+current_stage_id="input:example_input",
+next_stage_id=NEXT_STAGE_ID,
+update=update, context=context
+)
 
 example_input = Bot.get_input_from_user(
-    input_label="example_input",
-    input_text="Please input your ____:",
-    input_handler=callback
+input_label="example_input",
+input_text="Please input your \_\_\_\_:",
+input_handler=callback
 )
 
 # Proceeding to the stage:
+
 def some_state_or_stage(update : Update, context : CallbackContext) -> USERSTATE:
-    query = update.callback_query
-    query.answer()
+query = update.callback_query
+query.answer()
 
     return Bot.proceed_next_stage(
         current_stage_id=CURRENT_SOME_STATE_OR_STAGE_ID,
         next_stage_id=example_input or "input:example_input",
         update=update, context=context
+
 )
+
 ```
 
 #### get_info_from_user
@@ -125,35 +144,39 @@ def some_state_or_stage(update : Update, context : CallbackContext) -> USERSTATE
 Similar to `get_input_from_user` except that the input is a user information and is stored globally in the userdata. No additional logic implementation is required.
 
 ```
+
 def format_number_input(input_str : Union[str, bool]):
-    if input_str is True:
-        return "91234567"
-    else:
-        if input_str.find("+65") >= 0:
-            input_str = input_str[3:]
-        input_str = utils.format_input_str(input_str, False, "0123456789")
-        return input_str if (
-            len(input_str) == 8 and "689".find(input_str[0]) >= 0
-        ) else False
+if input_str is True:
+return "91234567"
+else:
+if input_str.find("+65") >= 0:
+input_str = input_str[3:]
+input_str = utils.format_input_str(input_str, False, "0123456789")
+return input_str if (
+len(input_str) == 8 and "689".find(input_str[0]) >= 0
+) else False
 
 example_info = bot.get_info_from_user( # This stage id is collect:phone number
-    data_label="phonenumber",
-    next_stage_id=NEXT_STAGE_ID,
-    input_formatter=format_number_input,
-    additional_text="We will not use this to contact you.",
-    allow_update=True
+data_label="phonenumber",
+next_stage_id=NEXT_STAGE_ID,
+input_formatter=format_number_input,
+additional_text="We will not use this to contact you.",
+allow_update=True
 )
 
 # Proceeding to the stage: (for get_info_from_user this is usually done at the start of the chatbot flow path)
+
 def some_state_or_stage(update : Update, context : CallbackContext) -> USERSTATE:
-    query = update.callback_query
-    query.answer()
+query = update.callback_query
+query.answer()
 
     return Bot.proceed_next_stage(
         current_stage_id=CURRENT_SOME_STATE_OR_STAGE_ID,
         next_stage_id=example_info or "collect:phonenumber",
         update=update, context=context
+
 )
+
 ```
 
 ---
@@ -165,6 +188,7 @@ def some_state_or_stage(update : Update, context : CallbackContext) -> USERSTATE
 src/stages/example.py
 
 ```
+
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
 from telegram.ext import (CallbackQueryHandler, CallbackContext)
 
@@ -172,9 +196,9 @@ from bot import (Bot, USERSTATE)
 from user import (User, Users)
 
 class Example(object):
-    def __init__(self, bot : Bot):
-        self.bot : Bot = bot
-        self.users : Users = Users()
+def **init**(self, bot : Bot):
+self.bot : Bot = bot
+self.users : Users = Users()
 
         self.stage = None
         self.states = []
@@ -334,6 +358,7 @@ class Example(object):
         )
 
         return self.load_menu(update, context)
+
 ```
 
 ### Example of main.py:
@@ -341,6 +366,7 @@ class Example(object):
 src/main.py
 
 ```
+
 #!path\to\venv\bin\python.exe
 import sys, logging, os
 from typing import (Union)
@@ -353,15 +379,15 @@ from stages.example import Example
 
 LOG_FILE = os.path.join("logs", f"csabot.log")
 CONFIG = utils.load_yaml_file(os.path.join("config.yaml"))
-BOT_TOKEN = CONFIG["BOT_TOKENS"]["LIVE"]
+BOT_TOKEN = CONFIG["BOT_TOKENS"]["live"]
 
 def main():
-    logger = Log(
-        name=__name__,
-        stream_handle=sys.stdout,
-        file_handle=LOG_FILE,
-        log_level= logging.DEBUG
-    )
+logger = Log(
+name=**name**,
+stream_handle=sys.stdout,
+file_handle=LOG_FILE,
+log_level= logging.DEBUG
+)
 
     users = Users()
     users.init(logger)
@@ -415,11 +441,15 @@ def main():
     bot.set_first_stage(STAGE_COLLECT_NAME)
     bot.start()
 
+if **name** == "**main**":
+main()
 
-if __name__ == "__main__":
-    main()
 ```
 
 <hr>
 
 # TECHNICAL DOCUMENTATION
+
+```
+
+```
