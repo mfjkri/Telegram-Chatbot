@@ -538,7 +538,7 @@ class Ctf(object):
         challenge_points = int(challenge["points"])
 
         text_body = f"<b>Challenge {challenge_number+1}</b>: "
-        text_body += f"Up to {challenge_points} points\n\n"
+        text_body += f"Up to {challenge_points - total_points_deduction} points\n\n"
 
         # if challenge["time_based"]:
         #     max_time_seconds = int(challenge["time_based"]["limit"])
