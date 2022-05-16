@@ -2,14 +2,14 @@
 
 1. [Quickstart](#1-quickstart-reference)
    - [1.1 Setting up](#11-setting-up):
-     - [Building with setup.py](#111-building-with-setuppy)
-     - [Building manually](#112-building-manually)
+     - [Building with setup.py](#111-usetuppyu)
+     - [Building manually](#112-ubuilding-manuallyu)
    - [1.2 Adding CTF Challenges](#12-adding-ctf-challenges)
 2. [States & Stages](#2-states--stages)
    - [2.1 Inbuilt stages](#21-inbuilt-stages):
-     - [let_user_choose](#211-letuserchoose)
-     - [get_input_from_user](#212-getinputfromuser)
-     - [get_info_from_user](#213-getinfofromuser)
+     - [let_user_choose](#211-uletuserchooseu)
+     - [get_input_from_user](#212-ugetinputfromuseru)
+     - [get_info_from_user](#213-ugetinfofromuseru)
    - [2.2 Custom stages](#22-creating-a-custom-stage)
 
 &nbsp;
@@ -20,7 +20,7 @@
 
 &nbsp;
 
-### 1.1.1) Building with `setup.py`:
+### 1.1.1) <u>`setup.py`</u>
 
 If you are running **Windows** or **Linux**, you can set up the project and install dependencies using `setup.py`:
 
@@ -55,7 +55,7 @@ WARNING: You are using pip version 22.0.4; however, version 22.1 is available.
 
 &nbsp;
 
-### 1.1.2) Building manually:
+### 1.1.2) <u>Building manually</u>:
 
 If you are running any other OS such as **MacOS**, you will have to build the project manually.
 
@@ -100,8 +100,6 @@ If you are running any other OS such as **MacOS**, you will have to build the pr
 ---
 
 ## 1.2) Adding CTF Challenges
-
-&nbsp;
 
 The default directory for CTF challenges is at `${rootDir}/ctf/challenges`.
 
@@ -347,7 +345,7 @@ For a more detailed explanation, please refer to the [Implementation Documentati
 
 ## 2.1) Inbuilt stages
 
-### 2.1.1) let_user_choose
+### 2.1.1) <u>let_user_choose</u>
 
 Presents a variable number of choices to the user. The choices are in the form of buttons (ReplyMarkupButton).
 
@@ -404,7 +402,7 @@ example_choose = Bot.let_user_choose(
 
 ```
 
-### 2.1.2) get_input_from_user
+### 2.1.2) <u>get_input_from_user</u>
 
 Presents an input field to the user. Input is capture through the next valid message sent from input prompt.
 
@@ -436,7 +434,7 @@ def some_state_or_stage(update : Update, context : CallbackContext) -> USERSTATE
     )
 ```
 
-### 2.1.3) get_info_from_user
+### 2.1.3) <u>get_info_from_user</u>
 
 Similar to `get_input_from_user` except that the input is a user information and is stored globally in the userdata. No additional logic implementation is required.
 
