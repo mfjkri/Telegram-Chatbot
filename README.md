@@ -2,7 +2,7 @@
 
 1. [Quickstart](#1-quickstart-reference)
    - [1.1 Setting up](#11-setting-up):
-     - [Building with setup.py](#111-setuppy)
+     - [setup.py](#111-setuppy)
      - [Building manually](#112-building-manually)
    - [1.2 Adding CTF Challenges](#12-adding-ctf-challenges)
 2. [States & Stages](#2-states--stages)
@@ -109,7 +109,7 @@ Each challenge is a subdirectory with the following name format:
 
 ![challenge_format](docs/img/2022-05-15%2018-08.png)
 
-The number preceeding the challenge name determines the **order** of display of challenges to the `User` on Telegram.
+The number preceeding the challenge name determines the **order** of display of challenges to the user on Telegram.
 
 ![challenge_order](docs/img/2022-05-16%2009-38-22.png)
 
@@ -118,9 +118,8 @@ The number preceeding the challenge name determines the **order** of display of 
 
 ![challenge_yaml](docs/img/2022-05-15%2019-23.png)
 
-`challenge.yaml`:
-
 ```yaml
+# ../1-challenge/challenge.yaml
 description: "Can you find the flag in this file?"
 additional_info: null
 answer: "flag@answer"
@@ -135,7 +134,7 @@ hints: []
 files: []
 ```
 
-### Challenge.yaml field reference:
+### challenge.yaml fields reference:
 
 - `description` : Required [string]
 
