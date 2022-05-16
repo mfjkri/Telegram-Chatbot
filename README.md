@@ -4,15 +4,17 @@
 
 ## Setting of CTF Challenges
 
-The default directory that the `ctf.py` stage looks for challenges in is at `${rootDir}/ctf/challenges`.
+The default directory for CTF challenges is at `${rootDir}/ctf/challenges`.
 
-Each challenge will be a subdirectory with the following format as its name:
+Each challenge is a subdirectory with the following name format:
 
     {NUMBER}-CHALLENGE_NAME
 
 ![challenge_format](docs/img/2022-05-15%2018-08.png)
 
-The number preceeding the challenge name will determine the **order of the challenges** when displayed to the `User` on Telegram.
+The number preceeding the challenge name determines the **order** of display of challenges to the `User` on Telegram.
+
+![challenge_order](docs/img/2022-05-16%2009-38-22.png)
 
 &nbsp;\
 **Each** challenge directory is expected to contain a `challenge.yaml` file of the following format:
@@ -251,6 +253,7 @@ For a more detailed explanation, please refer to the [Implementation Documentati
 Presents a variable number of choices to the user. The choices are in the form of buttons (ReplyMarkupButton).
 
 ```python
+# TODO: Document this stuff better
 def callback(choice_selected : str, update : Update, context : CallbackContext) -> USERSTATE:
     print("Choice selected was:", choice_selected)
     return Bot.proceed_next_stage(
@@ -272,6 +275,7 @@ example_choose = Bot.let_user_choose(
 
 # Proceeding to the stage:
 def some_state_or_stage(update : Update, context : CallbackContext) -> USERSTATE:
+    # TODO: Illustrate where this function originate from...
     query = update.callback_query
     query.answer()
 
