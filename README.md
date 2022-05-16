@@ -2,9 +2,11 @@
 
 1. [Quickstart](#1-quickstart-reference)
    - [1.1 Setting up](#11-setting-up):
-     - [setup.py](#111-setuppy)
+     - [**setup.py**](#111-setuppy)
      - [Building manually](#112-building-manually)
-   - [1.2 Adding CTF Challenges](#12-adding-ctf-challenges)
+   - [1.2 Configuring **config.yaml**](#12-configuring-configyaml)
+   - [1.2 Adding CTF Challenges](#13-adding-ctf-challenges)
+   - [1.3 Running Chatbot](#14-running-chatbot)
 2. [States & Stages](#2-states--stages)
    - [2.1 Inbuilt stages](#21-inbuilt-stages):
      - [let_user_choose](#211-letuserchoose)
@@ -32,7 +34,7 @@ $ cd ${rootDir}
 $ python setup.py --setup "python"
 ```
 
-Output:
+Expected output:
 
 ```bash
 2022-05-16 09:51:06,205 [INFO] Changing working directory to: /media/Programming/repos/js/Telegram-Chatbot
@@ -52,6 +54,8 @@ Installing collected packages: pytz, certifi, urllib3, tzdata, tornado, six, pyy
 Successfully installed APScheduler-3.6.3 cachetools-4.2.2 certifi-2021.10.8 charset-normalizer-2.0.12 idna-3.3 python-telegram-bot-13.11 pytz-2022.1 pytz-deprecation-shim-0.1.0.post0 pyyaml-6.0 requests-2.27.1 six-1.16.0 tornado-6.1 tzdata-2022.1 tzlocal-4.2 urllib3-1.26.9
 WARNING: You are using pip version 22.0.4; however, version 22.1 is available.
 ```
+
+If setup fails, please refer to [1.1.2) Building manually](#112-building-manually) and follow the steps for where the setup failed.
 
 &nbsp;
 
@@ -97,9 +101,119 @@ If you are running any other OS such as **MacOS**, you will have to build the pr
    LOG_USER_TO_APP_LOGS: false
    ```
 
+&nbsp;
+
 ---
 
-## 1.2) Adding CTF Challenges
+&nbsp;
+
+## 1.2) Configuring config.yaml
+
+For this program to run correctly, the `config.yaml` file has to be first configured.
+
+```yaml
+# ../${rootDir}/config.yaml
+
+# ---------------------------------- RUNTIME --------------------------------- #
+RUNTIME:
+LIVE_MODE: false
+FRESH_START: true
+
+# -------------------------------- BOT TOKENS -------------------------------- #
+BOT_TOKENS:
+LIVE: BOT_TOKEN
+TEST: BOT_TOKEN
+
+# ------------------------------ USER PASSCODES ------------------------------ #
+USER_PASSCODES:
+# START_OF_PASSCODES_MARKER
+# END_OF_PASSCODES_MARKER
+
+# -------------------------------- LOG CONFIG -------------------------------- #
+LOG_USER_TO_APP_LOGS: false
+```
+
+### config.yaml fields reference:
+
+- **`RUNTIME`**:
+
+  If _RUNTIME:LIVE_MODE_ is set to `true` then the bot will use _BOT_TOKENS:LIVE_ else it will use _BOT_TOKENS:TEST_.
+
+  If _RUNTIME:FRESH_START_ is set to `true` then the bot will clear previous log and user files every time it is restarted.\
+   For safety purposes, _RUNTIME:FRESH_START_ will be **ignored** if _RUNTIME:LIVE_MODE_ is `true`.
+
+- **`BOT_TOKENS`**:
+
+  BOT_TOKENS:LIVE is the token to connect to the Telegram Bot that is used on the actual day\
+  BOT_TOKENS:TEST is the token to connect to the Telegram Bot used during development.
+
+- **`USER_PASSCODES`**:
+
+  Each _PASSCODE_ is an entry:
+
+  ```yaml
+  PASSCODE:
+    - USER NAME
+    - USER GROUP
+  ```
+
+  _USER GROUP_ can be omitted and will default to "none":
+
+  ```yaml
+  PASSCODE: USER NAME
+  ```
+
+  Here is an example of more passcodes:
+
+  ```yaml
+  # ------------------------------ USER PASSCODES ------------------------------ #
+  USER_PASSCODES:
+      # START_OF_PASSCODES_MARKER
+
+      #------
+      # Generated at 16/05/2022 13:09:13
+      # Refer to src.runtime.generate_passcodes for more details.
+
+      T3026: Sonya Anhak # Here we can omit User Group entirely
+                      # It will be defaulted to none
+
+      T3026:
+      - Derek Eng
+      - none # We can also explicitly define User Group to be none
+
+      X4853:
+      - Rock Lee
+      - member
+
+      E9468:
+      - Samantha Tan
+      - guest
+
+      E4739:
+      - Johnny Smith
+      - guest
+
+      #------
+
+      # END_OF_PASSCODES_MARKER
+  ```
+
+- **`LOG_USER_TO_APP_LOGS`**:
+
+  If _LOG_USER_TO_APP_LOGS_ is set to `true` then user logs will be appended as part of the bot logs too.
+
+  Bot log file can be found at: `../${rootDir}/logs/${log_file}.log`\
+   User specific log files can be found at: `../${rootDir}/users/${userId}/${userId}.log`
+
+  For more information about **logging** go to [3) Logging](#2-states--stages).
+
+&nbsp;
+
+---
+
+&nbsp;
+
+## 1.3) Adding CTF Challenges
 
 The default directory for CTF challenges is at `${rootDir}/ctf/challenges`.
 
@@ -119,7 +233,7 @@ The number preceeding the challenge name determines the **order** of display of 
 ![challenge_yaml](docs/img/2022-05-15%2019-23.png)
 
 ```yaml
-# ../1-challenge/challenge.yaml
+# ../${rootDir}/ctf/challenges/1-challenge/challenge.yaml
 description: "Can you find the flag in this file?"
 additional_info: null
 answer: "flag@answer"
@@ -136,7 +250,7 @@ files: []
 
 ### challenge.yaml fields reference:
 
-- `description` : Required [string]
+- **`description`** : Required [string]
 
   Challenge text displayed when viewing challenge.
 
@@ -144,7 +258,7 @@ files: []
   description: "Can you find the flag in this file?"
   ```
 
-- `additional_info` : Optional [string, null]
+- **`additional_info`** : Optional [string, null]
 
   Additional info displayed when viewing the challenge.\
   It will be displayed under the `Notes:` section of the challenge view.
@@ -161,7 +275,7 @@ files: []
   additional_info: null
   ```
 
-- `answer` : Required [string]
+- **`answer`** : Required [string]
 
   The accepted answer of the challenge. Casing will be ignored when validating users answers.\
   Please ensure the answer contains only the following characters: `alphanumeric _ @`.
@@ -169,10 +283,10 @@ files: []
   ```yaml
   # If answer is preceeded by "flag@..." then a warning will be given
   # to user when their answer does not begin with flag@.
-  answer: "flag@answer"
+  answer: "flag@answer"t
   ```
 
-- `points` : Required [integer]
+- **`points`** : Required [integer]
 
   The total score for the challenge before deductions. This should reflect the difficulty of the challenge.
 
@@ -180,7 +294,7 @@ files: []
   points: 40
   ```
 
-- `time_based` : Optional [integer, null]
+- **`time_based`** : Optional [integer, null]
 
   Whether to calculate the score based on time taken to complete challenge.
 
@@ -199,7 +313,7 @@ files: []
   time_based: null
   ```
 
-- `one_try` : Required [bool]
+- **`one_try`** : Required [bool]
 
   Whether to only allow one attempt for the challenge.
 
@@ -215,7 +329,7 @@ files: []
   one_try: false
   ```
 
-- `multiple_choices` : Optional [list, null]
+- **`multiple_choices`** : Optional [list, null]
 
   Whether your challenge is a mutliple choice challenge.
 
@@ -240,7 +354,7 @@ files: []
   multiple_choices: null
   ```
 
-- `hints` : Required [list]
+- **`hints`** : Required [list]
 
   The list of hints provided for your challenge.
 
@@ -268,7 +382,7 @@ files: []
   hints: []
   ```
 
-- `files` : Required [list]
+- **`files`** : Required [list]
 
   The list of file links to download the files needed for your challenge.
 
@@ -292,7 +406,23 @@ files: []
   files: []
   ```
 
+&nbsp;
+
 ---
+
+&nbsp;
+
+## 1.4) Running Chatbot
+
+Before running the chatbot,
+
+1. Please ensure that you have configured `config.yaml` correctly:
+
+&nbsp;
+
+---
+
+&nbsp;
 
 # 2) STATES & STAGES
 
