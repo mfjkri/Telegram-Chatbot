@@ -6,7 +6,7 @@
      - [Building manually](#112-building-manually)
    - [1.2 Configuring **config.yaml**](#12-configuring-configyaml)
    - [1.2 Adding CTF Challenges](#13-adding-ctf-challenges)
-   - [1.3 Running Chatbot](#14-running-chatbot)
+   - [1.3 Running Chatbot](#14-running-the-chatbot)
 2. [States & Stages](#2-states--stages)
    - [2.1 Inbuilt stages](#21-inbuilt-stages):
      - [let_user_choose](#211-letuserchoose)
@@ -116,18 +116,18 @@ For this program to run correctly, the `config.yaml` file has to be first config
 
 # ---------------------------------- RUNTIME --------------------------------- #
 RUNTIME:
-LIVE_MODE: false
-FRESH_START: true
+  LIVE_MODE: false
+  FRESH_START: true
 
 # -------------------------------- BOT TOKENS -------------------------------- #
 BOT_TOKENS:
-LIVE: BOT_TOKEN
-TEST: BOT_TOKEN
+  LIVE: BOT_TOKEN
+  TEST: BOT_TOKEN
 
 # ------------------------------ USER PASSCODES ------------------------------ #
 USER_PASSCODES:
-# START_OF_PASSCODES_MARKER
-# END_OF_PASSCODES_MARKER
+  # START_OF_PASSCODES_MARKER
+  # END_OF_PASSCODES_MARKER
 
 # -------------------------------- LOG CONFIG -------------------------------- #
 LOG_USER_TO_APP_LOGS: false
@@ -137,15 +137,15 @@ LOG_USER_TO_APP_LOGS: false
 
 - **`RUNTIME`**:
 
-  If _RUNTIME:LIVE_MODE_ is set to `true` then the bot will use _BOT_TOKENS:LIVE_ else it will use _BOT_TOKENS:TEST_.
+  If **RUNTIME:LIVE_MODE** is set to `true` then the bot will use **BOT_TOKENS:LIVE** else it will use **BOT_TOKENS:TEST**.
 
-  If _RUNTIME:FRESH_START_ is set to `true` then the bot will clear previous log and user files every time it is restarted.\
-   For safety purposes, _RUNTIME:FRESH_START_ will be **ignored** if _RUNTIME:LIVE_MODE_ is `true`.
+  If **RUNTIME:FRESH_START** is set to `true` then the bot will clear previous log and user files every time it is restarted.\
+   For safety purposes, **RUNTIME:FRESH_START** will be **ignored** if **RUNTIME:LIVE_MODE** is `true`.
 
 - **`BOT_TOKENS`**:
 
-  BOT_TOKENS:LIVE is the token to connect to the Telegram Bot that is used on the actual day\
-  BOT_TOKENS:TEST is the token to connect to the Telegram Bot used during development.
+  **BOT_TOKENS:LIVE** is the token to connect to the Telegram Bot used for release day.\
+  **BOT_TOKENS:TEST** is the token to connect to the Telegram Bot used during development.
 
 - **`USER_PASSCODES`**:
 
@@ -163,7 +163,7 @@ LOG_USER_TO_APP_LOGS: false
   PASSCODE: USER NAME
   ```
 
-  Here is an example of more passcodes:
+  Here is an example with more passcodes:
 
   ```yaml
   # ------------------------------ USER PASSCODES ------------------------------ #
@@ -412,13 +412,37 @@ files: []
 
 &nbsp;
 
-## 1.4) Running Chatbot
+## 1.4) Running the Chatbot
 
 Before running the chatbot,
 
 1. Please ensure that you have configured `config.yaml` correctly:
 
-&nbsp;
+   Refer to [this](#12-configuring-configyaml) if you have not done so.
+
+2. Run the project.
+
+   The entry point of the chatbot is `main.py`.
+
+   ```bash
+   # Linux:
+   $ venv/bin/python src/main.py
+   # Windows:
+   $ venv\Scripts\python.exe .\src\main.py
+   ```
+
+   Or if you have the virtual env already activated:
+
+   ```bash
+   # Linux:
+   $ source venv/bin/activate
+   $ python src/main.py
+   # Windows:
+   $ venv\Scripts\activate.bat
+   $ python .\src\main.py
+   ```
+
+   &nbsp;
 
 ---
 
