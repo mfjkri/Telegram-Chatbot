@@ -1,12 +1,26 @@
-# QUICKSTART REFERENCE
+# Table of contents
 
----
-
-## Setting up
+1. [Quickstart](#1-quickstart-reference)
+   - [1.1 Setting up](#11-setting-up):
+     - [Building with setup.py](#111-building-with-setuppy)
+     - [Building manually](#112-building-manually)
+   - [1.2 Adding CTF Challenges](#12-adding-ctf-challenges)
+2. [States & Stages](#2-states--stages)
+   - [2.1 Inbuilt stages](#21-inbuilt-stages):
+     - [let_user_choose](#211-letuserchoose)
+     - [get_input_from_user](#212-getinputfromuser)
+     - [get_info_from_user](#213-getinfofromuser)
+   - [2.2 Custom stages](#22-creating-a-custom-stage)
 
 &nbsp;
 
-### Building with `setup.py`:
+# 1) QUICKSTART REFERENCE
+
+## 1.1) Setting up
+
+&nbsp;
+
+### 1.1.1) Building with `setup.py`:
 
 If you are running **Windows** or **Linux**, you can set up the project and install dependencies using `setup.py`:
 
@@ -41,7 +55,7 @@ WARNING: You are using pip version 22.0.4; however, version 22.1 is available.
 
 &nbsp;
 
-### Building manually:
+### 1.1.2) Building manually:
 
 If you are running any other OS such as **MacOS**, you will have to build the project manually.
 
@@ -85,7 +99,7 @@ If you are running any other OS such as **MacOS**, you will have to build the pr
 
 ---
 
-## Adding CTF Challenges
+## 1.2) Adding CTF Challenges
 
 &nbsp;
 
@@ -283,7 +297,7 @@ files: []
 
 ---
 
-# STATES & STAGES
+# 2) STATES & STAGES
 
 Throughout this project, you will see a lot of references to stages and states.\
 Below is a brief explanation for them however it does not cover the implementation details behind them.
@@ -331,9 +345,9 @@ For a more detailed explanation, please refer to the [Implementation Documentati
 
 ---
 
-## Inbuilt stages
+## 2.1) Inbuilt stages
 
-### let_user_choose
+### 2.1.1) let_user_choose
 
 Presents a variable number of choices to the user. The choices are in the form of buttons (ReplyMarkupButton).
 
@@ -390,7 +404,7 @@ example_choose = Bot.let_user_choose(
 
 ```
 
-### get_input_from_user
+### 2.1.2) get_input_from_user
 
 Presents an input field to the user. Input is capture through the next valid message sent from input prompt.
 
@@ -422,7 +436,7 @@ def some_state_or_stage(update : Update, context : CallbackContext) -> USERSTATE
     )
 ```
 
-### get_info_from_user
+### 2.1.3) get_info_from_user
 
 Similar to `get_input_from_user` except that the input is a user information and is stored globally in the userdata. No additional logic implementation is required.
 
@@ -461,7 +475,7 @@ def some_state_or_stage(update : Update, context : CallbackContext) -> USERSTATE
 
 ---
 
-## Creating a custom stage
+## 2.2) Creating a custom stage
 
 ### Example of a stage:
 
