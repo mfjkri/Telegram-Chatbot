@@ -76,8 +76,8 @@ if __name__ == "__main__":
                     [
                         "# ---------------------------------- RUNTIME --------------------------------- #\n"
                         "RUNTIME:\n"
-                        "    LIVE_MODE: False\n",
-                        "    FRESH_START: False\n\n",
+                        "    LIVE_MODE: false\n",
+                        "    FRESH_START: false\n\n",
 
                         "# -------------------------------- BOT TOKENS -------------------------------- #\n",
                         "BOT_TOKENS:\n",
@@ -90,7 +90,7 @@ if __name__ == "__main__":
                         "  # END_OF_PASSCODES_MARKER\n\n"
 
                         "# -------------------------------- LOG CONFIG -------------------------------- #\n",
-                        "LOG_USER_TO_APP_LOGS: False\n",
+                        "LOG_USER_TO_APP_LOGS: false\n",
                     ]
                 )
         # ------------------------------------- - ------------------------------------ #
