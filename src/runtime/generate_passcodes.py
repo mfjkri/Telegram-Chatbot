@@ -15,7 +15,7 @@ def strip_string_constructors(s: str) -> str:
 def generate_passcodes(new_users: list) -> None:
     config_yaml_file = os.path.join(os.getcwd(), "config.yaml")
 
-    assert os.path.isfile(config_yaml_file), "authenticate.py not found"
+    assert os.path.isfile(config_yaml_file), "config.yaml not found"
 
     raw_data = {}
     with open(config_yaml_file, 'r') as stream:
@@ -23,9 +23,9 @@ def generate_passcodes(new_users: list) -> None:
 
     start_marker_idx, end_marker_idx = False, False
     for idx, line in enumerate(raw_data):
-        if "# START_PASSCODES_MARKER" in line:
+        if "# START_OF_PASSCODES_MARKER" in line:
             start_marker_idx = idx
-        elif "# END_PASSCODES_MARKER" in line:
+        elif "# END_OF_PASSCODES_MARKER" in line:
             end_marker_idx = idx
             break
 
@@ -110,7 +110,9 @@ if __name__ == "__main__":
 
     generate_passcodes(
         get_new_users_from_file(ARGS.i) if ARGS.i else [
-            ["guest0", "guest"],
-            "guest1"
+            ["Johnny Smith", "guest"],
+            ["Samantha Tan", "guest"],
+            ["Rock Lee", "member"],
+            "Sonya Anhak",
         ]
     )
