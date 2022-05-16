@@ -2,7 +2,92 @@
 
 ---
 
-## Setting of CTF Challenges
+## Setting up
+
+&nbsp;
+
+### Building with `setup.py`:
+
+If you are running **Windows** or **Linux**, you can set up the project and install dependencies using `setup.py`:
+
+```bash
+$ cd ${rootDir}
+# Replace the "python" argument with whatever your python keyword is
+# For example,if your system uses python3:
+#       python3 setup.py --setup "python3"
+$ python setup.py --setup "python"
+```
+
+Output:
+
+```bash
+2022-05-16 09:51:06,205 [INFO] Changing working directory to: /media/Programming/repos/js/Telegram-Chatbot
+2022-05-16 09:51:06,206 [INFO] Creating logs and archives directory...
+2022-05-16 09:51:06,206 [INFO] Directory: exports not found. Creating one...
+2022-05-16 09:51:06,206 [INFO] Directory: logs not found. Creating one...
+2022-05-16 09:51:06,210 [INFO] PYTHON VERSION BEING USED IS: b'Python 3.10.4\n'
+2022-05-16 09:51:06,210 [INFO] Creating python venv (if already exists, nothing happens)...
+2022-05-16 09:51:16,866 [INFO] No config.yaml file found! Creating one with default template...
+2022-05-16 09:51:16,867 [INFO] Setting shebang of src/main.py to venv intepreter...
+2022-05-16 09:51:16,867 [INFO] Setting src/main.py to be an executable...
+...
+...
+Using legacy 'setup.py install' for tornado, since package 'wheel' is not installed.
+Installing collected packages: pytz, certifi, urllib3, tzdata, tornado, six, pyyaml, idna, charset-normalizer, cachetools, requests, pytz-deprecation-shim, tzlocal, APScheduler, python-telegram-bot
+  Running setup.py install for tornado ... done
+Successfully installed APScheduler-3.6.3 cachetools-4.2.2 certifi-2021.10.8 charset-normalizer-2.0.12 idna-3.3 python-telegram-bot-13.11 pytz-2022.1 pytz-deprecation-shim-0.1.0.post0 pyyaml-6.0 requests-2.27.1 six-1.16.0 tornado-6.1 tzdata-2022.1 tzlocal-4.2 urllib3-1.26.9
+WARNING: You are using pip version 22.0.4; however, version 22.1 is available.
+```
+
+&nbsp;
+
+### Building manually:
+
+If you are running any other OS such as **MacOS**, you will have to build the project manually.
+
+1. Go to your project root directory:
+   ```bash
+   cd ../project_name/
+   ```
+2. Create the following directories in your root directory:
+   - ctf/challenges/
+   - exports/
+   - logs/
+3. Create python `venv`:
+   ```bash
+   $ python -m venv venv # Or its equivalent on your OS
+   ```
+4. Install project dependencies into venv:
+   ```bash
+   $ venv/bin/python -m pip install -r requirements.txt # Or equivalent on your OS
+   ```
+5. Create `config.yaml`:
+
+   ```yaml
+   # ---------------------------------- RUNTIME --------------------------------- #
+   RUNTIME:
+     LIVE_MODE: false
+     FRESH_START: true
+
+   # -------------------------------- BOT TOKENS -------------------------------- #
+   BOT_TOKENS:
+     LIVE: BOT_TOKEN
+     TEST: BOT_TOKEN
+
+   # ------------------------------ USER PASSCODES ------------------------------ #
+   USER_PASSCODES:
+   # START_OF_PASSCODES_MARKER
+   # END_OF_PASSCODES_MARKER
+
+   # -------------------------------- LOG CONFIG -------------------------------- #
+   LOG_USER_TO_APP_LOGS: false
+   ```
+
+---
+
+## Adding CTF Challenges
+
+&nbsp;
 
 The default directory for CTF challenges is at `${rootDir}/ctf/challenges`.
 
@@ -56,7 +141,7 @@ files: []
   If you wish to have additional information displayed:
 
   ```yaml
-  additional_info: "Please do not run the files from this challenge as admin."
+  additional_info: "Please do not execute the files from this challenge with admin rights."
   ```
 
   Else:
@@ -68,7 +153,7 @@ files: []
 - `answer` : Required [string]
 
   The accepted answer of the challenge. Casing will be ignored when validating users answers.\
-  Please ensure that the answer only contains `alphanumeric _ @` characters.
+  Please ensure the answer contains only the following characters: `alphanumeric _ @`.
 
   ```yaml
   # If answer is preceeded by "flag@..." then a warning will be given
@@ -119,7 +204,7 @@ files: []
   one_try: false
   ```
 
-- `multiple_choices` : Optional [list]
+- `multiple_choices` : Optional [list, null]
 
   Whether your challenge is a mutliple choice challenge.
 
