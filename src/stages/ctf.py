@@ -32,7 +32,7 @@ class Ctf(object):
         self.stage_id = None
         self.next_stage_id = None
 
-        self.leaderboard_active = False
+        self.leaderboard_active = True
         self.leaderboard = []
         # self.leaderboard_file = os.path.join(directory, "leaderboard.txt")
 
