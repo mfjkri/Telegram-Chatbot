@@ -65,7 +65,8 @@ class Ctf(object):
             operator.and_,
             [re.search(r"[0-9]+", cn) is not None for cn in challenges_names]
         ), "Please ensure that the directory names of the challenges in ctf/challenges/"\
-            " are of the format:\n\tNUMBER-ChallengeName\n\te.g. 13-Decryption"
+            " are of the format:\n\tNUMBER-ChallengeName\n\te.g. 13-Decryption"\
+            "\n\nFor more info, refer to README.md -> 1.2 Adding CTF Challenges"
 
         challenges_names.sort(
             key=lambda a: int(re.search(r"[0-9]+", a).group(0))
