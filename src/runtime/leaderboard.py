@@ -103,7 +103,7 @@ def update_leaderboard(top_placing: int = MAX_LEADERBOARD_VIEW) -> None:
 
 def update_leaderboard_webpage(leaderboard: list) -> None:
     leaderboard_json = os.path.join(
-        os.getcwd(), "..", "leaderboard_web", "leaderboard.txt")
+        os.getcwd(), "..", "Chatbot-Leaderboard", "leaderboard.txt")
 
     file_lines = ["{\n"]
     idx = 0
