@@ -46,7 +46,11 @@ if __name__ == "__main__":
         log.info("Creating logs and archives directory...")
         get_dir_or_create("exports", True)
         get_dir_or_create("logs", True)
+
         users_directory = get_dir_or_create("users", True)
+
+        ctf_directory = get_dir_or_create("ctf", True)
+        get_dir_or_create(os.path.join(ctf_directory, "challenges"), True)
 
         banned_users_yaml_file = os.path.join(
             users_directory, "banned_users.yaml")
