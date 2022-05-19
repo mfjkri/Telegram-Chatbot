@@ -1,10 +1,10 @@
 # shebang
-from secrets import choice
 import sys
 import logging
 import os
 import shutil
 
+from typing import Union
 from bot import MESSAGE_DIVIDER, Bot
 from user import Users
 import utils.utils as utils
@@ -40,6 +40,7 @@ def main():
 
     STAGE_ADMIN = "admin"
     STAGE_AUTHENTICATE = "authenticate"
+    STAGE_COLLECT_USERNAME = "collect:username"
     STAGE_DISCLAIMER = "choose:disclaimer"
     STAGE_CTF = "CTF"
     STAGE_END = "end"
@@ -55,17 +56,30 @@ def main():
     authenticate: Authenticate = Authenticate(bot)
     authenticate.setup(
         stage_id=STAGE_AUTHENTICATE,
-        next_stage_id=STAGE_DISCLAIMER
+        next_stage_id=STAGE_COLLECT_USERNAME
     )
 
+    # Stage collect:username
+    def format_name_input(input_str: Union[str, bool]):
+        if input_str is not True:
+            return utils.format_input_str(input_str, True, "' ")
+    bot.get_info_from_user(  # This stage id is collect:username
+        data_label="username",
+        next_stage_id=STAGE_DISCLAIMER,
+        input_formatter=format_name_input,
+        allow_update=True
+    )
+
+    # Stage collect:name
     disclaimer_text = "<b><u>DISCLAIMER</u></b>\n\n"\
                       "- This Telegram Chatbot is just a medium for submission of answers.\n"\
                       "- Do not attack or DoS the Telegram Chatbot.\n"\
                       "- Read about the <u>Computer Misuse and Cybersecurity Act</u> <a href='https://sso.agc.gov.sg//Act/CMA1993'>here</a>.\n\n"\
                       f"{MESSAGE_DIVIDER}"\
                       "By pressing <i>Continue</i> you have read and agreed to conditions listed above."
-    # Stage disclaimer
-    bot.let_user_choose(
+
+    # Stage choose:disclaimer
+    bot.let_user_choose(    # This stage id is choose:disclaimer
         choice_label="disclaimer",
         choice_text=disclaimer_text,
         choices=[
@@ -93,7 +107,7 @@ def main():
     logger.info(False, "")
 
     # bot.set_first_stage(STAGE_ADMIN)
-    bot.set_first_stage(STAGE_DISCLAIMER)
+    bot.set_first_stage(STAGE_ADMIN)
     bot.set_end_of_chatbot(
         lambda update, context: bot.edit_or_reply_message(
             update, context, "You have exited the conversation. \n\nUse /start to begin a new one.")

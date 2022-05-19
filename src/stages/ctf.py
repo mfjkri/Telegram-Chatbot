@@ -280,13 +280,17 @@ class Ctf(object):
             ctf_menu_msg += "🥳🎉  CONGRATULATIONS!  🎉🥳\n\n"
             ctf_menu_msg += "You have attempted / solved all the challenges!\n\n"
         else:
-            ctf_menu_msg += f"""🔥 Capture The Flag (CTF) Challenge\n\n"""
+            username = user.data.get("username")
+            if username and username != "":
+                ctf_menu_msg += f"Welcome {username}:\n\n"
+            ctf_menu_msg += f"""🔥 Capture The Flag (CTF) Challenges\n\n"""
 
         score_type_msg = "final" if (
             all_challenges_completed or not challenges_to_attempt) else "current"
         ctf_menu_msg += MESSAGE_DIVIDER
-        ctf_menu_msg += f"""Your current {score_type_msg} is: <u><b>{ctf_state["total_score"]} points</b></u>\n"""
+        ctf_menu_msg += f"""Your {score_type_msg} score is: <u><b>{ctf_state["total_score"]} points</b></u>\n"""
         ctf_menu_msg += MESSAGE_DIVIDER + "\n\n"
+
         # ctf_menu_msg += "✅ - You have completed this challenge\n\n"
         # ctf_menu_msg += "❌ - You can no longer attempt this  challenge\n\n"
         # ctf_menu_msg += "<b>Challenge Types:</b>\n\n"
@@ -758,7 +762,7 @@ class Ctf(object):
     #         total_score, top_users = placing_array
 
     #         for user in top_users:
-    #             original_webpage_data.insert(start_marker_idx + 1, "{" + f""""username" : "{user.data.get("name")}","score" : {total_score}""" + "},\n")
+    #             original_webpage_data.insert(start_marker_idx + 1, "{" + f""""username" : "{user.data.get("username")}","score" : {total_score}""" + "},\n")
 
     #     with open(index_js_script, 'w') as stream:
     #         stream.writelines(original_webpage_data)
@@ -770,7 +774,7 @@ class Ctf(object):
 
     #         line = f"{total_score}:"
     #         for user in top_users:
-    #             line += f""" {user.data.get("name")},"""
+    #             line += f""" {user.data.get("username")},"""
 
     #         if line[-1] == ",":
     #             line = line[:-1]
