@@ -53,7 +53,7 @@ class Log:
         if with_code:
             log_type("$CODE::" + code + " || " + utils.concat_tuple(output))
         else:
-            log_type(code + utils.concat_tuple(output))
+            log_type(utils.concat_tuple((code, *output)))
 
     def info(self, with_code: bool = False, *output: Any) -> None:
         self._log(self.logger.info, with_code, *output)

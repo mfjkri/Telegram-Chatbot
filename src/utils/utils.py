@@ -34,7 +34,7 @@ def load_yaml_file(file_path: str, log=DEFAULT_LOG) -> Union[Any, bool]:
         try:
             config = yaml.safe_load(stream)
         except yaml.YAMLError as exception:
-            log.error(exception)
+            log.error(False, exception)
             config = False
         return config
 
@@ -45,7 +45,7 @@ def dump_to_yaml_file(data: dict, file_path: str, log=DEFAULT_LOG) -> bool:
         try:
             yaml.dump(data, file)
         except yaml.YAMLError as exception:
-            log.error(exception)
+            log.error(False, exception)
             write_status = False
         return write_status
 
@@ -89,7 +89,7 @@ def concat_tuple(ouput_tuple: Tuple) -> str:
 
 def clear_directory(directory: str, log=DEFAULT_LOG) -> None:
     if not os.path.isdir(directory):
-        return log.error(f"Directory: {os.path.join(os.getcwd(), directory)} does not exist.")
+        return log.error(False, f"Directory: {os.path.join(os.getcwd(), directory)} does not exist.")
 
     for filename in os.listdir(directory):
         file_path = os.path.join(directory, filename)
@@ -100,7 +100,8 @@ def clear_directory(directory: str, log=DEFAULT_LOG) -> None:
             elif os.path.isdir(file_path):
                 shutil.rmtree(file_path)
         except Exception as e:
-            log.error("Failed to delete %s. Reason: %s" % (file_path, e))
+            log.error(False, "Failed to delete %s. Reason: %s" %
+                      (file_path, e))
 
 
 def remove_files(files: list, log=DEFAULT_LOG) -> None:
@@ -109,7 +110,8 @@ def remove_files(files: list, log=DEFAULT_LOG) -> None:
             try:
                 os.remove(file)
             except Exception as e:
-                log.error("Failed to delete %s. Reason %s" % (str(file), e))
+                log.error(False, "Failed to delete %s. Reason %s" %
+                          (str(file), e))
 
 
 date_formatter = {
