@@ -1,10 +1,11 @@
 # shebang
+from secrets import choice
 import sys
 import logging
 import os
 import shutil
 
-from bot import Bot
+from bot import MESSAGE_DIVIDER, Bot
 from user import Users
 import utils.utils as utils
 from utils.log import Log
@@ -39,6 +40,7 @@ def main():
 
     STAGE_ADMIN = "admin"
     STAGE_AUTHENTICATE = "authenticate"
+    STAGE_DISCLAIMER = "choose:disclaimer"
     STAGE_CTF = "CTF"
     STAGE_END = "end"
 
@@ -53,7 +55,29 @@ def main():
     authenticate: Authenticate = Authenticate(bot)
     authenticate.setup(
         stage_id=STAGE_AUTHENTICATE,
-        next_stage_id=STAGE_CTF
+        next_stage_id=STAGE_DISCLAIMER
+    )
+
+    disclaimer_text = "<b><u>DISCLAIMER</u></b>\n\n"\
+                      "- This Telegram Chatbot is just a medium for submission of answers.\n"\
+                      "- Do not attack or DoS the Telegram Chatbot.\n"\
+                      "- Read about the <u>Computer Misuse and Cybersecurity Act</u> <a href='https://sso.agc.gov.sg//Act/CMA1993'>here</a>.\n\n"\
+                      f"{MESSAGE_DIVIDER}"\
+                      "By pressing <i>Continue</i> you have read and agreed to conditions listed above."
+    # Stage disclaimer
+    bot.let_user_choose(
+        choice_label="disclaimer",
+        choice_text=disclaimer_text,
+        choices=[
+            {
+                "text": "Continue",
+                "callback": lambda *args: bot.proceed_next_stage(
+                    STAGE_DISCLAIMER,
+                    STAGE_CTF,
+                    *args
+                )
+            },
+        ]
     )
 
     # Stage ctf
@@ -68,7 +92,8 @@ def main():
     logger.info(False, "Initializing...")
     logger.info(False, "")
 
-    bot.set_first_stage(STAGE_ADMIN)
+    # bot.set_first_stage(STAGE_ADMIN)
+    bot.set_first_stage(STAGE_DISCLAIMER)
     bot.set_end_of_chatbot(
         lambda update, context: bot.edit_or_reply_message(
             update, context, "You have exited the conversation. \n\nUse /start to begin a new one.")
