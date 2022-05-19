@@ -177,7 +177,7 @@ class Users(object):
     def add_data_field(self, key: str, value: Any):
         self.data_fields.update({key: copy.deepcopy(value)})
 
-    def init(self, logger: Log, log_user_logs_to_app_logs: bool = False):
+    def init(self, logger: Log, log_user_logs_to_app_logs: bool = False) -> None:
         self.application_logfilehandler = logger.file_handlers[0]
         self.logger = logger
         self.users = {}

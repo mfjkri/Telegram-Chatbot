@@ -1,11 +1,13 @@
 import os
 import yaml
 
+from typing import Union
+
 users_directory = os.path.join(os.getcwd(), "users")
 banned_users_file = os.path.join(users_directory, "banned_users.yaml")
 
 
-def load_yaml_file(file_path: str):
+def load_yaml_file(file_path: str) -> Union[bool, dict]:
     with open(file_path, 'r') as stream:
         config = {}
         try:

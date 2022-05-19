@@ -7,16 +7,16 @@ from datetime import date, datetime
 
 
 class DEFAULT_LOG:
-    def info(*args: Any):
+    def info(*args: Any) -> None:
         print("[INFO]", concat_tuple(args))
 
-    def debug(*args: Any):
+    def debug(*args: Any) -> None:
         print("[DEBUG]", concat_tuple(args))
 
-    def error(*args: Any):
+    def error(*args: Any) -> None:
         print("[ERROR]", concat_tuple(args))
 
-    def warn(*args: Any):
+    def warn(*args: Any) -> None:
         print("[WARN]", concat_tuple(args))
 
 
