@@ -354,6 +354,7 @@ class Bot(object):
                         {f"input:{data_label}": saved_data})
 
                     text = f"Confirm your <b><u>{data_label}</u></b>:\n\n"
+                    text += f"<i>{additional_text}</i>\n\n" if additional_text else ""
                     text += MESSAGE_DIVIDER
                     text += f"<b>{saved_data}</b>\n"
                     text += MESSAGE_DIVIDER + "\n"
@@ -383,7 +384,7 @@ class Bot(object):
                 self.edit_or_reply_message(
                     update, context,
                     text=f"Please enter your <b>{data_label}</b>:" +
-                    (f"\n\n{additional_text}" if additional_text else " ")
+                    (f"\n\n<i>{additional_text}</i>" if additional_text else " ")
                 )
                 debounce = False
                 return INPUT_HANDLER

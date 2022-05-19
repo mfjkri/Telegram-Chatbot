@@ -67,6 +67,7 @@ def main():
         data_label="username",
         next_stage_id=STAGE_DISCLAIMER,
         input_formatter=format_name_input,
+        additional_text="This is the name displayed on the leaderboard.",
         allow_update=True
     )
 

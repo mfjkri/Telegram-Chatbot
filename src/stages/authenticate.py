@@ -138,7 +138,7 @@ class Authenticate(object):
             reply_markup=InlineKeyboardMarkup([
                 [
                     InlineKeyboardButton(
-                        "Yes it's me", callback_data="auth_accept_identity"),
+                        "Yes that's me", callback_data="auth_accept_identity"),
                     InlineKeyboardButton(
                         "❌", callback_data="auth_decline_identity")
                 ]
@@ -189,7 +189,7 @@ class Authenticate(object):
 
         self.bot.edit_or_reply_message(
             update, context,
-            text="Are you sure?",
+            text="Are you sure?\n\n<i>This action is nonreversible.</i>",
             reply_markup=InlineKeyboardMarkup([
                 [
                     InlineKeyboardButton(
