@@ -79,7 +79,8 @@ class Ctf(object):
             if os.path.isfile(challenge_yaml_file):
                 challenge_data = utils.load_yaml_file(
                     challenge_yaml_file, self.bot.logger)
-                self.challenges.append(challenge_data)
+                if challenge_data:
+                    self.challenges.append(challenge_data)
 
     def init_users_data(self) -> None:
         """
