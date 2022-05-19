@@ -179,8 +179,8 @@ class Ctf(object):
             challenge_view_callbacks.extend([
                 CallbackQueryHandler(
                     self.submit_answer, pattern=f"^ctf_submit_answer_{idx_c}$", run_async=True),
-                CallbackQueryHandler(
-                    self.view_challenge, pattern=f"^ctf_refresh_challenge_{idx_c}$", run_async=True)
+                # CallbackQueryHandler(
+                #     self.view_challenge, pattern=f"^ctf_refresh_challenge_{idx_c}$", run_async=True)
             ])
             retry_challenge_callbacks.extend([
                 CallbackQueryHandler(
@@ -502,7 +502,14 @@ class Ctf(object):
         is_multiple_choices = challenge["multiple_choices"]
 
         keyboard = []
+        text_body = f"<b>Challenge {challenge_number+1}</b>: "
+
+        total_points_deduction = int(challenge["total_hints_deduction"])
+        challenge_points = int(challenge["points"])
+
         if not is_challenge_completed:
+            text_body += f"Up to {challenge_points - total_points_deduction} points\n\n"
+
             if challenge["time_based"]:
                 pass
                 # keyboard.append([InlineKeyboardButton("Refresh points", callback_data=f"ctf_refresh_challenge_{challenge_number}")])
@@ -535,15 +542,15 @@ class Ctf(object):
                         InlineKeyboardButton(
                             f"""Hint {t_idx+1} (-{hint["deduction"]} points)""", callback_data=f"ctf_view_hint_{t_idx}:{challenge_number}")
                     )
+        else:
+            if total_points_deduction > 0:
+                text_body += f"{challenge_points} - {total_points_deduction} = <u>{challenge_points - total_points_deduction} points</u>\n\n"
+            else:
+                text_body += f"<u>{challenge_points - total_points_deduction} points</u>\n\n"
+
         # Create the BackToMenu button
         keyboard.append([InlineKeyboardButton(
             "« Back", callback_data="ctf_return_to_menu")])
-
-        total_points_deduction = int(challenge["total_hints_deduction"])
-        challenge_points = int(challenge["points"])
-
-        text_body = f"<b>Challenge {challenge_number+1}</b>: "
-        text_body += f"Up to {challenge_points - total_points_deduction} points\n\n"
 
         # if challenge["time_based"]:
         #     max_time_seconds = int(challenge["time_based"]["limit"])
@@ -591,7 +598,7 @@ class Ctf(object):
                         if is_challenge_completed:
                             text_body += f"""\n(<u>-{hint["deduction"]} points</u>)"""
                         text_body += "\n"
-                    text_body += MESSAGE_DIVIDER
+                        text_body += MESSAGE_DIVIDER
 
         if is_challenge_completed:
             text_body += "\n✅ <b>YOU HAVE COMPLETED THIS CHALLENGE!</b> ✅"
