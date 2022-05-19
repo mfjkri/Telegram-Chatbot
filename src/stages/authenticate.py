@@ -25,7 +25,7 @@ class Authenticate(object):
         self.init_users_data()
 
     def init_users_data(self) -> None:
-        self.users.add_data_field("registered_name", None)
+        self.users.add_data_field("name", None)
         self.users.add_data_field("group", None)
 
     def entry_authenticate(self, update: Update, context: CallbackContext) -> USERSTATE:
@@ -35,7 +35,7 @@ class Authenticate(object):
 
         user: User = context.user_data.get("user")
 
-        if user.data.get("registered_name") is not None:
+        if user.data.get("name") is not None:
             return self.exit_authenticate(update, context)
         else:
             return self.bot.proceed_next_stage(
@@ -94,18 +94,18 @@ class Authenticate(object):
             input_passcode, alphanumeric=True)
 
         if sanitized_input in PASSCODES:
-            # This check is actually redundant since we already bypassed authenticated for users with a valid registered_name field.
+            # This check is actually redundant since we already bypassed authenticated for users with a valid name field.
 
             lookup, is_lookup_an_array = PASSCODES[sanitized_input], type(
                 PASSCODES[sanitized_input]) is list
-            registered_name = lookup[0] if is_lookup_an_array else lookup
+            name = lookup[0] if is_lookup_an_array else lookup
             group = lookup[1] if is_lookup_an_array else "none"
 
-            if user.data.get("registered_name") == registered_name:
+            if user.data.get("name") == name:
                 return self.exit_authenticate(update, context)
             else:
                 return self.confirm_identify(
-                    registered_name, group,
+                    name, group,
                     update, context
                 )
         else:
@@ -119,17 +119,17 @@ class Authenticate(object):
                 update=update, context=context
             )
 
-    def confirm_identify(self, registered_name: str, group: str, update: Update, context: CallbackContext) -> USERSTATE:
+    def confirm_identify(self, name: str, group: str, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query
         if query:
             query.answer()
 
-        context.user_data.update({"pending_registered_name": registered_name})
+        context.user_data.update({"pending_name": name})
         context.user_data.update({"pending_group": group})
 
         confirmation_text = f"Please confirm your identity.\n\n"
         confirmation_text += MESSAGE_DIVIDER
-        confirmation_text += f"<b>{registered_name}</b>\n"
+        confirmation_text += f"<b>{name}</b>\n"
         confirmation_text += MESSAGE_DIVIDER
 
         self.bot.edit_or_reply_message(
@@ -155,12 +155,12 @@ class Authenticate(object):
         user: User = context.user_data.get("user")
 
         user.update_user_data(
-            "registered_name",
-            context.user_data.pop("pending_registered_name")
+            "name",
+            context.user_data.pop("pending_name")
         )
         user.update_user_data(
             "username",
-            user.data.get("registered_name")
+            user.data.get("name")
         )
         user.update_user_data(
             "group",

@@ -71,15 +71,13 @@ def main():
         allow_update=True
     )
 
-    # Stage collect:name
+    # Stage choose:disclaimer
     disclaimer_text = "<b><u>DISCLAIMER</u></b>\n\n"\
                       "- This Telegram Chatbot is just a medium for submission of answers.\n"\
                       "- Do not attack or DoS the Telegram Chatbot.\n"\
                       "- Read about the <u>Computer Misuse and Cybersecurity Act</u> <a href='https://sso.agc.gov.sg//Act/CMA1993'>here</a>.\n\n"\
                       f"{MESSAGE_DIVIDER}"\
                       "By pressing <i>Continue</i> you have read and agreed to conditions listed above."
-
-    # Stage choose:disclaimer
     bot.let_user_choose(    # This stage id is choose:disclaimer
         choice_label="disclaimer",
         choice_text=disclaimer_text,

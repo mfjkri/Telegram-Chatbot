@@ -462,7 +462,7 @@ class Ctf(object):
                         placing_text = "⭐️ <b>You</b>," + placing_text
                         ctf_user_placing = idx
                     else:
-                        placing_text += top_user.data.get("name")
+                        placing_text += top_user.data.get("username")
                         placing_text += ", "
 
                 # Gets rid of the trailing ,\n

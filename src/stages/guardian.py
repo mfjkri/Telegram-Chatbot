@@ -182,7 +182,7 @@ class Guardian(object):
         user: User = context.user_data.get("user")
         guardian_state = user.data.get("guardian_state")
 
-        text_body = f"""Welcome {user.data.get("name")}.\n\n"""
+        text_body = f"""Welcome {user.data.get("username")}.\n\n"""
         text_body += "Let's answer a few questions and discover what kind of Cyber Guardian you are!"
 
         keyboard = [InlineKeyboardButton(

@@ -70,7 +70,7 @@ class AdminConsole(object):
 
         self.DELETE_USER_NAME_STAGE = self.bot.get_input_from_user(
             input_label="admin_delete_user_name",
-            input_text="Enter the User ID to delete name from:",
+            input_text="Enter the User ID to delete username from:",
             input_handler=self.delete_user_name
         )
 
@@ -105,7 +105,7 @@ class AdminConsole(object):
             f"Welcome to the Admin Console",
             reply_markup=InlineKeyboardMarkup([
                 [InlineKeyboardButton(
-                    "Delete User's Name", callback_data="admin_delete_user_name")],
+                    "Delete User's Username", callback_data="admin_delete_user_name")],
                 [InlineKeyboardButton(
                     "Delete User", callback_data="admin_delete_user")],
                 [InlineKeyboardButton(
@@ -163,7 +163,7 @@ class AdminConsole(object):
         target_user: Union[User, None] = self.users.get_from_chatid(chatid)
 
         if target_user:
-            target_user.data.update({"name": None})
+            target_user.data.update({"username": None})
             target_user.save_user_to_file()
 
         return self.load_admin(update, context)
