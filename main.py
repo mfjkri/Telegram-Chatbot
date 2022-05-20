@@ -83,7 +83,7 @@ def main():
 
     def accept_disclaimer(update: Update, context: CallbackContext) -> USERSTATE:
         user: User = context.user_data.get("user")
-        user.logger.info("ACCEPTED_DISCLIMAER",
+        user.logger.info("ACCEPTED_DISCLAIMER",
                          f"User:{user.chatid} has accepted the disclaimer.")
         return bot.proceed_next_stage(STAGE_DISCLAIMER, STAGE_CTF, update, context)
     bot.let_user_choose(    # This stage id is choose:disclaimer
