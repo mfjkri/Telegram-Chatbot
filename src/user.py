@@ -101,7 +101,7 @@ class User():
                 else:
                     if isinstance(value, (dict, list)):
                         self.update_userdata_format(value, data_node.get(key))
-        elif isinstance(node, list):
+        elif isinstance(node, list) and isinstance(data_node, list):
             if len(data_node) != len(node):
                 data_node.clear()
                 for index, value in enumerate(node):

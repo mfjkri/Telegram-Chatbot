@@ -1,3 +1,4 @@
+from bdb import effective
 import os
 import copy
 import time
@@ -507,9 +508,16 @@ class Ctf(object):
 
         total_points_deduction = int(challenge["total_hints_deduction"])
         challenge_points = int(challenge["points"])
-
+        number_of_attempts = int(challenge["attempts"]) + 1
+        
+        effective_score = challenge_points
+        
+        if is_multiple_choices:
+            effective_score = effective_score / number_of_attempts
+        effective_score = int(max(effective_score - total_points_deduction, 0))
+            
         if not is_challenge_completed:
-            text_body += f"Up to {challenge_points - total_points_deduction} points\n\n"
+            text_body += f"Up to {effective_score} points\n\n"
 
             if challenge["time_based"]:
                 pass
@@ -544,10 +552,13 @@ class Ctf(object):
                             f"""Hint {t_idx+1} (-{hint["deduction"]} points)""", callback_data=f"ctf_view_hint_{t_idx}:{challenge_number}")
                     )
         else:
-            if total_points_deduction > 0:
-                text_body += f"{challenge_points} - {total_points_deduction} = <u>{challenge_points - total_points_deduction} points</u>\n\n"
-            else:
-                text_body += f"<u>{challenge_points - total_points_deduction} points</u>\n\n"
+            text_body += f"<u>{effective_score} points</u>\n\n"
+            # if is_multiple_choices and total_points_deduction > 0:
+            #     text_body += f"(points / attempts) - hints = <u>{effective_score} points</u>\n\n"
+            # elif total_points_deduction > 0:
+            #     text_body += f"points - hints = <u>{effective_score} points</u>\n\n"
+            # else:
+            #     text_body += f"<u>{effective_score} points</u>\n\n"
 
         # Create the BackToMenu button
         keyboard.append([InlineKeyboardButton(
