@@ -29,11 +29,11 @@ class AdminConsole(object):
         user: User = context.user_data.get("user")
 
         if user.chatid in ADMIN_USERS:
-            user.logger.info(True, "USER_IS_ADMIN_USER",
+            user.logger.info("USER_IS_ADMIN_USER",
                              f"User:{user.chatid} is an  admin, loading admin console")
             return self.load_admin(update, context)
         else:
-            user.logger.info(True, "USER_IS_NORMAL_USER",
+            user.logger.info("USER_IS_NORMAL_USER",
                              f"User:{user.chatid} does not have admin privilege, skipping admin console")
             return self.exit_admin(update, context)
 

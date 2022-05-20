@@ -228,7 +228,7 @@ class Ctf(object):
             query.answer()
 
         user: User = context.user_data.get("user")
-        user.logger.info(True, "USER_CTF_LOAD_MENU",
+        user.logger.info("USER_CTF_LOAD_MENU",
                          f"User:{user.chatid} has loaded ctf menu")
         ctf_state = user.data.get("ctf_state")
 
@@ -315,7 +315,7 @@ class Ctf(object):
         challenge_number = int(query.data.split('_')[-1])
 
         user: User = context.user_data.get("user")
-        user.logger.info(True, f"USER_CTF_VIEW_CHALLENGE_{challenge_number}",
+        user.logger.info(f"USER_CTF_VIEW_CHALLENGE_{challenge_number}",
                          f"User:{user.chatid} has viewed Challenge {challenge_number}")
         ctf_state = user.data.get("ctf_state")
 
@@ -351,7 +351,7 @@ class Ctf(object):
         challenge_number, hint_number = int(challenge_number), int(hint_number)
 
         user: User = context.user_data.get("user")
-        user.logger.info(True, f"USER_CTF_VIEW_HINT_{challenge_number}_{hint_number}",
+        user.logger.info(f"USER_CTF_VIEW_HINT_{challenge_number}_{hint_number}",
                          f"User:{user.chatid} has revealed hint {hint_number} for Challenge {challenge_number}")
         ctf_state = user.data.get("ctf_state")
 
@@ -378,7 +378,7 @@ class Ctf(object):
             challenge_number), int(choice_number)
 
         user: User = context.user_data.get("user")
-        user.logger.info(True, f"USER_CTF_SUBMIT_{challenge_number}",
+        user.logger.info(f"USER_CTF_SUBMIT_{challenge_number}",
                          f"User:{user.chatid} is submitting choiced answer {choice_number} for Challenge {challenge_number}")
         ctf_state = user.data.get("ctf_state")
 
@@ -394,7 +394,7 @@ class Ctf(object):
         challenge_number = int(query.data.split('_')[-1])
 
         user: User = context.user_data.get("user")
-        user.logger.info(True, f"USER_CTF_SUBMIT_{challenge_number}",
+        user.logger.info(f"USER_CTF_SUBMIT_{challenge_number}",
                          f"User:{user.chatid} is submitting answer for Challenge {challenge_number}")
 
         if query.message.text.find('❌') == -1:
@@ -435,7 +435,7 @@ class Ctf(object):
         query.answer()
 
         user: User = context.user_data.get("user")
-        user.logger.info(True, f"USER_CTF_VIEW_LEADERBOARd",
+        user.logger.info(f"USER_CTF_VIEW_LEADERBOARd",
                          f"User:{user.chatid} is viewing the leaderboard.")
         ctf_state = user.data.get("ctf_state")
 
@@ -660,7 +660,7 @@ class Ctf(object):
             user.save_user_to_file()
             self.update_leaderboard()
 
-            user.logger.info(True, f"USER_CTF_CORRECT_ANSWER_{challenge_number}",
+            user.logger.info(f"USER_CTF_CORRECT_ANSWER_{challenge_number}",
                              f"""User:{user.chatid} @{ctf_state["total_score"]}@ got the answer CORRECT for Challenge {challenge_number}""")
 
             text_body = f"✅  Congratulations on solving Challenge {challenge_number+1} 🎉🥳\n\n"
@@ -679,7 +679,7 @@ class Ctf(object):
             return self.CHALLENGE_SUCCESS
         else:
             user.save_user_to_file()
-            user.logger.info(True, f"USER_CTF_WRONG_ANSWER_{challenge_number}",
+            user.logger.info(f"USER_CTF_WRONG_ANSWER_{challenge_number}",
                              f"""User:{user.chatid} @{answer}@ got the answer WRONG for Challenge {challenge_number}""")
 
             text_body = f"""❌ Your answer: <u>{answer}</u> is <b>incorrect</b>.\n\n"""

@@ -49,22 +49,23 @@ class Log:
     def add_filehandler(self, file_handler: logging.FileHandler):
         self.logger.addHandler(file_handler)
 
-    def _log(self, log_type: Callable, with_code: bool, code: str, *output: Any) -> None:
+    def _log(self, log_type: Callable, with_code: Union[bool, Any], *output: Any) -> None:
         if with_code:
-            log_type("$CODE::" + code + " || " + utils.concat_tuple(output))
+            log_type("$CODE::" + with_code + " || " +
+                     utils.concat_tuple(output))
         else:
-            log_type(utils.concat_tuple((code, *output)))
+            log_type(utils.concat_tuple(output))
 
-    def info(self, with_code: bool = False, *output: Any) -> None:
+    def info(self, with_code: Union[bool, Any], *output: Any) -> None:
         self._log(self.logger.info, with_code, *output)
 
-    def debug(self, with_code: bool = False, *output: Any) -> None:
+    def debug(self, with_code: Union[bool, Any], *output: Any) -> None:
         self._log(self.logger.debug, with_code, *output)
 
-    def error(self, with_code: bool = False, *output: Any) -> None:
+    def error(self, with_code: Union[bool, Any], *output: Any) -> None:
         self._log(self.logger.error, with_code, *output)
 
-    def warning(self, with_code: bool = False, *output: Any) -> None:
+    def warning(self, with_code: Union[bool, Any], *output: Any) -> None:
         self._log(self.logger.warning, with_code, *output)
 
     def info_if(self, condition: bool, *output: Any) -> None:

@@ -139,7 +139,7 @@ class Guardian(object):
             }
         )
         self.states = self.stage["states"]
-        self.INTRO_VIEW,  self.RESULTS_VIEW = self.bot.unpack_states(
+        self.INTRO_VIEW, self.RESULTS_VIEW = self.bot.unpack_states(
             self.states)
 
     def option_selected(self,
@@ -246,7 +246,7 @@ class Guardian(object):
             teams_picked.append(teams_list[1][1])
 
         user.logger.info(
-            True, "USER_IS_TEAM", f"User:{user.chatid} has gotten the results of {teams_picked}")
+            "USER_IS_TEAM", f"User:{user.chatid} has gotten the results of {teams_picked}")
 
         guardian_state.update({"teams": list(teams_picked)})
         guardian_state.update({"teams.history": list(teams_picked)})

@@ -41,7 +41,7 @@ class User():
             self.logger.add_filehandler(application_logfilehandler)
 
     def create_new_user(self) -> None:
-        self.logger.info(True, "CREATING_NEW_USER",
+        self.logger.info("CREATING_NEW_USER",
                          f"User:{self.chatid} is a new user. Creating their files...")
 
         user_data = copy.deepcopy(self.UsersManager.data_fields)
@@ -56,7 +56,7 @@ class User():
     def load_user_from_file(self) -> None:
         self.logger.info(False, "\n")
         self.logger.info(
-            True, "NEW_SESSION", f"User:{self.chatid} is starting a new session and resuming their progress...")
+            "NEW_SESSION", f"User:{self.chatid} is starting a new session and resuming their progress...")
 
         user_yaml_file = os.path.join(self.directory, f"{self.chatid}.yaml")
         user_yaml_file_exists = os.path.isfile(user_yaml_file)
@@ -67,17 +67,17 @@ class User():
         if not (user_yaml_file_exists and user_data):
             if not user_yaml_file_exists:
                 self.logger.error(
-                    True, "USERDATA_MISSING", f"User:{self.chatid} userdata is missing. Creating a new one...")
+                    "USERDATA_MISSING", f"User:{self.chatid} userdata is missing. Creating a new one...")
             else:
                 self.logger.error(
-                    True, "USERDATA_CORRUPTED", f"User:{self.chatid} userdata is corrupted! Resetting his/her state...")
+                    "USERDATA_CORRUPTED", f"User:{self.chatid} userdata is corrupted! Resetting his/her state...")
 
             # Create new user since their old data could not be found / loaded
             return self.create_new_user()
         else:
             # Update their saved data in case of format changes
             self.data = self.update_user_data_from_file(user_data)
-            self.logger.info(True, "LOADED_USER_FROM_FILE",
+            self.logger.info("LOADED_USER_FROM_FILE",
                              f"Loaded User:{self.chatid} from file.")
 
             return user_yaml_file
@@ -121,13 +121,13 @@ class Users(object):
         # self.update_banned_list()
         if chatid not in self.banned_users:
             if chatid not in self.users:
-                self.logger.info(True, "CREATING_USER_CLASS",
+                self.logger.info("CREATING_USER_CLASS",
                                  f"Creating UserClass for User:{chatid}.")
                 user = User(chatid, self.application_logfilehandler, self)
                 self.users.update({chatid: user})
                 return user
             else:
-                self.logger.info(True, "USING_CACHED_USER_CLASS",
+                self.logger.info("USING_CACHED_USER_CLASS",
                                  f"Using cached UserClass for User:{chatid}.")
                 return self.users.get(chatid)
         else:

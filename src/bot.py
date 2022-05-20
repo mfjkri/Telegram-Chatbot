@@ -135,20 +135,20 @@ class Bot(object):
             next_stage_id) if next_stage_id else self.stages.get(self.states[0]["stage_id"])
 
         if next_stage and user and not user.is_banned:
-            user.logger.info(True, "PROCEED_NEXT_STAGE",
+            user.logger.info("PROCEED_NEXT_STAGE",
                              f"User:{user.chatid} is moving on from: {current_stage_id} to: {next_stage_id}")
             return next_stage["entry"](update, context)
         else:
             if not next_stage:
                 user.logger.error(
-                    True, "NEXT_STAGE_MISSING", f"Next stage: {next_stage_id} not found. Current stage: {current_stage_id}")
+                    "NEXT_STAGE_MISSING", f"Next stage: {next_stage_id} not found. Current stage: {current_stage_id}")
                 return self.proceed_next_stage(current_stage_id, "end", update, context)
             elif not user:
-                self.logger.error(True, "USER_NOT_REGISTERED",
+                self.logger.error("USER_NOT_REGISTERED",
                                   f"User not found in users. Current stage: {current_stage_id}")
             elif user.is_banned:
                 self.logger.error(
-                    True, "USER_BANNED", f"User not found in users. Current stage: {current_stage_id}")
+                    "USER_BANNED", f"User not found in users. Current stage: {current_stage_id}")
             return self.stages.get("end")["entry"](update, context)
 
     def edit_or_reply_message(self,
@@ -347,7 +347,7 @@ class Bot(object):
 
             if saved_data and saved_data != "" and use_last_saved:
                 if allow_update:
-                    user.logger.info(True, "USER_DATA_INPUT_UPDATE_PROMPT",
+                    user.logger.info("USER_DATA_INPUT_UPDATE_PROMPT",
                                      f"User:{user.chatid} is choosing whether to update input({data_label})")
 
                     context.user_data.update(
@@ -375,11 +375,11 @@ class Bot(object):
 
                     return INPUT_CONFIRMATION
                 else:
-                    user.logger.info(True, "USER_DATA_INPUT_UPDATE_FORBIDDEN",
+                    user.logger.info("USER_DATA_INPUT_UPDATE_FORBIDDEN",
                                      f"User:{user.chatid} is forbidden from updating input({data_label}). Using old value...")
                     return prompt_exit(update, context)
             else:
-                user.logger.info(True, "USER_DATA_INPUT_INIT_PROMPT",
+                user.logger.info("USER_DATA_INPUT_INIT_PROMPT",
                                  f"User:{user.chatid} is choosing input({data_label})")
                 self.edit_or_reply_message(
                     update, context,
@@ -410,7 +410,7 @@ class Bot(object):
                     # return self.proceed_next_stage(stage_id, None, update, context)
 
                 if formatted_user_input:
-                    user.logger.info(True, "USER_DATA_INPUT_CONFIRMATION",
+                    user.logger.info("USER_DATA_INPUT_CONFIRMATION",
                                      f"User:{user.chatid} entered an input({data_label}) of @{user_input}@")
 
                     context.user_data.update(
@@ -431,7 +431,7 @@ class Bot(object):
 
                     return INPUT_CONFIRMATION
                 else:
-                    user.logger.warning(True, "USER_DATA_INPUT_WRONG_FORMAT",
+                    user.logger.warning("USER_DATA_INPUT_WRONG_FORMAT",
                                         f"User:{user.chatid} entered an input({data_label}) of the wrong format. @{user_input}@")
 
                     text = f"Your input: <b>{user_input}</b> is invalid."
@@ -450,7 +450,7 @@ class Bot(object):
             query.answer()
 
             user: User = context.user_data.get("user")
-            user.logger.info(True, "USER_DATA_INPUT_CONFIRMED",
+            user.logger.info("USER_DATA_INPUT_CONFIRMED",
                              f"User:{user.chatid} confirmed an input({data_label})")
             user.update_user_data(
                 data_label, context.user_data[f"input:{data_label}"])
@@ -470,7 +470,7 @@ class Bot(object):
             nonlocal debounce
 
             user: User = context.user_data.get("user")
-            user.logger.info(True, "USER_DATA_INPUT_RETRY",
+            user.logger.info("USER_DATA_INPUT_RETRY",
                              f"User:{user.chatid} retrying an input({data_label})")
 
             self.edit_or_reply_message(
@@ -486,10 +486,10 @@ class Bot(object):
             entry=prompt_entry,
             exit=prompt_exit,
             states={
-                data_label+"input_handler": [
+                data_label + "input_handler": [
                     MessageHandler(Filters.all, input_handler, run_async=True)
                 ],
-                data_label+"confirmation": [
+                data_label + "confirmation": [
                     CallbackQueryHandler(
                         retry_input, pattern=f"^{retry_input_pattern}$", run_async=True),
                     CallbackQueryHandler(
@@ -543,16 +543,16 @@ class Bot(object):
                     update=update, context=context
                 )
         else:
-            self.logger.error(True, "USER_MESSAGE_INVALID",
+            self.logger.error("USER_MESSAGE_INVALID",
                               f"Unknown user has entered a message with no valid update")
 
     def conversation_exit(self, update: Update, context: CallbackContext) -> USERSTATE:
         user: User = context.user_data.get("user")
         if user:
-            user.logger.info(True, "USER_REACHED_END_OF_CONVERSATION",
+            user.logger.info("USER_REACHED_END_OF_CONVERSATION",
                              f"User:{user.chatid} has reached the end of the conversation")
         else:
-            self.logger.info(True, "UNREGISTERED_USER_END_OF_CONVERSATION",
+            self.logger.info("UNREGISTERED_USER_END_OF_CONVERSATION",
                              f"Unregistered or banned user has reached the end of the conversation")
 
         self.end_of_chatbot(update, context)
