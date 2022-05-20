@@ -517,7 +517,7 @@ class Ctf(object):
         effective_score = int(max(effective_score - total_points_deduction, 0))
             
         if not is_challenge_completed:
-            text_body += f"Up to {effective_score} points\n\n"
+            text_body += f"<u>Up to {effective_score} points</u>\n\n"
 
             if challenge["time_based"]:
                 pass
