@@ -9,7 +9,7 @@ from stages.guardian import TEAMS_DESC
 from utils.utils import load_yaml_file
 
 users_directory = os.path.join("users")
-export_file = os.path.join("exports", "export.csv")
+leaderboard_export_file = os.path.join("exports", "exported_leaderboard.csv")
 # os.getcwd(), "..", "Chatbot-Leaderboard", "leaderboard.txt"
 leaderboard_json_file = os.path.join("leaderboard.txt")
 
@@ -126,7 +126,7 @@ def update_leaderboard_file(scoring_list) -> None:
 
             lines_to_write.append(line)
 
-    with open(export_file, "w") as file:
+    with open(leaderboard_export_file, "w") as file:
         file.writelines(lines_to_write)
 
 
