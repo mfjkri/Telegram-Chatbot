@@ -1,11 +1,13 @@
+import sys
+sys.path.append("src")
+
 import os
 import random
 import string
 import argparse
 
 from datetime import datetime
-
-stages_folder = os.path.join("src", "stages")
+from utils.utils import load_yaml_file
 
 
 def strip_string_constructors(s: str) -> str:
@@ -14,8 +16,10 @@ def strip_string_constructors(s: str) -> str:
 
 def generate_passcodes(new_users: list) -> None:
     config_yaml_file = os.path.join(os.getcwd(), "config.yaml")
-
     assert os.path.isfile(config_yaml_file), "config.yaml not found"
+
+    config = load_yaml_file(config_yaml_file)
+    assert config, "MALFORMED config.yaml"
 
     raw_data = {}
     with open(config_yaml_file, 'r') as stream:
@@ -35,16 +39,10 @@ def generate_passcodes(new_users: list) -> None:
     current_passcodes = {}
     new_passcodes = {}
 
-    for idx in range(start_marker_idx + 1, end_marker_idx - 1):
-        line = raw_data[idx]
-        line = ''.join(char for char in line if (
-            char != '#' and char != ' ' and char != '\n'))
-        marker = line.find(':')
-
-        if marker > 0:
-            passcode = strip_string_constructors(line[:marker])
-            registered_user = strip_string_constructors(line[marker+1:])
-            current_passcodes.update({passcode: registered_user})
+    for passcode, data in config["USER_PASSCODES"].items():
+        current_passcodes.update({
+            passcode: data[0] if type(data) is list else data
+        })
 
     for user_info in new_users:
         user, group = None, None

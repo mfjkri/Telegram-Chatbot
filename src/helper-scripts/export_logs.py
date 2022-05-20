@@ -81,29 +81,15 @@ Please watch the video (skip to the part where I show how to interpret the visua
 -------------------------------------------------------------------------------------
 """
 
+import sys
+sys.path.append("src")
 
 import os
 import argparse
 import re
 from typing import Union
 
-import yaml
-
-
-def get_dir_or_create(dir_path: str) -> str:
-    if not os.path.isdir(dir_path):
-        os.mkdir(dir_path)
-    return os.path.join(dir_path)
-
-
-def load_yaml_file(file_path: str) -> Union[bool, dict]:
-    with open(file_path, 'r') as stream:
-        config = {}
-        try:
-            config = yaml.safe_load(stream)
-        except yaml.YAMLError:
-            config = False
-        return config
+from utils.utils import load_yaml_file, get_dir_or_create
 
 
 EXPORTS_DIRECTORY = get_dir_or_create("exports")

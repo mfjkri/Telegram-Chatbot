@@ -1,29 +1,15 @@
+import sys
+sys.path.append("src")
+
 import os
 import time
-import yaml
 
-from typing import Union
-
-# from ctf import MAX_LEADERBOARD_VIEW
-MAX_LEADERBOARD_VIEW = 5
-TEAMS_DESC = {
-    "red": "Attack Team",
-    "blue": "Defend Team",
-    "yellow": "Consultancy / Project Management Team",
-}
+from stages.ctf import MAX_LEADERBOARD_VIEW
+from stages.guardian import TEAMS_DESC
+from utils.utils import load_yaml_file
 
 users_directory = os.path.join(os.getcwd(), "users")
 export_file = os.path.join(os.getcwd(), "exports", "export.csv")
-
-
-def load_yaml_file(file_path: str) -> Union[bool, dict]:
-    with open(file_path, 'r') as stream:
-        config = {}
-        try:
-            config = yaml.safe_load(stream)
-        except yaml.YAMLError:
-            config = False
-        return config
 
 
 def update_leaderboard(top_placing: int = MAX_LEADERBOARD_VIEW) -> None:
