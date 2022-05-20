@@ -96,7 +96,7 @@ def main():
     )
 
     # Stage ctf
-    ctf: Ctf = Ctf(os.path.join(os.getcwd(), "ctf"), bot)
+    ctf: Ctf = Ctf(os.path.join("ctf"), bot)
     ctf.setup(  # This stage id is CTF
         stage_id=STAGE_CTF,
         next_stage_id=STAGE_END,
@@ -117,9 +117,9 @@ def main():
 
 
 def setup():
-    utils.get_dir_or_create(os.path.join(os.getcwd(), "logs"))
+    utils.get_dir_or_create(os.path.join("logs"))
     if FRESH_START:
-        users_directory = os.path.join(os.getcwd(), "users")
+        users_directory = os.path.join("users")
 
         for chatid in os.listdir(users_directory):
             user_directory = os.path.join(users_directory, chatid)

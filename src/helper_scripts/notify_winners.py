@@ -1,9 +1,15 @@
+import sys
+sys.path.append("src")
+
+import os
 import requests
 
-from leaderboard import update_leaderboard
+from helper_scripts.leaderboard import update_leaderboard
+from utils.utils import load_yaml_file
 
-LIVE_MODE = True
-BOT_TOKEN = "1735980186:AAEmTPvc2APQubsF1RsDJzLt85cbNA7DV7E" if LIVE_MODE else "5099836053:AAF80IRmmVI-mgtvlYFzc_l6WVBwjNqY7hQ"
+CONFIG = load_yaml_file(os.path.join("config.yaml"))
+LIVE_MODE = CONFIG["RUNTIME"]["LIVE_MODE"]
+BOT_TOKEN = CONFIG["BOT_TOKENS"]["LIVE"] if LIVE_MODE else CONFIG["BOT_TOKENS"]["TEST"]
 
 
 def send_message(chatid: str, name: str, title: str, message: str) -> None:

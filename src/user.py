@@ -7,7 +7,7 @@ from typing import (Any, Union)
 import utils.utils as utils
 from utils.log import Log
 
-users_directory = utils.get_dir_or_create(os.path.join(os.getcwd(), "users"))
+users_directory = utils.get_dir_or_create(os.path.join("users"))
 banned_users_yaml_file = os.path.join(users_directory, "banned_users.yaml")
 
 

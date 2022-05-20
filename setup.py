@@ -6,7 +6,7 @@ import sys
 
 
 def get_dir_or_create(dir_str: str, to_log: bool = False) -> str:
-    dir_path = os.path.join(os.getcwd(), dir_str)
+    dir_path = os.path.join(dir_str)
     if not os.path.isdir(dir_path):
         if to_log:
             log.info(f"Directory: {dir_str} not found. Creating one...")

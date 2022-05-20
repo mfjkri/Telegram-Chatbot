@@ -7,7 +7,7 @@ from user import Users, User
 from bot import (MESSAGE_DIVIDER, Bot, USERSTATE)
 import utils.utils as utils
 
-CONFIG = utils.load_yaml_file(os.path.join(os.getcwd(), "config.yaml"))
+CONFIG = utils.load_yaml_file(os.path.join("config.yaml"))
 PASSCODES = CONFIG["USER_PASSCODES"]
 
 

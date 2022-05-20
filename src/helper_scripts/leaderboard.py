@@ -8,8 +8,10 @@ from stages.ctf import MAX_LEADERBOARD_VIEW
 from stages.guardian import TEAMS_DESC
 from utils.utils import load_yaml_file
 
-users_directory = os.path.join(os.getcwd(), "users")
-export_file = os.path.join(os.getcwd(), "exports", "export.csv")
+users_directory = os.path.join("users")
+export_file = os.path.join("exports", "export.csv")
+# os.getcwd(), "..", "Chatbot-Leaderboard", "leaderboard.txt"
+leaderboard_json_file = os.path.join("leaderboard.txt")
 
 
 def update_leaderboard(top_placing: int = MAX_LEADERBOARD_VIEW) -> None:
@@ -88,9 +90,6 @@ def update_leaderboard(top_placing: int = MAX_LEADERBOARD_VIEW) -> None:
 
 
 def update_leaderboard_webpage(leaderboard: list) -> None:
-    leaderboard_json = os.path.join(
-        os.getcwd(), "..", "Chatbot-Leaderboard", "leaderboard.txt")
-
     file_lines = ["{\n"]
     idx = 0
 
@@ -109,7 +108,7 @@ def update_leaderboard_webpage(leaderboard: list) -> None:
 
     file_lines[-1] = file_lines[-1][:-2] + "\n"
     file_lines.append("}")
-    with open(leaderboard_json, 'w') as stream:
+    with open(leaderboard_json_file, 'w') as stream:
         stream.writelines(file_lines)
 
 

@@ -89,7 +89,7 @@ def concat_tuple(ouput_tuple: Tuple) -> str:
 
 def clear_directory(directory: str, log=DEFAULT_LOG) -> None:
     if not os.path.isdir(directory):
-        return log.error(False, f"Directory: {os.path.join(os.getcwd(), directory)} does not exist.")
+        return log.error(False, f"Directory: {os.path.join(directory)} does not exist.")
 
     for filename in os.listdir(directory):
         file_path = os.path.join(directory, filename)

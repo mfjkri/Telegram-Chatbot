@@ -15,7 +15,7 @@ def strip_string_constructors(s: str) -> str:
 
 
 def generate_passcodes(new_users: list) -> None:
-    config_yaml_file = os.path.join(os.getcwd(), "config.yaml")
+    config_yaml_file = os.path.join("config.yaml")
     assert os.path.isfile(config_yaml_file), "config.yaml not found"
 
     config = load_yaml_file(config_yaml_file)
@@ -81,7 +81,7 @@ def generate_passcodes(new_users: list) -> None:
 
 
 def get_new_users_from_file(file_name: str) -> list:
-    file = os.path.join(os.getcwd(), file_name)
+    file = os.path.join(file_name)
 
     assert os.path.isfile(
         file), "THE INPUT FILE IS NOT FOUND. Please ensure that it is spelt correctly and is found in the root directory of the project."

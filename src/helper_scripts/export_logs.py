@@ -116,7 +116,7 @@ def extract_data_type_from_line(data_type: str, log_line: str) -> Union[str, Non
 def get_users() -> dict:
     users = {}
 
-    users_directory = os.path.join(os.getcwd(), "users")
+    users_directory = os.path.join("users")
     for chatid in os.listdir(users_directory):
         user_directory = os.path.join(users_directory, chatid)
         if os.path.isdir(user_directory):
