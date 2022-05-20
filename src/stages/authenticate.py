@@ -94,13 +94,15 @@ class Authenticate(object):
             input_passcode, alphanumeric=True)
 
         if sanitized_input in PASSCODES:
-            # This check is actually redundant since we already bypassed authenticated for users with a valid name field.
+            user.logger.info(f"USER_AUTHENTICATE_CORRECT_PASSCODE",
+                             f"User:{user.chatid} has entered a valid passcode")
 
             lookup, is_lookup_an_array = PASSCODES[sanitized_input], type(
                 PASSCODES[sanitized_input]) is list
             name = lookup[0] if is_lookup_an_array else lookup
             group = lookup[1] if is_lookup_an_array else "none"
 
+            # This check is actually redundant since we already bypassed authenticated for users with a valid name field.
             if user.data.get("name") == name:
                 return self.exit_authenticate(update, context)
             else:
@@ -109,6 +111,9 @@ class Authenticate(object):
                     update, context
                 )
         else:
+            user.logger.info(f"USER_AUTHENTICATE_WRONG_PASSCODE",
+                             f"User:{user.chatid} has tried an invalid passcode: @{sanitized_input}@")
+
             self.bot.edit_or_reply_message(
                 update, context,
                 "You have entered a wrong passcode. Please try again."
@@ -152,15 +157,19 @@ class Authenticate(object):
         if query:
             query.answer()
 
+        pending_name = context.user_data.pop("pending_name")
+
         user: User = context.user_data.get("user")
+        user.logger.info(f"USER_AUTHENTICATE_ACCEPT_IDENTITY",
+                         f"User:{user.chatid} has accepted the identity: @{pending_name}@")
 
         user.update_user_data(
             "name",
-            context.user_data.pop("pending_name")
+            pending_name
         )
         user.update_user_data(
             "username",
-            user.data.get("name")
+            pending_name
         )
         user.update_user_data(
             "group",
@@ -174,8 +183,13 @@ class Authenticate(object):
         if query:
             query.answer()
 
-        context.user_data.pop("pending_registered_name")
+        pending_name = context.user_data.pop("pending_name")
         context.user_data.pop("pending_group")
+
+        user: User = context.user_data.get("user")
+        user.logger.info(f"USER_AUTHENTICATE_DECLINE_IDENTITY",
+                         f"User:{user.chatid} has declined the identity: @{pending_name}@")
+
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
             next_stage_id=self.PROMPT_AUTHENTICATION,
@@ -186,6 +200,10 @@ class Authenticate(object):
         query = update.callback_query
         if query:
             query.answer()
+
+        user: User = context.user_data.get("user")
+        user.logger.info(f"USER_AUTHENTICATE_CONFIRM_IDENTITY",
+                         f"User:{user.chatid} has confirmed the accepted identity")
 
         self.bot.edit_or_reply_message(
             update, context,
