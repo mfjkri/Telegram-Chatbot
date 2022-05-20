@@ -21,7 +21,7 @@ Exporting Process:
             source venv/bin/activate
     
     2) Running the script
-        python src/runtime/export_logs.py --export "example_export"
+        python src/helper_scripts/export_logs.py --export "example_export"
         
         Argument is the name of the exported CSV file (it will be created if not found).
         Do not include the file extension in the argument

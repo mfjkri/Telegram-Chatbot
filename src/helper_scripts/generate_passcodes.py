@@ -71,7 +71,7 @@ def generate_passcodes(new_users: list) -> None:
         raw_data.insert(
             end_marker_idx, f"""  {new_passcode}:\n    - {user}\n    - {group}\n\n""")
     raw_data.insert(
-        end_marker_idx, "  # Refer to src.runtime.generate_passcodes for more details.\n\n")
+        end_marker_idx, "  # Refer to src/helper_scripts/generate_passcodes.py for more details.\n\n")
     raw_data.insert(
         end_marker_idx, f"""  # Generated at {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}\n""")
     raw_data.insert(end_marker_idx, "\n  #------\n")

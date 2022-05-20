@@ -7,7 +7,7 @@
    - [1.2 Configuring **config.yaml**](#12-configuring-configyaml)
    - [1.2 Adding CTF Challenges](#13-adding-ctf-challenges)
    - [1.3 Running Chatbot](#14-running-the-chatbot)
-   - [1.3 Using runtime scripts](#)
+   - [1.3 Using runtime helper_scripts](#)
 2. [States & Stages](#2-states--stages)
    - [2.1 Inbuilt stages](#21-inbuilt-stages):
      - [let_user_choose](#211-letuserchoose)
@@ -173,7 +173,7 @@ LOG_USER_TO_APP_LOGS: false
 
       #------
       # Generated at 16/05/2022 13:09:13
-      # Refer to src.runtime.generate_passcodes for more details.
+      # Refer to src/helper_scripts/generate_passcodes.py for more details.
 
       T3026: Sonya Anhak # Here we can omit User Group entirely
                       # It will be defaulted to none
