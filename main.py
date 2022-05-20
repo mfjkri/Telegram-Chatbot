@@ -1,5 +1,7 @@
 # shebang
 import sys
+sys.path.append("src")
+
 import logging
 import os
 import shutil

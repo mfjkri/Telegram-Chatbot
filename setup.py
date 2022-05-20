@@ -100,9 +100,9 @@ if __name__ == "__main__":
         # ------------------------------------- - ------------------------------------ #
 
         # ----------------- Modify shebang in main.py to relativepath ---------------- #
-        log.info(f"Setting shebang of src/main.py to venv intepreter...")
+        log.info(f"Setting shebang of main.py to venv intepreter...")
         data = None
-        main_py_file = os.path.join(os.getcwd(), "src", "main.py")
+        main_py_file = os.path.join("main.py")
         with open(main_py_file, 'r', encoding="utf-8") as main_py:
             data = main_py.readlines()
 
@@ -119,8 +119,8 @@ if __name__ == "__main__":
         if is_linux:
 
             # ---------------------- Giving program executable perm ---------------------- #
-            log.info(f"Setting src/main.py to be an executable...")
-            subprocess.run(["sudo", "chmod", "u+x", "src/main.py"])
+            log.info(f"Setting main.py to be an executable...")
+            subprocess.run(["sudo", "chmod", "u+x", "main.py"])
             # ------------------------------------- - ------------------------------------ #
 
             # -------------------------- Installing dependencies ------------------------- #

@@ -45,8 +45,8 @@ Expected output:
 2022-05-16 09:51:06,210 [INFO] PYTHON VERSION BEING USED IS: b'Python 3.10.4\n'
 2022-05-16 09:51:06,210 [INFO] Creating python venv (if already exists, nothing happens)...
 2022-05-16 09:51:16,866 [INFO] No config.yaml file found! Creating one with default template...
-2022-05-16 09:51:16,867 [INFO] Setting shebang of src/main.py to venv intepreter...
-2022-05-16 09:51:16,867 [INFO] Setting src/main.py to be an executable...
+2022-05-16 09:51:16,867 [INFO] Setting shebang of main.py to venv intepreter...
+2022-05-16 09:51:16,867 [INFO] Setting main.py to be an executable...
 ...
 ...
 Using legacy 'setup.py install' for tornado, since package 'wheel' is not installed.
@@ -426,21 +426,25 @@ Before running the chatbot,
    The entry point of the chatbot is `main.py`.
 
    ```bash
+   # cd ${rootDir}
+
    # Linux:
-   $ venv/bin/python src/main.py
+   $ venv/bin/python main.py
    # Windows:
-   $ venv\Scripts\python.exe .\src\main.py
+   $ .\venv\Scripts\python.exe .\main.py
    ```
 
    Or if you have the virtual env already activated:
 
    ```bash
+   # cd ${rootDir}
+
    # Linux:
    $ source venv/bin/activate
-   $ python src/main.py
+   $ python main.py
    # Windows:
    $ venv\Scripts\activate.bat
-   $ python .\src\main.py
+   $ python .\main.py
    ```
 
    &nbsp;
@@ -807,8 +811,6 @@ class Example(object):
 ```
 
 ### Example of main.py:
-
-src/main.py
 
 ```python
 #!path\to\venv\bin\python.exe
