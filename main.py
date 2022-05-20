@@ -7,8 +7,8 @@ import os
 import shutil
 
 from typing import Union
-from bot import MESSAGE_DIVIDER, Bot
-from user import Users
+from bot import MESSAGE_DIVIDER, USERSTATE, Bot, Update, CallbackContext
+from user import Users, User
 import utils.utils as utils
 from utils.log import Log
 from stages.admin import AdminConsole
@@ -80,17 +80,21 @@ def main():
                       "- Read about the <u>Computer Misuse and Cybersecurity Act</u> <a href='https://sso.agc.gov.sg//Act/CMA1993'>here</a>.\n\n"\
                       f"{MESSAGE_DIVIDER}"\
                       "By pressing <i>Continue</i> you have read and agreed to conditions listed above."
+
+    def accept_disclaimer(update: Update, context: CallbackContext) -> USERSTATE:
+        user: User = context.user_data.get("user")
+        user.logger.info("ACCEPTED_DISCLIMAER",
+                         f"User:{user.chatid} has accepted the disclaimer.")
+        user.logger.info(False,
+                         "HELLO WORLD")
+        return bot.proceed_next_stage(STAGE_DISCLAIMER, STAGE_CTF, update, context)
     bot.let_user_choose(    # This stage id is choose:disclaimer
         choice_label="disclaimer",
         choice_text=disclaimer_text,
         choices=[
             {
                 "text": "Continue",
-                "callback": lambda *args: bot.proceed_next_stage(
-                    STAGE_DISCLAIMER,
-                    STAGE_CTF,
-                    *args
-                )
+                "callback": accept_disclaimer
             },
         ]
     )
