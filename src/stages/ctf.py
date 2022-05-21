@@ -1,4 +1,3 @@
-from bdb import effective
 import os
 import copy
 import time
@@ -509,13 +508,13 @@ class Ctf(object):
         total_points_deduction = int(challenge["total_hints_deduction"])
         challenge_points = int(challenge["points"])
         number_of_attempts = int(challenge["attempts"]) + 1
-        
+
         effective_score = challenge_points
-        
+
         if is_multiple_choices:
             effective_score = effective_score / number_of_attempts
         effective_score = int(max(effective_score - total_points_deduction, 0))
-            
+
         if not is_challenge_completed:
             text_body += f"<u>Up to {effective_score} points</u>\n\n"
 
