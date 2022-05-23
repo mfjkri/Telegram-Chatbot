@@ -10,6 +10,49 @@ import utils.utils as utils
 CONFIG = utils.load_yaml_file(os.path.join("config.yaml"))
 PASSCODES = CONFIG["USER_PASSCODES"]
 
+# --------------------------------- FEATURES --------------------------------- #
+# - Only allow authorized users to use Bot
+# - Categorize users based on user groups
+
+# ----------------------------------- USAGE ---------------------------------- #
+# Requirements:
+# Configure "PASSCODES" in config.yaml to have passcodes passcode:[name, [user-group]]
+
+# Example of usage:
+# --
+# in ../${rootDir} main.py:
+
+# from bot import Bot
+# from stages.authenticate import Authenticate
+
+# def main():
+#   ...
+#
+#   bot = Bot()
+#   bot.init(BOT_TOKEN, logger)
+#
+#   STAGE_AUTHENTICATE = "authenticate"
+#
+#   authenticate: Authenticate = Authenticate(bot)
+#   authenticate.setup(
+#       stage_id=STAGE_AUTHENTICATE,
+#       next_stage_id=NEXT_STAGE
+#   )
+#
+#   ...
+#
+#   bot.set_first_stage(STAGE_AUTHENTICATE)
+#   bot.start(live_mode=LIVE_MODE)
+# --
+
+# In the example above, we have the Authenticate stage as the first stage of the bot.
+# The user will have to verify their indentity with a passcode before being able to use the rest of the bot.
+# You can also have the Authenticate stage be at any point in your bot flow.
+#   For example, if you have AdminConsole enabled and set as the first stage,
+#   Have the next stage_id of AdminConsole be set to STAGE_AUTHENTICATE
+
+# ---------------------------------------------------------------------------- #
+
 
 class Authenticate(object):
     def __init__(self, bot: Bot):
