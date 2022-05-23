@@ -1,3 +1,4 @@
+import os
 from typing import (Union)
 
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
@@ -5,8 +6,10 @@ from telegram.ext import (CallbackQueryHandler, CallbackContext)
 
 from user import UserManager, User
 from bot import (Bot, USERSTATE)
+import utils.utils as utils
 
-ADMIN_USERS = []  # "1026217187"
+CONFIG = utils.load_yaml_file(os.path.join("config.yaml"))
+ADMIN_CHATIDS = CONFIG["ADMIN_CHATIDS"]
 
 
 class AdminConsole(object):
@@ -28,7 +31,7 @@ class AdminConsole(object):
 
         user: User = context.user_data.get("user")
 
-        if user.chatid in ADMIN_USERS:
+        if user.chatid in ADMIN_CHATIDS:
             user.logger.info("USER_IS_ADMIN_USER",
                              f"User:{user.chatid} is an  admin, loading admin console")
             return self.load_admin(update, context)

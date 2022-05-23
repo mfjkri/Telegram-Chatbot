@@ -93,6 +93,9 @@ if __name__ == "__main__":
                         "  # START_OF_PASSCODES_MARKER\n"
                         "  # END_OF_PASSCODES_MARKER\n\n"
 
+                        "# ------------------------------ ADMIN CHATIDS ------------------------------ #\n"
+                        "ADMIN_CHATIDS: []\n\n",
+
                         "# -------------------------------- LOG CONFIG -------------------------------- #\n",
                         "LOG_USER_TO_APP_LOGS: false\n",
                     ]
