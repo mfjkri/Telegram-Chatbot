@@ -47,6 +47,43 @@ DEFAULT_TEAM = "red"
 TOTAL_QUESTIONS = len(QUESTIONS[DEFAULT_TEAM])
 NUMER_OF_OPTIONS_PER_QUESTION = len(QUESTIONS.keys())
 
+# --------------------------------- FEATURES --------------------------------- #
+# - A range of questions and options to find users aptitude in cybersecurity
+# - Dynamically created based on QUESTIONS, TEAMS_DSEC
+# - Displays results at the end of questionaire
+# - Handles ties in aptitude
+
+# ----------------------------------- USAGE ---------------------------------- #
+# Requirements:
+# -
+
+# Example of usage:
+# --
+# in ../${rootDir} main.py:
+
+# from bot import Bot
+# from stages.guardian import Guardian
+
+# def main():
+#   ...
+#
+#   bot = Bot()
+#   bot.init(BOT_TOKEN, logger)
+#
+#   STAGE_GUARDIAN = "guardian"
+#
+#   guardian: Guardian = Guardian(bot)
+#   guardian.setup(
+#       stage_id=STAGE_GUARDIAN,
+#       next_stage_id=NEXT_STAGE
+#   )
+#
+#   ...
+#
+# --
+
+# ---------------------------------------------------------------------------- #
+
 
 class Guardian(object):
     def __init__(self, bot: Bot):
