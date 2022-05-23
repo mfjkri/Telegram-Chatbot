@@ -9,7 +9,7 @@ import datetime
 import string
 
 from bot import Bot
-from user import User, Users
+from user import User, UserManager
 from stages.ctf import Ctf
 from utils.log import Log
 from utils import utils
@@ -22,7 +22,8 @@ MAX_ATTEMPTS = 3
 
 MAX_NUMBER_OF_USERS = len(string.ascii_uppercase)
 NUMBER_OF_FAKE_USERS = NUMBER_OF_FAKE_USERS if NUMBER_OF_FAKE_USERS else MAX_NUMBER_OF_USERS
-FAKE_NAMES = [f"PERSON {char}" for char in string.ascii_uppercase[:min(NUMBER_OF_FAKE_USERS, MAX_NUMBER_OF_USERS)]]
+FAKE_NAMES = [f"PERSON {char}" for char in string.ascii_uppercase[:min(
+    NUMBER_OF_FAKE_USERS, MAX_NUMBER_OF_USERS)]]
 FAKE_GROUPS = ["Alpha", "Beta", "Charlie"]
 LOG_FILE = os.path.join("logs", "fake_run.log")
 
@@ -57,8 +58,8 @@ class Emulator:
         self.bot: Bot = Bot()
         self.bot.init(BOT_TOKEN, self.logger)
 
-        self.users: Users = Users()
-        self.users.init(self.logger, False)
+        self.user_manager: UserManager = UserManager()
+        self.user_manager.init(self.logger, False)
 
         self.ctf: Ctf = Ctf(os.path.join("ctf"), self.bot)
         self.challenges = self.ctf.challenges
@@ -67,8 +68,8 @@ class Emulator:
         self.fake_time = {}
 
         for name in names:
-            chatid = name # self.generate_chatid()
-            user = self.users.new(chatid)
+            chatid = name  # self.generate_chatid()
+            user = self.user_manager.new(chatid)
 
             user.update_user_data("name", name)
             user.update_user_data("username", name)
@@ -184,7 +185,8 @@ class Emulator:
                 challenge_number = random.randint(1, total_no_of_challenges)
 
                 while challenge_number in attempted_challenges:
-                    challenge_number = random.randint(1, total_no_of_challenges)
+                    challenge_number = random.randint(
+                        1, total_no_of_challenges)
 
                 attempted_challenges.append(challenge_number)
                 challenge_number -= 1

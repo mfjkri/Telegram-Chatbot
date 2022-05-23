@@ -8,7 +8,7 @@ import shutil
 
 from typing import Union
 from bot import MESSAGE_DIVIDER, USERSTATE, Bot, Update, CallbackContext
-from user import Users, User
+from user import UserManager, User
 import utils.utils as utils
 from utils.log import Log
 from stages.admin import AdminConsole
@@ -33,8 +33,8 @@ def main():
         log_level=logging.DEBUG
     )
 
-    users = Users()
-    users.init(
+    user_manager = UserManager()
+    user_manager.init(
         logger, "LOG_USER_TO_APP_LOGS" in CONFIG and CONFIG["LOG_USER_TO_APP_LOGS"])
 
     bot = Bot()
@@ -110,7 +110,7 @@ def main():
     logger.info(False, "")
 
     # bot.set_first_stage(STAGE_ADMIN)
-    bot.set_first_stage(STAGE_ADMIN)
+    bot.set_first_stage(STAGE_DISCLAIMER)
     bot.set_end_of_chatbot(
         lambda update, context: bot.edit_or_reply_message(
             update, context, "You have exited the conversation. \n\nUse /start to begin a new one.")

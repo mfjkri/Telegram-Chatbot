@@ -7,7 +7,7 @@ from telegram.ext import (Updater, CommandHandler, ConversationHandler,
                           CallbackQueryHandler, MessageHandler, CallbackContext, Filters)
 
 import utils.utils as utils
-from user import Users, User
+from user import UserManager, User
 from utils.log import Log
 
 USERSTATE = int
@@ -642,7 +642,7 @@ class Bot(object):
         self.updater = updater
         self.dispatcher = dispatcher
 
-        self.users = Users()
+        self.users = UserManager()
         self.stages_handlers = []
 
     def __new__(cls, *_):

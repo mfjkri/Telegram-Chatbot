@@ -3,7 +3,7 @@ import time
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
 from telegram.ext import (CallbackQueryHandler, CallbackContext)
 
-from user import Users, User
+from user import UserManager, User
 from bot import (Bot, USERSTATE, MESSAGE_DIVIDER)
 
 QUESTIONS = {
@@ -51,7 +51,7 @@ NUMER_OF_OPTIONS_PER_QUESTION = len(QUESTIONS.keys())
 class Guardian(object):
     def __init__(self, bot: Bot):
         self.bot: Bot = bot
-        self.users: Users = Users()
+        self.user_manager: UserManager = UserManager()
 
         self.stage = None
         self.states = []
@@ -68,7 +68,7 @@ class Guardian(object):
             "options_picked": []
         }
 
-        self.users.add_data_field("guardian_state", guardian_state)
+        self.user_manager.add_data_field("guardian_state", guardian_state)
 
     def entry_guardian(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query

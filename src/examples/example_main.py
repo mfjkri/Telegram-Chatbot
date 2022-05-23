@@ -1,14 +1,16 @@
 #!D:\repos\py\_csa\CSA_Academy_CTF_v4\bot\venv\Scripts\python.exe
 import sys
+sys.path.append("src")
+
 import logging
 import os
 from typing import (Union)
 
 from bot import Bot
-from user import Users
+from user import UserManager
 import utils.utils as utils
 from utils.log import Log
-from stages.example import Example
+from examples.example import Example
 
 LOG_FILE = os.path.join(os.getcwd(), "logs", f"csabot.log")
 BOT_TOKEN = "5292154363:AAGcDCaS0PLMNbcY6uRXYV3Coneq4H2aR34"
@@ -22,7 +24,7 @@ def main():
         log_level=logging.DEBUG
     )
 
-    users = Users()
+    users = UserManager()
     users.init(logger)
 
     bot = Bot()

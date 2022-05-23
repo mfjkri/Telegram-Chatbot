@@ -11,7 +11,7 @@ from telegram import (InlineKeyboardButton,
 from telegram.ext import (CallbackQueryHandler,
                           MessageHandler, CallbackContext, Filters)
 
-from user import Users, User
+from user import UserManager, User
 from bot import (Bot, USERSTATE, MESSAGE_DIVIDER)
 import utils.utils as utils
 
@@ -25,7 +25,7 @@ class Ctf(object):
         self.challenges_directory = os.path.join(directory, "challenges")
 
         self.bot: Bot = bot
-        self.users: Users = Users()
+        self.users_manager: UserManager = UserManager()
 
         self.stage = None
         self.states = []
@@ -122,30 +122,35 @@ class Ctf(object):
             # Data fields related to CTF in user.data (ctf_state)
             # "ctf_state" :
             {
-                'challenges': [],  # see structure for each challenge below
-                'total_score': 0,
-                'last_score_update': None,
+                "challenges": [],  # see structure for each challenge below
+                "total_score": 0,
+                "last_score_update": None,
             }
 
             # Challenge format for users (each challenge in challenges : [])
             {
-                'description': 'Lorem ipsum?',
-                'answer': '',
-                'points': 0,
-                'attempts': 0,
-                'completed': False,
-                'total_hints_deduction': 0,
-                'max_hints_deduction': 0,
-                'hints': [{'deduction': 0, 'text': 'Lorem ipsum', 'used': False}],
-                'files': ['www.link.com'],
-                'one_try': True,
-                'time_based': {
-                    'limit': 1800,
-                    'start_time': False,
-                    'end_time': False,
+                "description": "Lorem ipsum?",
+                "answer": "",
+                "points": 0,
+                "attempts": 0,
+                "completed": False,
+                "total_hints_deduction": 0,
+                "max_hints_deduction": 0,
+                "hints": [{"deduction": 0, "text": "Lorem ipsum", "used": False}],
+                "files": ["www.link.com"],
+                "one_try": True,
+                "time_based": {
+                    "limit": 1800,
+                    "start_time": False,
+                    "end_time": False,
                 } or False,
+                "multiple_choices": [
+                    "Choice A",
+                    "Choice B",
+                    "choice C", ...
+                ] or False
             }
-        self.users.add_data_field("ctf_state", ctf_state)
+        self.users_manager.add_data_field("ctf_state", ctf_state)
 
     def entry_ctf(self, update: Update, context: CallbackContext) -> USERSTATE:
         return self.load_menu(update, context)
@@ -731,7 +736,7 @@ class Ctf(object):
             dict_scoring_list = {}
             scoring_list = []
 
-            for chatid, user in self.users.users.items():
+            for _, user in self.users_manager.users.items():
                 ctf_state = user.data.get("ctf_state")
                 user_total_score = str(ctf_state["total_score"])
 
@@ -752,54 +757,6 @@ class Ctf(object):
             scoring_list = scoring_list[:top_placing]
 
             self.leaderboard = scoring_list
-            # self.update_leaderboard_file()
-
             return scoring_list
         else:
             return []
-
-    # def update_leaderboard_file(self) -> None:
-    #     index_js_script = "/media/Programming/repos/py/_csa/CSA_Academy_CTF_v3/leaderboard_web/index.js"
-    #     original_webpage_data = {}
-
-    #     with open(index_js_script, 'r') as stream:
-    #         original_webpage_data = stream.readlines()
-
-    #     start_marker_idx = False
-    #     end_marker_idx = False
-    #     for idx, line in enumerate(original_webpage_data):
-    #         if "START OF MARKER" in line:
-    #             start_marker_idx = idx
-    #         elif "END OF MARKER" in line:
-    #             end_marker_idx = idx
-    #             break
-
-    #     original_webpage_data = original_webpage_data[:start_marker_idx + 1] + original_webpage_data[end_marker_idx:]
-
-    #     for idx, placing_array in enumerate(self.leaderboard):
-    #         total_score, top_users = placing_array
-
-    #         for user in top_users:
-    #             original_webpage_data.insert(start_marker_idx + 1, "{" + f""""username" : "{user.data.get("username")}","score" : {total_score}""" + "},\n")
-
-    #     with open(index_js_script, 'w') as stream:
-    #         stream.writelines(original_webpage_data)
-
-    #     lines_to_write = []
-
-    #     for idx, placing_array in enumerate(self.leaderboard):
-    #         total_score, top_users = placing_array
-
-    #         line = f"{total_score}:"
-    #         for user in top_users:
-    #             line += f""" {user.data.get("username")},"""
-
-    #         if line[-1] == ",":
-    #             line = line[:-1]
-
-    #         line += "\n"
-
-    #         lines_to_write.append(line)
-
-    #     with open(self.leaderboard_file, "w") as file:
-    #         file.writelines(lines_to_write)

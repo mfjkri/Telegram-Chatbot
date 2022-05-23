@@ -2,13 +2,13 @@ from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
 from telegram.ext import (CallbackQueryHandler, CallbackContext)
 
 from bot import (Bot, USERSTATE)
-from user import (User, Users)
+from user import (User, UserManager)
 
 
 class Example(object):
     def __init__(self, bot: Bot):
         self.bot: Bot = bot
-        self.users: Users = Users()
+        self.user_manager: UserManager = UserManager()
 
         self.stage = None
         self.states = []
@@ -19,7 +19,7 @@ class Example(object):
         bot.add_custom_stage_handler(self)
 
     def init_users_data(self) -> None:
-        self.users.add_data_field("example_state", {
+        self.user_manager.add_data_field("example_state", {
             "score": 0,
             "gender": None,
         })

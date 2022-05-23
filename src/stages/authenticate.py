@@ -3,7 +3,7 @@ import os
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
 from telegram.ext import (CallbackQueryHandler, CallbackContext)
 
-from user import Users, User
+from user import UserManager, User
 from bot import (MESSAGE_DIVIDER, Bot, USERSTATE)
 import utils.utils as utils
 
@@ -14,7 +14,7 @@ PASSCODES = CONFIG["USER_PASSCODES"]
 class Authenticate(object):
     def __init__(self, bot: Bot):
         self.bot: Bot = bot
-        self.users: Users = Users()
+        self.user_manager: UserManager = UserManager()
 
         self.stage = None
         self.states = []
@@ -25,8 +25,8 @@ class Authenticate(object):
         self.init_users_data()
 
     def init_users_data(self) -> None:
-        self.users.add_data_field("name", None)
-        self.users.add_data_field("group", None)
+        self.user_manager.add_data_field("name", None)
+        self.user_manager.add_data_field("group", None)
 
     def entry_authenticate(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query

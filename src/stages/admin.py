@@ -3,7 +3,7 @@ from typing import (Union)
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
 from telegram.ext import (CallbackQueryHandler, CallbackContext)
 
-from user import Users, User
+from user import UserManager, User
 from bot import (Bot, USERSTATE)
 
 ADMIN_USERS = []  # "1026217187"
@@ -12,7 +12,7 @@ ADMIN_USERS = []  # "1026217187"
 class AdminConsole(object):
     def __init__(self, bot: Bot):
         self.bot: Bot = bot
-        self.users: Users = Users()
+        self.user_manager: UserManager = UserManager()
 
         self.stage = None
         self.states = []
@@ -160,7 +160,8 @@ class AdminConsole(object):
         )
 
     def delete_user_name(self, chatid: str, update: Update, context: CallbackContext) -> USERSTATE:
-        target_user: Union[User, None] = self.users.get_from_chatid(chatid)
+        target_user: Union[User,
+                           None] = self.user_manager.get_from_chatid(chatid)
 
         if target_user:
             target_user.data.update({"username": None})
@@ -169,7 +170,8 @@ class AdminConsole(object):
         return self.load_admin(update, context)
 
     def reset_user(self, chatid: str, update: Update, context: CallbackContext) -> USERSTATE:
-        target_user: Union[User, None] = self.users.get_from_chatid(chatid)
+        target_user: Union[User,
+                           None] = self.user_manager.get_from_chatid(chatid)
 
         if target_user:
             target_user.reset_user()
@@ -177,14 +179,15 @@ class AdminConsole(object):
         return self.load_admin(update, context)
 
     def ban_user(self, chatid: str, update: Update, context: CallbackContext) -> USERSTATE:
-        target_user: Union[User, None] = self.users.get_from_chatid(chatid)
+        target_user: Union[User,
+                           None] = self.user_manager.get_from_chatid(chatid)
 
         if target_user:
-            self.users.ban_user(chatid)
+            self.user_manager.ban_user(chatid)
 
         return self.load_admin(update, context)
 
     def unban_user(self, chatid: str, update: Update, context: CallbackContext) -> USERSTATE:
-        self.users.unban_user(chatid)
+        self.user_manager.unban_user(chatid)
 
         return self.load_admin(update, context)

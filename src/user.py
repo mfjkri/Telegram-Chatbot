@@ -116,7 +116,7 @@ class User():
                             data_node[index] = copy.deepcopy(value)
 
 
-class Users(object):
+class UserManager(object):
     def new(self, chatid: str) -> Union[User, None]:
         # self.update_banned_list()
         if chatid not in self.banned_users:
@@ -194,5 +194,5 @@ class Users(object):
 
     def __new__(cls, *_):
         if not hasattr(cls, "instance"):
-            cls.instance = super(Users, cls).__new__(cls)
+            cls.instance = super(UserManager, cls).__new__(cls)
         return cls.instance
