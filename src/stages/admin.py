@@ -11,6 +11,49 @@ import utils.utils as utils
 CONFIG = utils.load_yaml_file(os.path.join("config.yaml"))
 ADMIN_CHATIDS = CONFIG["ADMIN_CHATIDS"]
 
+# --------------------------------- FEATURES --------------------------------- #
+# - Delete Username
+# - Delete User
+# - Ban User
+# - Unban User
+
+# ----------------------------------- USAGE ---------------------------------- #
+# Requirements:
+# Configure "ADMIN_CHATIDS" in config.yaml to include the chatids for your admins (or just you).
+
+# Example of usage:
+# --
+# in ../${rootDir} main.py:
+
+# from bot import Bot
+# from stages.admin import AdminConsole
+
+# def main():
+#   ...
+#
+#   bot = Bot()
+#   bot.init(BOT_TOKEN, logger)
+#
+#   STAGE_ADMIN = "admin"
+#
+#   admin: AdminConsole = AdminConsole(bot)
+#   admin.setup(
+#     stage_id=STAGE_ADMIN,
+#     next_stage_id=NEXT_STAGE
+#   )
+#
+#   ...
+#
+#   bot.set_first_stage(STAGE_ADMIN)
+#   bot.start(live_mode=LIVE_MODE)
+# --
+
+# In the example above, we have the AdminConsole stage as the first stage of the bot.
+# Any non-admin users will automatically skip this stage and move on to the NEXT_STAGE.
+# You can also have the AdminConsole stage be at any point in your bot flow.
+
+# ---------------------------------------------------------------------------- #
+
 
 class AdminConsole(object):
     def __init__(self, bot: Bot):
