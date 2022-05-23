@@ -4,6 +4,7 @@ sys.path.append("src")
 
 import logging
 import os
+import shutil
 
 from typing import Union
 from bot import Bot
@@ -24,7 +25,23 @@ FRESH_START = CONFIG["RUNTIME"]["FRESH_START"] if not LIVE_MODE else False
 BOT_TOKEN = CONFIG["BOT_TOKENS"]["LIVE"] if LIVE_MODE else CONFIG["BOT_TOKENS"]["TEST"]
 
 
+def setup():
+    utils.get_dir_or_create(os.path.join("logs"))
+    if FRESH_START:
+        users_directory = os.path.join("users")
+
+        for chatid in os.listdir(users_directory):
+            user_directory = os.path.join(users_directory, chatid)
+            if os.path.isdir(user_directory):
+                shutil.rmtree(user_directory)
+
+        if os.path.isfile(LOG_FILE):
+            os.remove(LOG_FILE)
+
+
 def main():
+    setup()
+
     logger = Log(
         name=__name__,
         stream_handle=sys.stdout,
