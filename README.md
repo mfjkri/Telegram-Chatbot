@@ -32,10 +32,14 @@ $ cd ${rootDir}
 # Replace the "python" argument with whatever your python keyword is
 # For example,if your system uses python3:
 #       python3 setup.py --setup "python3"
+
+# Linux:
 $ python setup.py --setup "python"
+# Windows:
+$ python .\setup.py --setup "python"
 ```
 
-Expected output:
+Assuming you encounter no errors, you should see something like this:
 
 ```bash
 2022-05-16 09:51:06,205 [INFO] Changing working directory to: /media/Programming/repos/js/Telegram-Chatbot
@@ -95,8 +99,11 @@ If you are running any other OS such as **MacOS**, you will have to build the pr
 
    # ------------------------------ USER PASSCODES ------------------------------ #
    USER_PASSCODES:
-   # START_OF_PASSCODES_MARKER
-   # END_OF_PASSCODES_MARKER
+     # START_OF_PASSCODES_MARKER
+     # END_OF_PASSCODES_MARKER
+
+   # ------------------------------- ADMIN CHATIDS ------------------------------ #
+   ADMIN_CHATIDS: []
 
    # -------------------------------- LOG CONFIG -------------------------------- #
    LOG_USER_TO_APP_LOGS: false
@@ -129,6 +136,9 @@ BOT_TOKENS:
 USER_PASSCODES:
   # START_OF_PASSCODES_MARKER
   # END_OF_PASSCODES_MARKER
+
+# ------------------------------- ADMIN CHATIDS ------------------------------ #
+ADMIN_CHATIDS: []
 
 # -------------------------------- LOG CONFIG -------------------------------- #
 LOG_USER_TO_APP_LOGS: false
@@ -169,34 +179,62 @@ LOG_USER_TO_APP_LOGS: false
   ```yaml
   # ------------------------------ USER PASSCODES ------------------------------ #
   USER_PASSCODES:
-      # START_OF_PASSCODES_MARKER
+    # START_OF_PASSCODES_MARKER
 
-      #------
-      # Generated at 16/05/2022 13:09:13
-      # Refer to src/helper_scripts/generate_passcodes.py for more details.
+    #------
+    # Generated at 16/05/2022 13:09:13
+    # Refer to src/helper_scripts/generate_passcodes.py for more details.
 
-      T3026: Sonya Anhak # Here we can omit User Group entirely
-                      # It will be defaulted to none
+    T3026: Sonya Anhak # Here we can omit User Group entirely
+                    # It will be defaulted to none
 
-      T3026:
-      - Derek Eng
-      - none # We can also explicitly define User Group to be none
+    T3026:
+    - Derek Eng
+    - none # We can also explicitly define User Group to be none
 
-      X4853:
-      - Rock Lee
-      - member
+    X4853:
+    - Rock Lee
+    - member
 
-      E9468:
-      - Samantha Tan
-      - guest
+    E9468:
+    - Samantha Tan
+    - guest
 
-      E4739:
-      - Johnny Smith
-      - guest
+    E4739:
+    - Johnny Smith
+    - guest
 
-      #------
+    #------
 
-      # END_OF_PASSCODES_MARKER
+    # END_OF_PASSCODES_MARKER
+  ```
+
+- **`ADMIN_CHATIDS`**:
+
+  Every user with their chatid here will have access to the Admin Console when using the bot assuming that the Admin stage is in use (look through [admin.py](src/stages/admin.py) for more details).
+
+  To obtain your own chatid, you can run the bot in development mode, and use the bot alone. This ensures the only one user created is yours. Alternatively, you can also follow this [guide](https://www.alphr.com/find-chat-id-telegram/).
+
+  Each _CHATID_ is an entry:
+
+  ```yaml
+  ADMIN_CHATIDS:
+    - 102391029
+  ```
+
+  Here is an example with more chatids:
+
+  ```yaml
+  ADMIN_CHATIDS:
+    - 1203910239
+    - 12032190391
+    - 40329103192
+  ```
+
+  If you do not wish to have any admin chatids:
+
+  ```yaml
+  ADMIN_CHATIDS: []
   ```
 
 - **`LOG_USER_TO_APP_LOGS`**:
