@@ -556,7 +556,7 @@ class Ctf(object):
                             f"""Hint {t_idx+1} (-{hint["deduction"]} points)""", callback_data=f"ctf_view_hint_{t_idx}:{challenge_number}")
                     )
         else:
-            text_body += f"<u>{effective_score} points</u>\n\n"
+            text_body += f"You earned <u>{effective_score} points</u>\n\n"
             # if is_multiple_choices and total_points_deduction > 0:
             #     text_body += f"(points / attempts) - hints = <u>{effective_score} points</u>\n\n"
             # elif total_points_deduction > 0:
