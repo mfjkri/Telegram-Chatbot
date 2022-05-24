@@ -90,7 +90,8 @@ if __name__ == "__main__":
 
                         "# ------------------------------ USER PASSCODES ------------------------------ #\n"
                         "USER_PASSCODES:\n",
-                        "  # START_OF_PASSCODES_MARKER\n"
+                        "  # START_OF_PASSCODES_MARKER\n\n"
+                        "  A1234: John Smith\n\n"
                         "  # END_OF_PASSCODES_MARKER\n\n"
 
                         "# ------------------------------ ADMIN CHATIDS ------------------------------ #\n"

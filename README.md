@@ -99,6 +99,7 @@ If you are running any other OS such as **MacOS**, you will have to build the pr
 
    # ------------------------------ USER PASSCODES ------------------------------ #
    USER_PASSCODES:
+     {}
      # START_OF_PASSCODES_MARKER
      # END_OF_PASSCODES_MARKER
 
@@ -135,6 +136,7 @@ BOT_TOKENS:
 # ------------------------------ USER PASSCODES ------------------------------ #
 USER_PASSCODES:
   # START_OF_PASSCODES_MARKER
+  A1234: John Smith
   # END_OF_PASSCODES_MARKER
 
 # ------------------------------- ADMIN CHATIDS ------------------------------ #
@@ -201,7 +203,7 @@ LOG_USER_TO_APP_LOGS: false
     - guest
 
     E4739:
-    - Johnny Smith
+    - John Smith
     - guest
 
     #------
