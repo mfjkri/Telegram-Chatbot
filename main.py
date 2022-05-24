@@ -26,6 +26,7 @@ BOT_TOKEN = CONFIG["BOT_TOKENS"]["LIVE"] if LIVE_MODE else CONFIG["BOT_TOKENS"][
 def main():
     setup()
 
+    # Main application logger
     logger = Log(
         name=__name__,
         stream_handle=sys.stdout,
@@ -40,6 +41,9 @@ def main():
     bot = Bot()
     bot.init(BOT_TOKEN, logger)
 
+    # Bot flow:
+    #   admin -> authenticate -> collect:username -> choose:disclaimer -> CTF -> end
+    #   admin stage is automatically skipped if user is not admin
     STAGE_ADMIN = "admin"
     STAGE_AUTHENTICATE = "authenticate"
     STAGE_COLLECT_USERNAME = "collect:username"
@@ -93,6 +97,7 @@ def main():
             {
                 "text": "Continue",
                 "callback": accept_disclaimer
+                # "callback": lambda *args: bot.proceed_next_stage(STAGE_DISCLAIMER, STAGE_CTF, *args)
             },
         ]
     )
@@ -119,6 +124,12 @@ def main():
 
 
 def setup():
+    """
+    Creates the neccesary runtime directories if missing (logs).
+    If FRESH_START is True, then it will clear existing files (logs/* and users/*).
+
+    :return: None
+    """
     utils.get_dir_or_create(os.path.join("logs"))
     if FRESH_START:
         users_directory = os.path.join("users")
