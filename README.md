@@ -162,6 +162,8 @@ LOG_USER_TO_APP_LOGS: false
 
 - **`USER_PASSCODES`**:
 
+  **Note:** This field is only used with [`Stage:Authenticate`](src/stages/authenticate.py). If you are not using the stage, you can ignore this field.
+
   Each _PASSCODE_ is an entry:
 
   ```yaml
@@ -212,6 +214,8 @@ LOG_USER_TO_APP_LOGS: false
   ```
 
 - **`ADMIN_CHATIDS`**:
+
+  **Note:** This field is only used with [`Stage:Admin`](src/stages/admin.py). If you are not using the stage, you can ignore this field.
 
   Every user with their chatid here will have access to the Admin Console when using the bot assuming that the Admin stage is in use (look through [admin.py](src/stages/admin.py) for more details).
 
