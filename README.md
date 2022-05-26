@@ -29,8 +29,9 @@ If you are running **Windows** or **Linux**, you can set up the project and inst
 
 ```bash
 $ cd ${rootDir}
+
 # Replace the "python" argument with whatever your python keyword is
-# For example,if your system uses python3:
+# For example, if your system uses python3:
 #       python3 setup.py --setup "python3"
 
 # Linux:
