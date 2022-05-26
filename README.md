@@ -470,29 +470,45 @@ Before running the chatbot,
 
    The entry point of the chatbot is `main.py`.
 
+   With `venv` activated for your terminal session:
+
+   - Activating venv:
+
+     ```bash
+     # cd ${rootDir}
+
+     # Linux:
+     $ source venv/bin/activate
+
+     #Windows:
+     $ venv\Scripts\activate.bat
+     ```
+
+   - Running main.py:
+
+     ```bash
+     # cd ${rootDir}
+
+     # Linux:
+     $(venv) python main.py
+
+     # Windows:
+     $(venv) python .\main.py
+     ```
+
+   Or if you don't wish to activate venv:
+
    ```bash
    # cd ${rootDir}
 
    # Linux:
    $ venv/bin/python main.py
+
    # Windows:
    $ .\venv\Scripts\python.exe .\main.py
    ```
 
-   Or if you have the virtual env already activated:
-
-   ```bash
-   # cd ${rootDir}
-
-   # Linux:
-   $ source venv/bin/activate
-   $ python main.py
-   # Windows:
-   $ venv\Scripts\activate.bat
-   $ python .\main.py
-   ```
-
-   &nbsp;
+&nbsp;
 
 ---
 
