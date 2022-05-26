@@ -15,8 +15,8 @@ class Example(object):
         self.stage_id = None
         self.next_stage_id = None
 
-        self.init_users_data()
         bot.add_custom_stage_handler(self)
+        self.init_users_data()
 
     def init_users_data(self) -> None:
         self.user_manager.add_data_field("example_state", {
