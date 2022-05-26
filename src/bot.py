@@ -1,3 +1,4 @@
+from calendar import c
 import time
 from typing import (Any, Callable, Union)
 
@@ -139,23 +140,42 @@ class Bot(object):
                              f"User:{user.chatid} is moving on from: {current_stage_id} to: {next_stage_id}")
             return next_stage["entry"](update, context)
         else:
-            if not next_stage:
-                user.logger.error(
-                    "NEXT_STAGE_MISSING", f"Next stage: {next_stage_id} not found. Current stage: {current_stage_id}")
-                return self.proceed_next_stage(current_stage_id, "end", update, context)
-            elif not user:
+            if not user:
+                chatid, _ = context._user_id_and_data
                 self.logger.error("USER_NOT_REGISTERED",
-                                  f"User not found in users. Current stage: {current_stage_id}")
+                                  f"User:{chatid} not found in users. Current stage: {current_stage_id}")
+                self.edit_or_reply_message(
+                    update, context,
+                    text="<b>ERROR</b>: Unknown user.\n\n"
+                    "If you are seeing this, please contact your System Administrator."
+                )
             elif user.is_banned:
-                self.logger.error(
-                    "USER_BANNED", f"User not found in users. Current stage: {current_stage_id}")
+                user.logger.error("USER_BANNED",
+                                  f"User:{user.chatid} is a banned user. Current stage: {current_stage_id}")
+
+                self.edit_or_reply_message(
+                    update, context,
+                    text="Unfortunately, it appears you have been <b>banned</b>.\n\n"
+                    "If you believe this to be a mistake, please contact the System Administrator."
+                )
+            elif not next_stage:
+                user.logger.error("NEXT_STAGE_MISSING",
+                                  f"User:{user.chatid} is proceeding to unknown next stage: {next_stage_id}. Current stage: {current_stage_id}")
+
+                self.edit_or_reply_message(
+                    update, context,
+                    text="<b>ERROR</b>: Unknown next stage.\n\n"
+                    "If you are seeing this, please contact your System Administrator."
+                )
+
             return self.stages.get("end")["entry"](update, context)
 
     def edit_or_reply_message(self,
                               update: Update, context: CallbackContext,
                               text: str,
                               reply_markup: ReplyMarkup = None,
-                              parse_mode: ParseMode = ParseMode.HTML) -> None:
+                              parse_mode: ParseMode = ParseMode.HTML,
+                              reply_message: bool = False) -> None:
         """
         Helper function to edit or reply the message sent by bot with new text and reply_markup.
 
@@ -163,25 +183,34 @@ class Bot(object):
         :param context: Context passed from caller function. (Required)
         :param text: Text to edit or reply message with. (Required)
         :param reply_markup: Reply_markup to append with the message. (Optional, Defaults to None)
-        :param parse_mode: Parse_mdoe to format the message with. (Optional, Defaults to ParseMode.HTML)
+        :param parse_mode: ParseMode to format the message with. (Optional, Defaults to ParseMode.HTML)
+        :param reply_message: Whether it should edit or reply to its previous message
 
         :return: None
         """
 
-        if update.callback_query:
+        user: User = context.user_data.get("user")
+
+        if update.callback_query and not reply_message:
             update.callback_query.message.edit_text(
                 text=text,
                 reply_markup=reply_markup,
                 parse_mode=parse_mode,
                 disable_web_page_preview=True
             )
-        else:
+        elif update.message:
             update.message.reply_text(
                 text=text,
                 reply_markup=reply_markup,
                 parse_mode=parse_mode,
                 disable_web_page_preview=True
             )
+        else:
+            if user:
+                context.bot.send_message(user.chatid, text)
+            else:
+                self.logger.error("UNKNOWN_TARGET_USER",
+                                  "Unknown user to reply message to.")
 
     def let_user_choose(self,
                         choice_label: str,
@@ -516,7 +545,8 @@ class Bot(object):
         self.edit_or_reply_message(
             update, context,
             text="Find out more about what we do at www.csa.gov.sg!"
-            "\n\nUse /start to resume where you left off."
+            "\n\nUse /start to resume where you left off.",
+            reply_message=True
         )
 
     def conversation_entry(self, update: Update, context: CallbackContext) -> USERSTATE:
