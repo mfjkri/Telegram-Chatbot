@@ -5,6 +5,60 @@ from bot import (Bot, USERSTATE)
 from user import (User, UserManager)
 
 
+# -------------------------------- TAKE NOTES -------------------------------- #
+# In a real stage, you would have its filepath be:
+#    ${rootDir}/src/stages/
+
+# and in your main.py:
+#   import sys
+#   sys.path.append("src")
+#
+#   from stages.stage_name import stage_class_name
+
+# !!!!!!!!!!
+# FOR THE REST OF THIS DOCUMENTATION, IT IS ASSUMED
+# THAT YOU HAVE THIS STAGE, PARENTED AT,
+# ${rootDir}/src/stages/ folder.
+# !!!!!!!!!!
+
+# --------------------------------- FEATURES --------------------------------- #
+# - Single-questionaire (Attempt Question)
+# - Single two options choice (Select Color)
+
+# ----------------------------------- USAGE ---------------------------------- #
+# Requirements:
+# -
+
+# Example of usage:
+# --
+# in ../${rootDir}/main.py:
+
+# from bot import Bot
+# from stages.example_stage import Example
+
+# def main():
+#   ...
+#
+#   bot = Bot()
+#   bot.init(BOT_TOKEN, logger)
+#
+#   STAGE_EXAMPLE = "example"
+#
+#   example: Example = Example(bot)
+#   example.setup(
+#       stage_id=STAGE_EXAMPLE,
+#       next_stage_id=NEXT_STAGE
+#   )
+#
+#   ...
+#
+#   bot.set_first_stage(STAGE_EXAMPLE)
+#   bot.start(live_mode=LIVE_MODE)
+# --
+
+# ---------------------------------------------------------------------------- #
+
+
 class Example(object):
     def __init__(self, bot: Bot):
         self.bot: Bot = bot
@@ -21,7 +75,7 @@ class Example(object):
     def init_users_data(self) -> None:
         self.user_manager.add_data_field("example_state", {
             "score": 0,
-            "gender": None,
+            "color": None,
         })
 
     def entry_example(self, update: Update, context: CallbackContext) -> USERSTATE:
@@ -51,24 +105,24 @@ class Example(object):
                     CallbackQueryHandler(
                         self.prompt_question, pattern="^example_prompt_question$", run_async=True),
                     CallbackQueryHandler(
-                        self.prompt_gender_selection, pattern="^example_prompt_gender$", run_async=True),
+                        self.prompt_color_selection, pattern="^example_prompt_color$", run_async=True),
                 ]
             }
         )
         self.states = self.stage["states"]
 
-        self.SELECT_GENDER = self.bot.let_user_choose(
-            choice_label="example_sex",
-            choice_text="Please select your sex",
+        self.SELECT_COLOR = self.bot.let_user_choose(
+            choice_label="example_color",
+            choice_text="Please select your color",
             choices=[
                 {
-                    "text": "Male",
-                    "callback": lambda update, context: self.gender_selected("Male", update, context)
+                    "text": "Red",
+                    "callback": lambda update, context: self.color_selected("Red", update, context)
                 },
 
                 {
-                    "text": "Female",
-                    "callback": lambda update, context: self.gender_selected("Female", update, context)
+                    "text": "Blue",
+                    "callback": lambda update, context: self.color_selected("Blue", update, context)
                 },
 
             ],
@@ -89,17 +143,17 @@ class Example(object):
         user: User = context.user_data.get("user")
         example_state = user.data.get("example_state")
 
-        gender = example_state.get("gender", "undefined")
+        color = example_state.get("color", "undefined")
         score = example_state.get("score")
 
         self.bot.edit_or_reply_message(
             update=update, context=context,
-            text=f"Hi!\n\nGender: <b>{gender}</b>\nScore: <b>{score}</b>",
+            text=f"Hi!\n\nColor: <b>{color}</b>\nScore: <b>{score}</b>",
             reply_markup=InlineKeyboardMarkup([
                 [InlineKeyboardButton(
                     "Attempt Question", callback_data="example_prompt_question")],
                 [InlineKeyboardButton(
-                    "Select Gender", callback_data="example_prompt_gender")],
+                    "Select Color", callback_data="example_prompt_color")],
             ])
         )
         return self.MENU
@@ -124,13 +178,13 @@ class Example(object):
             )
             return self.load_menu(update, context)
 
-    def prompt_gender_selection(self, update: Update, context: CallbackContext) -> USERSTATE:
+    def prompt_color_selection(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query
         query.answer()
 
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
-            next_stage_id=self.SELECT_GENDER,
+            next_stage_id=self.SELECT_COLOR,
             update=update, context=context
         )
 
@@ -155,19 +209,19 @@ class Example(object):
             )
         return self.load_menu(update, context)
 
-    def gender_selected(self, gender: str, update: Update, context: CallbackContext) -> USERSTATE:
+    def color_selected(self, color: str, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query
         query.answer()
 
         user: User = context.user_data.get("user")
         example_state = user.data.get("example_state")
 
-        example_state["gender"] = gender
+        example_state["color"] = color
         user.save_user_to_file()
 
         self.bot.edit_or_reply_message(
             update, context,
-            text=f"You have selected the option: {gender}!"
+            text=f"You have selected the option: {color}!"
         )
 
         return self.load_menu(update, context)
