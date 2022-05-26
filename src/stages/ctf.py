@@ -403,14 +403,12 @@ class Ctf(object):
                          f"User:{user.chatid} is submitting answer for Challenge {challenge_number}")
 
         if query.message.text.find('❌') == -1:
+            query.message.edit_reply_markup()
+
             self.bot.edit_or_reply_message(
                 update, context,
-                text=query.message.text_html,
-            )
-
-            query.message.reply_text(
-                text="Enter your answer:",
-                parse_mode=ParseMode.HTML
+                text="Enter you answer:",
+                reply_message=True
             )
         else:
             self.bot.edit_or_reply_message(
