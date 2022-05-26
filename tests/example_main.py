@@ -20,7 +20,6 @@ from utils.log import Log
 
 from stages.admin import AdminConsole
 from stages.authenticate import Authenticate
-from stages.ctf import Ctf
 
 LOG_FILE = os.path.join("logs", f"csabot.log")
 
@@ -65,7 +64,6 @@ def main():
     STAGE_COLLECT_USERNAME = "collect:username"
     STAGE_COLLECT_EMAIL = "collect:email"
     STAGE_EXAMPLE = "example"
-    STAGE_CTF = "CTF"
     STAGE_END = "end"
 
     # Stage admin
@@ -114,13 +112,6 @@ def main():
     example.setup(
         stage_id=STAGE_EXAMPLE,         # This stage id is example
         next_stage_id=STAGE_END
-    )
-
-    # Stage ctf
-    ctf: Ctf = Ctf(os.path.join("ctf"), bot)
-    ctf.setup(
-        stage_id=STAGE_CTF,             # This stage id is CTF
-        next_stage_id=STAGE_END,
     )
 
     # Start Bot
