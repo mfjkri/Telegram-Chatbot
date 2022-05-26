@@ -545,9 +545,13 @@ For a more detailed explanation, please refer to the [Implementation Documentati
 
 ---
 
+&nbsp;
+
 ## 2.1) Inbuilt stages
 
-### 2.1.1) let_user_choose
+&nbsp;
+
+### 2.1.1) **let_user_choose**
 
 Presents a variable number of choices to the user. The choices are in the form of buttons (ReplyMarkupButton).
 
@@ -604,7 +608,9 @@ example_choose = Bot.let_user_choose(
 
 ```
 
-### 2.1.2) get_input_from_user
+&nbsp;
+
+### 2.1.2) **get_input_from_user**
 
 Presents an input field to the user. Input is capture through the next valid message sent from input prompt.
 
@@ -636,7 +642,9 @@ def some_state_or_stage(update : Update, context : CallbackContext) -> USERSTATE
     )
 ```
 
-### 2.1.3) get_info_from_user
+&nbsp;
+
+### 2.1.3) **get_info_from_user**
 
 Similar to `get_input_from_user` except that the input is a user information and is stored globally in the userdata. No additional logic implementation is required.
 
@@ -675,266 +683,92 @@ def some_state_or_stage(update : Update, context : CallbackContext) -> USERSTATE
 
 ---
 
+&nbsp;
+
 ## 2.2) Creating a custom stage
 
-### Example of a stage:
+&nbsp;
 
-src/stages/example.py
+### Custom stage (`Example`):
+
+[src/stages/example_stage.py](src/stages/)
 
 ```python
-from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
-from telegram.ext import (CallbackQueryHandler, CallbackContext)
-
-from bot import (Bot, USERSTATE)
-from user import (User, Users)
-
-class Example(object):
-    def init(self, bot : Bot):
-        self.bot : Bot = bot
-        self.users : Users = Users()
-
-        self.stage = None
-        self.states = []
-        self.stage_id = None
-        self.next_stage_id = None
-
-        self.init_users_data()
-        bot.add_custom_stage_handler(self)
-
-    def init_users_data(self) -> None:
-        self.users.add_data_field("example_state", {
-            "score" : 0,
-            "gender" : None,
-        })
-
-    def entry_example(self, update : Update, context : CallbackContext) -> USERSTATE:
-        query = update.callback_query
-        if query:
-            query.answer()
-
-        return self.load_menu(update, context)
-
-    def exit_example(self, update : Update, context : CallbackContext) -> USERSTATE:
-        return self.bot.proceed_next_stage(
-            current_stage_id=self.stage_id,
-            next_stage_id=self.next_stage_id,
-            update=update, context=context
-        )
-
-    def setup(self, stage_id : str, next_stage_id : str) -> None:
-        self.stage_id = stage_id
-        self.next_stage_id = next_stage_id
-
-        self.stage = self.bot.add_stage(
-            stage_id=stage_id,
-            entry=self.entry_example,
-            exit=self.exit_example,
-            states={
-                "MENU" : [
-                    CallbackQueryHandler(self.prompt_question, pattern="^example_prompt_question$", run_async=True),
-                    CallbackQueryHandler(self.prompt_gender_selection, pattern="^example_prompt_gender$", run_async=True),
-                ]
-            }
-        )
-
-        self.SELECT_GENDER = self.bot.let_user_choose(
-            choice_label="example_sex",
-            choice_text="Please select your sex",
-            choices=[
-              {
-                  "text" : "Male",
-                  "callback" : lambda update, context : self.gender_selected("Male", update, context)
-              },
-
-              {
-                  "text" : "Female",
-                  "callback" : lambda update, context : self.gender_selected("Female", update, context)
-              },
-
-            ],
-            choices_per_row=2
-        )
-        self.QUESTION_STAGE = self.bot.get_input_from_user(
-            input_label="example_question",
-            input_text="What is 1 + 1?",
-            input_handler=self.check_answer
-        )
-
-        self.states = self.stage["states"]
-        self.MENU = self.bot.unpack_states(self.states)[0]
-
-    def load_menu(self, update : Update, context : CallbackContext) -> USERSTATE:
-        query = update.callback_query
-        if query:
-            query.answer()
-
-        user : User = context.user_data.get("user")
-        example_state = user.data.get("example_state")
-
-        gender = example_state.get("gender", "undefined")
-        score = example_state.get("score")
-
-        self.bot.edit_or_reply_message(
-            update=update, context=context,
-            text=f"Hi!\n\nGender: <b>{gender}</b>\nScore: <b>{score}</b>",
-            reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("Attempt Question", callback_data="example_prompt_question")],
-                [InlineKeyboardButton("Select Gender", callback_data="example_prompt_gender")],
-            ])
-        )
-        return self.MENU
-
-    def prompt_question(self, update : Update, context : CallbackContext) -> USERSTATE:
-        query = update.callback_query
-        query.answer()
-
-        user : User = context.user_data.get("user")
-        example_state = user.data.get("example_state")
-
-        if example_state["score"] == 0:
-            return self.bot.proceed_next_stage(
-                current_stage_id=self.stage_id,
-                next_stage_id=self.QUESTION_STAGE,
-                update=update, context=context
-            )
-        else:
-            self.bot.edit_or_reply_message(
-                    update, context,
-                    text=f"You have already completed this question!"
-                )
-            return self.load_menu(update, context)
-
-    def prompt_gender_selection(self, update : Update, context : CallbackContext) -> USERSTATE:
-        query = update.callback_query
-        query.answer()
-
-        return self.bot.proceed_next_stage(
-            current_stage_id=self.stage_id,
-            next_stage_id=self.SELECT_GENDER,
-            update=update, context=context
-        )
-
-    def check_answer(self, answer : str, update : Update, context : CallbackContext) -> USERSTATE:
-        user : User = context.user_data.get("user")
-        example_state = user.data.get("example_state")
-
-        answer = "".join(char for char in answer if char.isalnum())
-
-        if answer == "2":
-            example_state["score"]  = 10
-            user.save_user_to_file()
-
-            self.bot.edit_or_reply_message(
-                update, context,
-                text=f"Your answer: {answer} is correct! You have been awarded 10 points!"
-            )
-        else:
-            self.bot.edit_or_reply_message(
-                update, context,
-                text=f"Your answer: {answer} is wrong!"
-            )
-        return self.load_menu(update, context)
-
-    def gender_selected(self, gender : str, update : Update, context : CallbackContext) -> USERSTATE:
-        query = update.callback_query
-        query.answer()
-
-        user : User = context.user_data.get("user")
-        example_state = user.data.get("example_state")
-
-        example_state["gender"] = gender
-        user.save_user_to_file()
-
-        self.bot.edit_or_reply_message(
-            update, context,
-            text=f"You have selected the option: {gender}!"
-        )
-
-        return self.load_menu(update, context)
 
 ```
 
-### Example of main.py:
+&nbsp;
+
+### Using custom stage:
+
+[main.py](main.py)
 
 ```python
-#!path\to\venv\bin\python.exe
-import sys, logging, os
-from typing import (Union)
+# shebang
+import sys
+sys.path.append("src")
+
+import logging
+import os
 
 from bot import Bot
-from user import Users
+from user import UserManager, User
 import utils.utils as utils
 from utils.log import Log
-from stages.example import Example
 
-LOG_FILE = os.path.join("logs", f"csabot.log")
+from stages.example_stage import Example
+
+LOG_FILE = os.path.join("logs", f"examplebot.log")
+
 CONFIG = utils.load_yaml_file(os.path.join("config.yaml"))
-BOT_TOKEN = CONFIG["BOT_TOKENS"]["live"]
+LIVE_MODE = CONFIG["RUNTIME"]["LIVE_MODE"]
+FRESH_START = CONFIG["RUNTIME"]["FRESH_START"] if not LIVE_MODE else False
+BOT_TOKEN = CONFIG["BOT_TOKENS"]["LIVE"] if LIVE_MODE else CONFIG["BOT_TOKENS"]["TEST"]
+
+
+def setup():
+    utils.get_dir_or_create(os.path.join("logs"))
+    if FRESH_START:
+        # Remove runtime files (logs, users, etc)
+        pass
+
 
 def main():
+    setup()
+
     logger = Log(
-        name=**name**,
+        name=__name__,
         stream_handle=sys.stdout,
         file_handle=LOG_FILE,
-        log_level= logging.DEBUG
+        log_level=logging.DEBUG
     )
 
-    users = Users()
+    users = UserManager()
     users.init(logger)
 
     bot = Bot()
     bot.init(BOT_TOKEN, logger)
 
-    STAGE_COLLECT_NAME = "collect:name"
-    STAGE_COLLECT_EMAIL = "collect:email"
     STAGE_EXAMPLE = "example"
     STAGE_END = "end"
 
-
-    # Stage collect:name
-    def format_name_input(input_str : Union[str, bool]):
-        if input_str is not True:
-            return utils.format_input_str(input_str, True, "' ")
-    bot.get_info_from_user( # This stage id is collect:name
-        data_label="name",
-        next_stage_id=STAGE_COLLECT_EMAIL,
-        input_formatter=format_name_input,
-        allow_update=True
-    )
-
-    # Stage collect:email
-    def format_email_input(input_str : Union[str, bool]):
-        if input_str is True:
-            return "example@domain.com"
-        else:
-            input_str = utils.format_input_str(input_str, True, "@.")
-            return utils.check_if_valid_email_format(input_str)
-    bot.get_info_from_user( # This stage id is collect:email
-        data_label="email",
-        next_stage_id=STAGE_EXAMPLE,
-        input_formatter=format_email_input,
-        additional_text=None, #"⚠ This will be the only channel that we use to contact or share opportunities via.",
-        allow_update=True
-    )
-
-    # Stage Example
-    example : Example = Example(bot)
+    # Stage example
+    example: Example = Example(bot)
     example.setup(
-        stage_id=STAGE_EXAMPLE,
+        stage_id=STAGE_EXAMPLE,         # This stage id is example
         next_stage_id=STAGE_END
     )
 
     # Start Bot
-    logger.info(False, "")
-    logger.info(False, "Initializing...")
-    logger.info(False, "")
-    bot.set_first_stage(STAGE_COLLECT_NAME)
-    bot.start()
+    bot.set_first_stage(STAGE_EXAMPLE)
+    bot.set_end_of_chatbot(
+        lambda update, context: bot.edit_or_reply_message(
+            update, context, "You have exited the conversation. \n\nUse /start to begin a new one.")
+    )
+    bot.start(live_mode=LIVE_MODE)
 
-if **name** == "**main**":
+
+if __name__ == "__main__":
     main()
+
 ```
-
----
-
-# TECHNICAL DOCUMENTATION
