@@ -386,8 +386,7 @@ class Bot(object):
                     text += f"<i>{additional_text}</i>\n\n" if additional_text else ""
                     text += MESSAGE_DIVIDER
                     text += f"<b>{saved_data}</b>\n"
-                    text += MESSAGE_DIVIDER + "\n"
-                    text += "Press Yes to confirm or No to re-enter."
+                    text += MESSAGE_DIVIDER
 
                     self.edit_or_reply_message(
                         update, context,
@@ -395,9 +394,9 @@ class Bot(object):
                         reply_markup=InlineKeyboardMarkup([
                             [
                                 InlineKeyboardButton(
-                                    "Yes", callback_data=confirm_input_pattern),
+                                    "Confirm", callback_data=confirm_input_pattern),
                                 InlineKeyboardButton(
-                                    "No", callback_data=retry_input_pattern),
+                                    "Edit", callback_data=retry_input_pattern),
                             ]
                         ]),
                     )
@@ -447,13 +446,13 @@ class Bot(object):
 
                     self.edit_or_reply_message(
                         update, context,
-                        text=f"Is your {data_label}: <b>{formatted_user_input}</b>?\n\nPress Yes to confirm or No to re-enter.",
+                        text=f"Is your {data_label}: <b>{formatted_user_input}</b>?",
                         reply_markup=InlineKeyboardMarkup([
                             [
                                 InlineKeyboardButton(
-                                    "Yes", callback_data=confirm_input_pattern),
+                                    "Confirm", callback_data=confirm_input_pattern),
                                 InlineKeyboardButton(
-                                    "No", callback_data=retry_input_pattern),
+                                    "Edit", callback_data=retry_input_pattern),
                             ]
                         ])
                     )
