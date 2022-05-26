@@ -119,19 +119,20 @@ class User():
 class UserManager(object):
     def new(self, chatid: str) -> Union[User, None]:
         # self.update_banned_list()
-        if chatid not in self.banned_users:
-            if chatid not in self.users:
-                self.logger.info("CREATING_USER_CLASS",
-                                 f"Creating UserClass for User:{chatid}.")
-                user = User(chatid, self.application_logfilehandler, self)
-                self.users.update({chatid: user})
-                return user
-            else:
-                self.logger.info("USING_CACHED_USER_CLASS",
-                                 f"Using cached UserClass for User:{chatid}.")
-                return self.users.get(chatid)
+        if chatid not in self.users:
+            self.logger.info("CREATING_USER_CLASS",
+                             f"Creating UserClass for User:{chatid}.")
+            user = User(chatid, self.application_logfilehandler, self)
+
+            if chatid in self.banned_users:
+                user.is_banned = True
+
+            self.users.update({chatid: user})
+            return user
         else:
-            return None
+            self.logger.info("USING_CACHED_USER_CLASS",
+                             f"Using cached UserClass for User:{chatid}.")
+            return self.users.get(chatid)
 
     def get_from_chatid(self, chatid: str) -> Union[User, None]:
         return self.users.get(chatid)
