@@ -20,7 +20,7 @@ PASSCODES = CONFIG["USER_PASSCODES"]
 
 # Example of usage:
 # --
-# in ../${rootDir} main.py:
+# in ../${rootDir}/main.py:
 
 # from bot import Bot
 # from stages.authenticate import Authenticate

@@ -23,7 +23,7 @@ ADMIN_CHATIDS = CONFIG["ADMIN_CHATIDS"]
 
 # Example of usage:
 # --
-# in ../${rootDir} main.py:
+# in ../${rootDir}/main.py:
 
 # from bot import Bot
 # from stages.admin import AdminConsole

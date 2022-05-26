@@ -59,7 +59,7 @@ NUMER_OF_OPTIONS_PER_QUESTION = len(QUESTIONS.keys())
 
 # Example of usage:
 # --
-# in ../${rootDir} main.py:
+# in ../${rootDir}/main.py:
 
 # from bot import Bot
 # from stages.guardian import Guardian
