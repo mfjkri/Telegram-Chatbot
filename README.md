@@ -517,7 +517,13 @@ Before running the chatbot,
 # 2) STATES & STAGES
 
 Throughout this project, you will see a lot of references to stages and states.\
-Below is a brief explanation for them however it does not cover the implementation details behind them.
+
+Simply said, a `state` is the smallest unit of "building block" while a `stage` is a group of states (or nested stages even) with its inner functionality abstracted away for either reduced code duplication or means of organization.
+
+With the use of stages you can reuse common functionality between stages, see [in-built stages](#21-inbuilt-stages).\
+You can also create custom stages to have unique functionality, see [custom stages](src/stages/).
+
+Below is a more in-depth description however you might find it still insufficient. It is best to dive in and [try it yourself](#22-creating-a-custom-stage).
 
 - A `state` is a condition of outcome that the `User` is in.
 
