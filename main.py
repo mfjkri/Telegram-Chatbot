@@ -24,6 +24,33 @@ BOT_TOKEN = CONFIG["BOT_TOKENS"]["LIVE"] if LIVE_MODE else CONFIG["BOT_TOKENS"][
 
 
 def main():
+    """
+    Entry point for the project.
+
+    These classes must always be initialized regardless of stages used:
+        Log, Bot, UserManager
+
+
+    The chatbot flow is determined by flow of stages below.
+
+        StageA -> StageB -> StageC -> StageEND
+
+    To set the flow from one stage to another:
+
+        in constructor or initializer of stages (
+            stage_id      = stageA
+            next_stage_id = stageB
+        )
+
+    To set terminating stage: 
+
+        in constructor or initializer (
+            stage_id      = stageC
+            next_stage_id = stageEND
+        )
+
+    :return: None
+    """
     setup()
 
     # Main application logger
@@ -126,7 +153,7 @@ def main():
 def setup():
     """
     Creates the neccesary runtime directories if missing (logs).
-    If FRESH_START is True, then it will clear existing files (logs/* and users/*).
+    If FRESH_START is True, then it will clear existing files from last run (logs/* and users/*).
 
     :return: None
     """
