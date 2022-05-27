@@ -6,6 +6,7 @@ import logging
 import random
 import shutil
 import datetime
+import argparse
 import string
 
 from bot import Bot
@@ -14,16 +15,9 @@ from stages.ctf import Ctf
 from utils.log import Log
 from utils import utils
 
-# 0 = max, max = 26
-NUMBER_OF_FAKE_USERS = 200
-# will be capped depending on total number of challenges
-MIN_CHALLENGES_SOLVED = 6
 MAX_ATTEMPTS = 3
 
 MAX_NUMBER_OF_USERS = len(string.ascii_uppercase)
-NUMBER_OF_FAKE_USERS = NUMBER_OF_FAKE_USERS if NUMBER_OF_FAKE_USERS else MAX_NUMBER_OF_USERS
-FAKE_NAMES = [f"PERSON {char}" for char in string.ascii_uppercase[:min(
-    NUMBER_OF_FAKE_USERS, MAX_NUMBER_OF_USERS)]]
 FAKE_GROUPS = ["Alpha", "Beta", "Charlie"]
 LOG_FILE = os.path.join("logs", "fake_run.log")
 
@@ -170,13 +164,13 @@ class Emulator:
             chatids.append(chatid)
             return chatid
 
-    def run(self) -> None:
+    def run(self, min_challenges_solved: int = 5) -> None:
         total_no_of_challenges = len(self.challenges)
         for name, user in self.fake_users.items():
             user: User = user
 
             challenges_to_consider = random.randint(
-                min(MIN_CHALLENGES_SOLVED, total_no_of_challenges), total_no_of_challenges)
+                min(min_challenges_solved, total_no_of_challenges), total_no_of_challenges)
 
             attempted_challenges = []
 
@@ -219,11 +213,14 @@ class Emulator:
                     self.attempt_challenge(name, challenge_number)
 
 
-def main():
+def main(number_of_users: int = 26, min_challenges_solve: int = 5):
     setup()
 
-    emulator: Emulator = Emulator(FAKE_NAMES)
-    emulator.run()
+    print(number_of_users, min_challenges_solve)
+    fake_names = [f"PERSON {char}" for char in string.ascii_uppercase[:min(
+        number_of_users, MAX_NUMBER_OF_USERS)]]
+    emulator: Emulator = Emulator(fake_names)
+    emulator.run(min_challenges_solve)
 
 
 def setup():
@@ -240,4 +237,13 @@ def setup():
 
 
 if __name__ == "__main__":
-    main()
+    PARSER = argparse.ArgumentParser()
+
+    PARSER.add_argument(
+        "-n", type=int, help="Number of users to generate. Max is 26. If set to 0 then max will be taken.", default=0, required=False)
+    PARSER.add_argument(
+        "-c", type=int, help="Number of challenges to attempt per user.", default=5, required=False)
+
+    ARGS = PARSER.parse_args()
+
+    main(ARGS.n or MAX_NUMBER_OF_USERS, ARGS.c)
