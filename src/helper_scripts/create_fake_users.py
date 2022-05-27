@@ -76,7 +76,7 @@ class Emulator:
             with open(user.log_file, 'w', encoding="utf-8") as log_file:
                 time = self.fast_forward_time(name, 5)
                 log_file.write(
-                    f"{time} [INFO] $CODE::CREATING_NEW_USER || User:{chatid} is a new user. Creating their files... ")
+                    f"{time} [INFO] $CODE::CREATING_NEW_USER || User:{chatid} is a new user. Creating their files...\n")
 
     def create_log_line(self, name: str, time: str, log: str) -> None:
         fake_user: User = self.fake_users.get(name)
