@@ -83,7 +83,7 @@ def main():
                       "- Do not attack or DoS the Telegram Chatbot.\n"\
                       "- Read about the <u>Computer Misuse and Cybersecurity Act</u> <a href='https://sso.agc.gov.sg//Act/CMA1993'>here</a>.\n\n"\
                       f"{MESSAGE_DIVIDER}"\
-                      "By pressing <i>Continue</i> you have read and agreed to conditions listed above."
+                      "By pressing <i>Accept</i> you have read and agreed to conditions listed above."
 
     def accept_disclaimer(update: Update, context: CallbackContext) -> USERSTATE:
         user: User = context.user_data.get("user")
@@ -95,7 +95,7 @@ def main():
         choice_text=disclaimer_text,
         choices=[
             {
-                "text": "Continue",
+                "text": "Accept",
                 "callback": accept_disclaimer
                 # "callback": lambda *args: bot.proceed_next_stage(STAGE_DISCLAIMER, STAGE_CTF, *args)
             },
