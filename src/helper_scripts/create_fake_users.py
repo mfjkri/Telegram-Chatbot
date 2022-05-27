@@ -164,13 +164,13 @@ class Emulator:
             chatids.append(chatid)
             return chatid
 
-    def run(self, min_challenges_solved: int = 5) -> None:
+    def run(self, min_challenges_attempted: int = 5) -> None:
         total_no_of_challenges = len(self.challenges)
         for name, user in self.fake_users.items():
             user: User = user
 
             challenges_to_consider = random.randint(
-                min(min_challenges_solved, total_no_of_challenges), total_no_of_challenges)
+                min(min_challenges_attempted, total_no_of_challenges), total_no_of_challenges)
 
             attempted_challenges = []
 
@@ -213,14 +213,15 @@ class Emulator:
                     self.attempt_challenge(name, challenge_number)
 
 
-def main(number_of_users: int = 26, min_challenges_solve: int = 5):
+def main(number_of_users: int = 26, min_challenges_attempted: int = 5):
     setup()
 
-    print(number_of_users, min_challenges_solve)
+    print(
+        f"Creating {number_of_users} users with a minimum of {min_challenges_attempted} challenge attempts")
     fake_names = [f"PERSON {char}" for char in string.ascii_uppercase[:min(
         number_of_users, MAX_NUMBER_OF_USERS)]]
     emulator: Emulator = Emulator(fake_names)
-    emulator.run(min_challenges_solve)
+    emulator.run(min_challenges_attempted)
 
 
 def setup():
