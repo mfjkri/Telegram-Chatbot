@@ -80,13 +80,16 @@ if __name__ == "__main__":
                     [
                         "# ---------------------------------- RUNTIME --------------------------------- #\n"
                         "RUNTIME:\n"
-                        "    LIVE_MODE: false\n",
-                        "    FRESH_START: false\n\n",
+                        "  LIVE_MODE: false\n",
+                        "  FRESH_START: false\n\n",
 
-                        "# -------------------------------- BOT TOKENS -------------------------------- #\n",
+                        "# -------------------------------- BOT CONFIG -------------------------------- #\n",
                         "BOT_TOKENS:\n",
                         "  LIVE: TOKEN_HERE\n",
                         "  TEST: TOKEN_HERE\n\n",
+
+                        "BOT:\n",
+                        "  REMOVE_INLINE_KEYBOARD_MARKUP: False\n\n",
 
                         "# ------------------------------ USER PASSCODES ------------------------------ #\n"
                         "USER_PASSCODES:\n",
