@@ -244,10 +244,15 @@ class Bot(object):
         callbacks, keyboard = [], [[]]
 
         for idx, choice in enumerate(choices):
+            def callback_wrapper(update: Update, context: CallbackContext, choice: dict = choice) -> USERSTATE:
+                query = update.callback_query
+                query.answer()
+                return choice["callback"](update, context)
+
             if choices_per_row and idx % choices_per_row == 0:
                 keyboard.append([])
             callbacks.append(CallbackQueryHandler(
-                choice["callback"], pattern=f"^{choice_label}:choice:{idx}$", run_async=True))
+                callback_wrapper, pattern=f"^{choice_label}:choice:{idx}$", run_async=True))
             keyboard[-1].append(InlineKeyboardButton(choice["text"],
                                 callback_data=f"{choice_label}:choice:{idx}"))
 
