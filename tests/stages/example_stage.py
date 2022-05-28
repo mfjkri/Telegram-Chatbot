@@ -215,9 +215,6 @@ class Example(object):
         return self.load_menu(update, context)
 
     def color_selected(self, color: str, update: Update, context: CallbackContext) -> USERSTATE:
-        query = update.callback_query
-        query.answer()
-
         user: User = context.user_data.get("user")
         example_state = user.data.get("example_state")
 

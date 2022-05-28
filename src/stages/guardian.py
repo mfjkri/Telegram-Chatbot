@@ -182,9 +182,6 @@ class Guardian(object):
     def option_selected(self,
                         update: Update, context: CallbackContext,
                         question_number: int, option_selected: str) -> USERSTATE:
-        query = update.callback_query
-        query.answer()
-
         user: User = context.user_data.get("user")
         guardian_state = user.data.get("guardian_state")
 
@@ -192,11 +189,12 @@ class Guardian(object):
         user.save_user_to_file()
 
         if question_number < TOTAL_QUESTIONS - 1:
-            self.bot.edit_or_reply_message(
-                update, context,
-                "💭 Loading next question..."
-            )
-            time.sleep(0.25)
+            if not self.bot.behavior_remove_inline_markup:
+                self.bot.edit_or_reply_message(
+                    update, context,
+                    "💭 Loading next question..."
+                )
+                time.sleep(0.25)
             return self.bot.proceed_next_stage(
                 current_stage_id=f"choose:guardian:qn:{question_number}",
                 next_stage_id=f"choose:guardian:qn:{question_number + 1}",
@@ -214,7 +212,8 @@ class Guardian(object):
 
     def intro_view(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query
-        query.answer()
+        if query:
+            query.answer()
 
         user: User = context.user_data.get("user")
         guardian_state = user.data.get("guardian_state")
