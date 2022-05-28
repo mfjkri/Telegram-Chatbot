@@ -694,15 +694,25 @@ class Bot(object):
 
         answer_query = telegram.CallbackQuery.answer
 
-        def override_answer(query: CallbackQuery, *args) -> None:
+        def override_answer(query: CallbackQuery,
+                            keep_message: Union[bool, str] = False,
+                            do_nothing: bool = False,
+                            *args) -> None:
             chatid = str(query.message.chat_id)
             user: User = self.users.users.get(chatid)
             if query.id not in user.answered_callback_queries:
                 if self.behavior_remove_inline_markup:
                     try:
-                        query.message.edit_reply_markup()
-                    except:
-                        pass
+                        if not do_nothing:
+                            if keep_message:
+                                if keep_message is True:
+                                    query.message.edit_reply_markup()
+                                else:
+                                    query.message.edit_text(keep_message)
+                            else:
+                                query.message.edit_text("💭 Loading...")
+                    except Exception as e:
+                        self.logger.error(False, e)
                 answer_query(query, *args)
                 user.answered_callback_queries.append(query.id)
         telegram.CallbackQuery.answer = override_answer

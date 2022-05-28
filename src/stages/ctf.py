@@ -158,7 +158,7 @@ class Ctf(object):
     def exit_ctf(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query
         if query:
-            query.answer()
+            query.answer(keep_message="-")
 
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
@@ -353,7 +353,7 @@ class Ctf(object):
 
     def reveal_hint(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query
-        query.answer()
+        query.answer(do_nothing=True)
 
         query_info = query.data.split('_')[-1].split(':')
         hint_number, challenge_number = query_info
@@ -397,8 +397,10 @@ class Ctf(object):
         return self.check_answer(update, context, challenge_number, choice.lower())
 
     def submit_answer(self, update: Update, context: CallbackContext) -> USERSTATE:
+        is_first_attempt = update.callback_query.message.text.find('❌') == -1
+
         query = update.callback_query
-        query.answer()
+        query.answer(keep_message=is_first_attempt)
 
         challenge_number = int(query.data.split('_')[-1])
 
@@ -406,7 +408,7 @@ class Ctf(object):
         user.logger.info(f"USER_CTF_SUBMIT_{challenge_number}",
                          f"User:{user.chatid} is submitting answer for Challenge {challenge_number}")
 
-        if query.message.text.find('❌') == -1:
+        if is_first_attempt:
             if not self.bot.behavior_remove_inline_markup:
                 query.message.edit_reply_markup()
 
