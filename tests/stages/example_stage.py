@@ -158,7 +158,8 @@ class Example(object):
                     "Select Color", callback_data="example_prompt_color")],
                 [InlineKeyboardButton(
                     "Exit Example 👋", callback_data="example_exit")]
-            ])
+            ]),
+            reply_message=True
         )
         return self.MENU
 
