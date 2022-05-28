@@ -694,12 +694,12 @@ class Bot(object):
         if self.behavior_remove_inline_markup:
             answer_query = telegram.CallbackQuery.answer
 
-            def override_answer(query: CallbackQuery) -> None:
+            def override_answer(query: CallbackQuery, *args) -> None:
                 try:
                     query.message.edit_reply_markup()
                 except:
                     pass
-                answer_query(query)
+                answer_query(query, *args)
             telegram.CallbackQuery.answer = override_answer
 
     def __new__(cls, *_):
