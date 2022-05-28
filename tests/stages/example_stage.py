@@ -106,6 +106,8 @@ class Example(object):
                         self.prompt_question, pattern="^example_prompt_question$", run_async=True),
                     CallbackQueryHandler(
                         self.prompt_color_selection, pattern="^example_prompt_color$", run_async=True),
+                    CallbackQueryHandler(
+                        self.exit_example, pattern="^example_exit$", run_async=True),
                 ]
             }
         )
@@ -154,6 +156,8 @@ class Example(object):
                     "Attempt Question", callback_data="example_prompt_question")],
                 [InlineKeyboardButton(
                     "Select Color", callback_data="example_prompt_color")],
+                [InlineKeyboardButton(
+                    "Exit Example 👋", callback_data="example_exit")]
             ])
         )
         return self.MENU
