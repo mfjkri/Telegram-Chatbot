@@ -93,10 +93,13 @@ If you are running any other OS such as **MacOS**, you will have to build the pr
      LIVE_MODE: false
      FRESH_START: true
 
-   # -------------------------------- BOT TOKENS -------------------------------- #
+   # -------------------------------- BOT CONFIG -------------------------------- #
    BOT_TOKENS:
      LIVE: BOT_TOKEN
      TEST: BOT_TOKEN
+
+   BOT:
+     REMOVE_INLINE_KEYBOARD_MARKUP: True
 
    # ------------------------------ USER PASSCODES ------------------------------ #
    USER_PASSCODES:
@@ -129,10 +132,13 @@ RUNTIME:
   LIVE_MODE: false
   FRESH_START: true
 
-# -------------------------------- BOT TOKENS -------------------------------- #
+# -------------------------------- BOT CONFIG -------------------------------- #
 BOT_TOKENS:
   LIVE: BOT_TOKEN
   TEST: BOT_TOKEN
+
+BOT:
+  REMOVE_INLINE_KEYBOARD_MARKUP: True
 
 # ------------------------------ USER PASSCODES ------------------------------ #
 USER_PASSCODES:
@@ -160,6 +166,10 @@ LOG_USER_TO_APP_LOGS: false
 
   **BOT_TOKENS:LIVE** is the token to connect to the Telegram Bot used for release day.\
   **BOT_TOKENS:TEST** is the token to connect to the Telegram Bot used during development.
+
+- **`BOT`**:
+
+  If **REMOVE_INLINE_KEYBOARD_MARKUP** is set to `true` then the bot will remove InlineKeyboardMarkup for its previous message everytime an InlineKeyboardButton is pressed (handled through the query.answer callback that is called after the event is triggered). This is to prevent users from using old menu buttons however can cause visual confusion to user due to multiple updates to dislay messages (first Remove keyboard-markup then update message content to new text).
 
 - **`USER_PASSCODES`**:
 
