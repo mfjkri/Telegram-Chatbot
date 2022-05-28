@@ -691,16 +691,21 @@ class Bot(object):
         self.stages_handlers = []
 
         self.behavior_remove_inline_markup = BOT_CONFIG["REMOVE_INLINE_KEYBOARD_MARKUP"]
-        if self.behavior_remove_inline_markup:
-            answer_query = telegram.CallbackQuery.answer
 
-            def override_answer(query: CallbackQuery, *args) -> None:
-                try:
-                    query.message.edit_reply_markup()
-                except:
-                    pass
+        answer_query = telegram.CallbackQuery.answer
+
+        def override_answer(query: CallbackQuery, *args) -> None:
+            chatid = str(query.message.chat_id)
+            user: User = self.users.users.get(chatid)
+            if query.id not in user.answered_callback_queries:
+                if self.behavior_remove_inline_markup:
+                    try:
+                        query.message.edit_reply_markup()
+                    except:
+                        pass
                 answer_query(query, *args)
-            telegram.CallbackQuery.answer = override_answer
+                user.answered_callback_queries.append(query.id)
+        telegram.CallbackQuery.answer = override_answer
 
     def __new__(cls, *_):
         if not hasattr(cls, 'instance'):

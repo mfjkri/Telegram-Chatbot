@@ -23,6 +23,7 @@ class User():
         self.data = None
         self.is_banned = False
         self.UsersManager = UsersManager
+        self.answered_callback_queries = []
 
         self.directory = os.path.join(users_directory, chatid)
         user_exists = os.path.isdir(self.directory)
