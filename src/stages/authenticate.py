@@ -168,10 +168,6 @@ class Authenticate(object):
             )
 
     def confirm_identify(self, name: str, group: str, update: Update, context: CallbackContext) -> USERSTATE:
-        query = update.callback_query
-        if query:
-            query.answer()
-
         context.user_data.update({"pending_name": name})
         context.user_data.update({"pending_group": group})
 
@@ -197,8 +193,7 @@ class Authenticate(object):
 
     def accept_identity(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query
-        if query:
-            query.answer()
+        query.answer()
 
         pending_name = context.user_data.pop("pending_name")
 
@@ -223,8 +218,7 @@ class Authenticate(object):
 
     def decline_identity(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query
-        if query:
-            query.answer()
+        query.answer()
 
         pending_name = context.user_data.pop("pending_name")
         context.user_data.pop("pending_group")
@@ -241,8 +235,7 @@ class Authenticate(object):
 
     def confirm_choice(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query
-        if query:
-            query.answer()
+        query.answer()
 
         user: User = context.user_data.get("user")
         user.logger.info(f"USER_AUTHENTICATE_CONFIRM_IDENTITY",
