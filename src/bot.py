@@ -487,11 +487,15 @@ class Bot(object):
             user.update_user_data(
                 data_label, context.user_data[f"input:{data_label}"])
 
-            self.edit_or_reply_message(
-                update, context,
-                "💭 Loading..."
-            )
-            time.sleep(0.25)
+            # If we are already removing buttons, then there
+            # is no need to have an extra visual delay
+            # to make the change obvious
+            if not self.behavior_remove_inline_markup:
+                self.edit_or_reply_message(
+                    update, context,
+                    "💭 Loading..."
+                )
+                time.sleep(0.25)
 
             return prompt_exit(update, context)
 
