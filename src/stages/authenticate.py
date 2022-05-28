@@ -88,6 +88,10 @@ class Authenticate(object):
             )
 
     def exit_authenticate(self, update: Update, context: CallbackContext) -> USERSTATE:
+        query = update.callback_query
+        if query and query:
+            query.answer()
+
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
             next_stage_id=self.next_stage_id,

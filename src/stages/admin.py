@@ -84,6 +84,10 @@ class AdminConsole(object):
             return self.exit_admin(update, context)
 
     def exit_admin(self, update: Update, context: CallbackContext) -> USERSTATE:
+        query = update.callback_query
+        if query:
+            query.answer()
+
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
             next_stage_id=self.next_stage_id,

@@ -7,7 +7,7 @@ import functools
 import operator
 
 from telegram import (InlineKeyboardButton,
-                      InlineKeyboardMarkup, ParseMode, Update)
+                      InlineKeyboardMarkup, Update)
 from telegram.ext import (CallbackQueryHandler,
                           MessageHandler, CallbackContext, Filters)
 
@@ -156,6 +156,10 @@ class Ctf(object):
         return self.load_menu(update, context)
 
     def exit_ctf(self, update: Update, context: CallbackContext) -> USERSTATE:
+        query = update.callback_query
+        if query:
+            query.answer()
+
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
             next_stage_id=self.next_stage_id,

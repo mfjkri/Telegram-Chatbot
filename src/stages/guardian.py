@@ -115,6 +115,10 @@ class Guardian(object):
         return self.intro_view(update, context)
 
     def exit_guardian(self, update: Update, context: CallbackContext) -> USERSTATE:
+        query = update.callback_query
+        if query:
+            query.answer()
+
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
             next_stage_id=self.next_stage_id,
