@@ -206,7 +206,9 @@ class Bot(object):
             )
         else:
             if user:
-                context.bot.send_message(user.chatid, text)
+                context.bot.send_message(user.chatid, text,
+                                         reply_markup=reply_markup,
+                                         parse_mode=parse_mode)
             else:
                 self.logger.error("UNKNOWN_TARGET_USER",
                                   "Unknown user to reply message to.")
