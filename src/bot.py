@@ -1,3 +1,4 @@
+import os
 import time
 from typing import (Any, Callable, Union)
 
@@ -11,22 +12,9 @@ import utils.utils as utils
 from user import UserManager, User
 from utils.log import Log
 
+BOT_CONFIG = utils.load_yaml_file(os.path.join("config.yaml"))["BOT"]
 USERSTATE = int
 MESSAGE_DIVIDER = "—————————————————————————\n"
-
-
-answer_query = telegram.CallbackQuery.answer
-
-
-def override_answer(query: CallbackQuery) -> None:
-    try:
-        query.message.edit_reply_markup()
-    except:
-        pass
-    answer_query(query)
-
-
-telegram.CallbackQuery.answer = override_answer
 
 
 class Bot(object):
@@ -592,6 +580,9 @@ class Bot(object):
                               f"Unknown user has entered a message with no valid update")
 
     def conversation_exit(self, update: Update, context: CallbackContext) -> USERSTATE:
+        query = update.callback_query
+        query.answer()
+
         user: User = context.user_data.get("user")
         if user:
             user.logger.info("USER_REACHED_END_OF_CONVERSATION",
@@ -689,6 +680,18 @@ class Bot(object):
 
         self.users = UserManager()
         self.stages_handlers = []
+
+        self.behavior_remove_inline_markup = BOT_CONFIG["REMOVE_INLINE_KEYBOARD_MARKUP"]
+        if self.behavior_remove_inline_markup:
+            answer_query = telegram.CallbackQuery.answer
+
+            def override_answer(query: CallbackQuery) -> None:
+                try:
+                    query.message.edit_reply_markup()
+                except:
+                    pass
+                answer_query(query)
+            telegram.CallbackQuery.answer = override_answer
 
     def __new__(cls, *_):
         if not hasattr(cls, 'instance'):
