@@ -1,7 +1,8 @@
 import time
 from typing import (Any, Callable, Union)
 
-from telegram import (InlineKeyboardButton,
+import telegram
+from telegram import (CallbackQuery, InlineKeyboardButton,
                       InlineKeyboardMarkup, ParseMode, ReplyMarkup, Update)
 from telegram.ext import (Updater, CommandHandler, ConversationHandler,
                           CallbackQueryHandler, MessageHandler, CallbackContext, Filters)
@@ -12,6 +13,20 @@ from utils.log import Log
 
 USERSTATE = int
 MESSAGE_DIVIDER = "—————————————————————————\n"
+
+
+answer_query = telegram.CallbackQuery.answer
+
+
+def override_answer(query: CallbackQuery) -> None:
+    try:
+        query.message.edit_reply_markup()
+    except:
+        pass
+    answer_query(query)
+
+
+telegram.CallbackQuery.answer = override_answer
 
 
 class Bot(object):
