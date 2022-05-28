@@ -142,28 +142,32 @@ class Example(object):
         self.MENU = self.bot.unpack_states(self.states)[0]
 
     def load_menu(self, update: Update, context: CallbackContext) -> USERSTATE:
-        query = update.callback_query
-        if query:
-            query.answer()
-
         user: User = context.user_data.get("user")
         example_state = user.data.get("example_state")
 
-        color = example_state.get("color", "undefined")
-        score = example_state.get("score")
+        color: str = example_state.get("color", "undefined")
+        score: int = example_state.get("score", 0)
+
+        keyboard = [
+            [InlineKeyboardButton(
+                "Select Color", callback_data="example_prompt_color")],
+            [InlineKeyboardButton(
+                "Exit Example 👋", callback_data="example_exit")]
+        ]
+
+        if score == 0:
+            keyboard.insert(
+                0,
+                [InlineKeyboardButton(
+                    "Attempt Question",
+                    callback_data="example_prompt_question"
+                )],
+            )
 
         self.bot.edit_or_reply_message(
             update=update, context=context,
-            text=f"Hi!\n\nColor: <b>{color}</b>\nScore: <b>{score}</b>",
-            reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton(
-                    "Attempt Question", callback_data="example_prompt_question")],
-                [InlineKeyboardButton(
-                    "Select Color", callback_data="example_prompt_color")],
-                [InlineKeyboardButton(
-                    "Exit Example 👋", callback_data="example_exit")]
-            ]),
-            reply_message=True
+            text=f"Hi!\n\nScore: <b>{score}</b>\nColor: <b>{color}</b>",
+            reply_markup=InlineKeyboardMarkup(keyboard)
         )
         return self.MENU
 
@@ -171,21 +175,11 @@ class Example(object):
         query = update.callback_query
         query.answer()
 
-        user: User = context.user_data.get("user")
-        example_state = user.data.get("example_state")
-
-        if example_state["score"] == 0:
-            return self.bot.proceed_next_stage(
-                current_stage_id=self.stage_id,
-                next_stage_id=self.QUESTION_STAGE,
-                update=update, context=context
-            )
-        else:
-            self.bot.edit_or_reply_message(
-                update, context,
-                text=f"You have already completed this question!"
-            )
-            return self.load_menu(update, context)
+        return self.bot.proceed_next_stage(
+            current_stage_id=self.stage_id,
+            next_stage_id=self.QUESTION_STAGE,
+            update=update, context=context
+        )
 
     def prompt_color_selection(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query
@@ -224,10 +218,5 @@ class Example(object):
 
         example_state["color"] = color
         user.save_user_to_file()
-
-        self.bot.edit_or_reply_message(
-            update, context,
-            text=f"You have selected the option: {color}!"
-        )
 
         return self.load_menu(update, context)
