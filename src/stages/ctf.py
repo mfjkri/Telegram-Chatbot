@@ -455,6 +455,8 @@ class Ctf(object):
         text_body += f"<b><u>LEADERBOARD (TOP {MAX_LEADERBOARD_VIEW})</u></b>\n\n"
 
         if len(self.leaderboard) > 0:
+            updated_leaderboard = False
+
             for idx, placing_array in enumerate(self.leaderboard):
                 total_score, top_users = placing_array
 
@@ -472,7 +474,14 @@ class Ctf(object):
                         placing_text = "⭐️ <b>You</b>," + placing_text
                         ctf_user_placing = idx
                     else:
-                        placing_text += top_user.data.get("username")
+                        top_user_name = top_user.data.get("username")
+
+                        # Leaderboard is stale due to admin modifying in-memory data
+                        if top_user_name == '' and not updated_leaderboard:
+                            updated_leaderboard = True
+                            self.update_leaderboard()
+
+                        placing_text += top_user_name
                         placing_text += ", "
 
                 # Gets rid of the trailing ,\n
@@ -481,6 +490,9 @@ class Ctf(object):
 
                 text_body += placing_text
                 text_body += f"  |  <u>{total_score} points</u>\n\n"
+
+            if updated_leaderboard:
+                text_body += "\n\n⚠️ OUTDATED. Re-open Leaderboard from Menu. ⚠️\n\n"
         else:
             text_body += "🦗 It appears no one has gotten any points yet...\n\n"
 
