@@ -346,7 +346,7 @@ class Bot(object):
                            additional_text: str = None,
                            use_last_saved: bool = True, allow_update: bool = True) -> str:
         """
-        In-built function to create a stage that collects a user info.
+        In-built function to create a stage that collects a user info (string).
         stage_id of the stage created is of the format {collect:DATA_LABEL}
 
         :param data_label: The information label of the data collected from user (for example: name). Will also be appended in the stage_id. (Required)

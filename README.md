@@ -679,7 +679,7 @@ def some_state_or_stage(update : Update, context : CallbackContext) -> USERSTATE
 
 ### 2.1.3) **get_info_from_user**
 
-Similar to `get_input_from_user` except that the input is a user information and is stored globally in the userdata. No additional logic implementation is required.
+Similar to `get_input_from_user` except that the input is a user information (string) and is stored globally in the userdata. No additional logic implementation is required.
 
 ```python
 def format_number_input(input_str : Union[str, bool]):
