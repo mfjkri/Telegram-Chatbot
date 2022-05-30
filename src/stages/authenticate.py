@@ -78,7 +78,7 @@ class Authenticate(object):
 
         user: User = context.user_data.get("user")
 
-        if user.data.get("name") is not None:
+        if user.data.get("name") != "":
             return self.exit_authenticate(update, context)
         else:
             return self.bot.proceed_next_stage(
