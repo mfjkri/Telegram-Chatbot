@@ -14,6 +14,7 @@ ADMIN_CHATIDS = CONFIG["ADMIN_CHATIDS"]
 # --------------------------------- FEATURES --------------------------------- #
 # - Delete Username
 # - Delete User
+# - Delete All Users
 # - Ban User
 # - Unban User
 
@@ -109,6 +110,8 @@ class AdminConsole(object):
                     CallbackQueryHandler(
                         self.prompt_delete_user, pattern="^admin_delete_user$", run_async=True),
                     CallbackQueryHandler(
+                        self.prompt_delete_all_users, pattern="^admin_delete_all_users$", run_async=True),
+                    CallbackQueryHandler(
                         self.prompt_ban_user, pattern="^admin_ban_user$", run_async=True),
                     CallbackQueryHandler(
                         self.prompt_unban_user, pattern="^admin_unban_user$", run_async=True),
@@ -128,6 +131,22 @@ class AdminConsole(object):
             input_label="admin_reset_user",
             input_text="Enter the User ID to delete:",
             input_handler=self.reset_user
+        )
+
+        self.DELETE_ALL_USERS_STAGE = self.bot.let_user_choose(
+            "admin:delete_all_users",
+            choice_text="Are you sure you want to delete <b>ALL</b>"
+                        " users data?",
+            choices=[
+                {
+                    "text": "Yes",
+                    "callback": lambda update, context: self.reset_all_users(update, context)
+                },
+                {
+                    "text": "No",
+                    "callback": lambda update, context: self.load_admin(update, context)
+                }
+            ]
         )
 
         self.BAN_USER_STAGE = self.bot.get_input_from_user(
@@ -159,6 +178,8 @@ class AdminConsole(object):
                 [InlineKeyboardButton(
                     "Delete User", callback_data="admin_delete_user")],
                 [InlineKeyboardButton(
+                    "Delete All Users", callback_data="admin_delete_all_users")],
+                [InlineKeyboardButton(
                     "Ban User", callback_data="admin_ban_user")],
                 [InlineKeyboardButton(
                     "Unban User", callback_data="admin_unban_user")],
@@ -186,6 +207,16 @@ class AdminConsole(object):
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
             next_stage_id=self.DELETE_USER_STAGE,
+            update=update, context=context
+        )
+
+    def prompt_delete_all_users(self, update: Update, context: CallbackContext) -> USERSTATE:
+        query = update.callback_query
+        query.answer()
+
+        return self.bot.proceed_next_stage(
+            current_stage_id=self.stage_id,
+            next_stage_id=self.DELETE_ALL_USERS_STAGE,
             update=update, context=context
         )
 
@@ -225,6 +256,13 @@ class AdminConsole(object):
 
         if target_user:
             target_user.reset_user()
+
+        return self.load_admin(update, context)
+
+    def reset_all_users(self, update: Update, context: CallbackContext) -> USERSTATE:
+        for chatid, user in self.user_manager.users.items():
+            user: User = user
+            user.reset_user()
 
         return self.load_admin(update, context)
 
