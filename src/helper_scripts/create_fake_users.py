@@ -213,7 +213,7 @@ class Emulator:
                     self.attempt_challenge(name, challenge_number)
 
 
-def main(number_of_users: int = 26, min_challenges_attempted: int = 5):
+def main(number_of_users: int = 26, min_challenges_attempted: int = 5) -> None:
     setup()
 
     print(
@@ -224,7 +224,7 @@ def main(number_of_users: int = 26, min_challenges_attempted: int = 5):
     emulator.run(min_challenges_attempted)
 
 
-def setup():
+def setup() -> None:
     utils.get_dir_or_create(os.path.join("logs"))
     users_directory = os.path.join("users")
 

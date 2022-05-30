@@ -42,7 +42,7 @@ def message_top_3() -> None:
             )
 
 
-def main():
+def main() -> None:
     message_top_3()
 
 
