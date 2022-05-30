@@ -56,6 +56,8 @@ def convert_int_to_word(n):
 
 
 def main(challenge_yaml_file: Union[bool, str], no_of_challenges: int = 4) -> None:
+    clear_current_challenges()
+
     template_challenge_data = utils.load_yaml_file(
         challenge_yaml_file) if challenge_yaml_file and os.path.isfile(challenge_yaml_file) else DEFAULT_CHALLENGE_DATA
 
@@ -74,6 +76,14 @@ def main(challenge_yaml_file: Union[bool, str], no_of_challenges: int = 4) -> No
         challenge_yaml_file = os.path.join(
             challenge_directory, "challenge.yaml")
         utils.dump_to_yaml_file(challenge_data, challenge_yaml_file)
+
+
+def clear_current_challenges() -> None:
+    for challenge_name in os.listdir(CHALLENGES_DIRECTORY):
+        challenge_directory = os.path.join(
+            CHALLENGES_DIRECTORY, challenge_name)
+        if os.path.isdir(challenge_directory):
+            shutil.rmtree(challenge_directory)
 
 
 if __name__ == "__main__":
