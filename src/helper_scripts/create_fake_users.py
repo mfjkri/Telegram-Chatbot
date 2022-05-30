@@ -19,7 +19,7 @@ MAX_ATTEMPTS = 3
 
 MAX_NUMBER_OF_USERS = len(string.ascii_uppercase)
 FAKE_GROUPS = ["Alpha", "Beta", "Charlie"]
-LOG_FILE = os.path.join("logs", "fake_run.log")
+LOG_FILE = os.path.join("logs", "create_fake_users.log")
 
 CONFIG = utils.load_yaml_file(os.path.join("config.yaml"))
 LIVE_MODE = CONFIG["RUNTIME"]["LIVE_MODE"]
