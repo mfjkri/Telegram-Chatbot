@@ -19,7 +19,7 @@ MAX_ATTEMPTS = 3
 
 MAX_NUMBER_OF_USERS = len(string.ascii_uppercase)
 FAKE_GROUPS = ["Alpha", "Beta", "Charlie"]
-LOG_FILE = os.path.join("logs", "create_fake_users.log")
+TEMP_LOG_FILE = os.path.join("logs", "create_fake_users.log")
 
 CONFIG = utils.load_yaml_file(os.path.join("config.yaml"))
 LIVE_MODE = CONFIG["RUNTIME"]["LIVE_MODE"]
@@ -46,7 +46,7 @@ class Emulator:
         self.logger: Log = Log(
             name=__name__,
             log_level=logging.DEBUG,
-            file_handle=LOG_FILE
+            file_handle=TEMP_LOG_FILE
         )
 
         self.bot: Bot = Bot()
@@ -77,6 +77,9 @@ class Emulator:
                 time = self.fast_forward_time(name, 5)
                 log_file.write(
                     f"{time} [INFO] $CODE::CREATING_NEW_USER || User:{chatid} is a new user. Creating their files...\n")
+
+        self.logger.quit()
+        os.remove(TEMP_LOG_FILE)
 
     def create_log_line(self, name: str, time: str, log: str) -> None:
         fake_user: User = self.fake_users.get(name)
@@ -233,8 +236,8 @@ def setup() -> None:
         if os.path.isdir(user_directory):
             shutil.rmtree(user_directory)
 
-    if os.path.isfile(LOG_FILE):
-        os.remove(LOG_FILE)
+    if os.path.isfile(TEMP_LOG_FILE):
+        os.remove(TEMP_LOG_FILE)
 
 
 if __name__ == "__main__":
