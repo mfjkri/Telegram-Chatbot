@@ -43,12 +43,14 @@ if __name__ == "__main__":
         os.chdir(prjDir)
 
         # -------------------- Creating directories -------------------- #
-        log.info("Creating logs and archives directory...")
+        log.info("Creating exports and logs directories...")
         get_dir_or_create("exports", True)
         get_dir_or_create("logs", True)
 
+        log.info("Creating users directory...")
         users_directory = get_dir_or_create("users", True)
 
+        log.info("Creating ctf/challenges directories...")
         ctf_directory = get_dir_or_create("ctf", True)
         get_dir_or_create(os.path.join(ctf_directory, "challenges"), True)
 
