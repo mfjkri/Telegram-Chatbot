@@ -68,8 +68,8 @@ class Authenticate(object):
         self.init_users_data()
 
     def init_users_data(self) -> None:
-        self.user_manager.add_data_field("name", None)
-        self.user_manager.add_data_field("group", None)
+        self.user_manager.add_data_field("name", "")
+        self.user_manager.add_data_field("group", "")
 
     def entry_authenticate(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query

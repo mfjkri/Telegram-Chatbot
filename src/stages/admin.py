@@ -259,7 +259,7 @@ class AdminConsole(object):
                            None] = self.user_manager.get_from_chatid(chatid)
 
         if target_user:
-            target_user.data.update({"username": None})
+            target_user.data.update({"username": ""})
             target_user.save_user_to_file()
 
         return self.load_admin(update, context)
