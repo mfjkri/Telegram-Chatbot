@@ -30,27 +30,18 @@ DEFAULT_CHALLENGE_DATA = {
     "one_try": False,
     "multiple_choices": None,
 
-    "hints": [
-        {
-            "text": "Lorem ipsum dolor sit amet.",
-            "deduction": 10
-        },
-        {
-            "text": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Veniam, distinctio?",
-            "deduction": 10
-        }
-    ],
+    "hints": [],
 
     "files": ["https://www.youtube.com/watch?v=dQw4w9WgXcQ"]
 }
 
 
-def convert_int_to_word(n):
+def convert_int_to_word(n) -> str:
     try:
         return NUM_TO_WORDS[n]
     except KeyError:
         try:
-            return NUM_TO_WORDS[n - n % 10] + NUM_TO_WORDS[n % 10].lower()
+            return NUM_TO_WORDS[n - n % 10] + NUM_TO_WORDS[n % 10]
         except KeyError:
             return "Number out of range"
 
@@ -64,10 +55,23 @@ def main(challenge_yaml_file: Union[bool, str], no_of_challenges: int = 4) -> No
     for challenge_number in range(1, no_of_challenges + 1):
         challenge_data = copy.deepcopy(template_challenge_data)
         challenge_name = convert_int_to_word(challenge_number)
+        challenge_answer = f"flag@{challenge_name.lower()}"
+
         challenge_data.update({
             "description": f"This is Challenge {challenge_name}. {template_challenge_data['description']}",
-            "answer": f"flag@{challenge_name.lower()}",
-            "points": template_challenge_data["points"] + (challenge_number * 10)
+            "answer": challenge_answer,
+            "points": template_challenge_data["points"] + (challenge_number * 10),
+
+            "flags": [
+                {
+                    "text": "Lorem ipsum dolor sit amet.",
+                    "deduction": 10 + challenge_number * 5
+                },
+                {
+                    "text": f"Lorem ipsum, dolor sit {challenge_answer} elit. Veniam, distinctio?",
+                    "deduction": 10 + challenge_number * 5
+                }
+            ]
 
         })
 
