@@ -62,7 +62,7 @@ def main(challenge_yaml_file: Union[bool, str], no_of_challenges: int = 4) -> No
             "answer": challenge_answer,
             "points": template_challenge_data["points"] + (challenge_number * 10),
 
-            "flags": [
+            "hints": [
                 {
                     "text": "Lorem ipsum dolor sit amet.",
                     "deduction": 10 + challenge_number * 5
