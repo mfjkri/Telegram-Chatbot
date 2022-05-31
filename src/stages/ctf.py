@@ -534,7 +534,10 @@ class Ctf(object):
         effective_score = challenge_points
 
         if is_multiple_choices:
-            effective_score = effective_score / number_of_attempts
+            if can_attempt:
+                effective_score = effective_score / number_of_attempts
+            else:
+                effective_score = effective_score / (number_of_attempts - 1)
         effective_score = int(max(effective_score - total_points_deduction, 0))
 
         if not is_challenge_completed:
@@ -543,35 +546,36 @@ class Ctf(object):
             if challenge["time_based"]:
                 pass
                 # keyboard.append([InlineKeyboardButton("Refresh points", callback_data=f"ctf_refresh_challenge_{challenge_number}")])
-            if can_attempt and not is_multiple_choices:
-                keyboard.append([InlineKeyboardButton(
-                    "Submit answer", callback_data=f"ctf_submit_answer_{challenge_number}")])
-            # Creates the RevealHint and  SubmitFlag buttons if challenge is not completed
+            if can_attempt:
+                if not is_multiple_choices:
+                    keyboard.append([InlineKeyboardButton(
+                        "Submit answer", callback_data=f"ctf_submit_answer_{challenge_number}")])
+                # Creates the RevealHint and  SubmitFlag buttons if challenge is not completed
 
-            if is_multiple_choices:
+                else:
+                    idx = 0
+                    for t_idx, choice in enumerate(challenge["multiple_choices"]):
+                        if idx % 2 == 0:
+                            keyboard.append([])
+                        idx += 1
+
+                        keyboard[-1].append(
+                            InlineKeyboardButton(
+                                f"{choice}", callback_data=f"ctf_select_choice_{t_idx}:{challenge_number}")
+                        )
+
                 idx = 0
-                for t_idx, choice in enumerate(challenge["multiple_choices"]):
-                    if idx % 2 == 0:
-                        keyboard.append([])
-                    idx += 1
+                for t_idx, hint in enumerate(challenge["hints"]):
+                    # Only create a button for RevealHint if the hint is not yet revealed
+                    if not hint["used"]:
+                        if idx % 2 == 0:
+                            keyboard.append([])
+                        idx += 1
 
-                    keyboard[-1].append(
-                        InlineKeyboardButton(
-                            f"{choice}", callback_data=f"ctf_select_choice_{t_idx}:{challenge_number}")
-                    )
-
-            idx = 0
-            for t_idx, hint in enumerate(challenge["hints"]):
-                # Only create a button for RevealHint if the hint is not yet revealed
-                if not hint["used"]:
-                    if idx % 2 == 0:
-                        keyboard.append([])
-                    idx += 1
-
-                    keyboard[-1].append(
-                        InlineKeyboardButton(
-                            f"""Hint {t_idx+1} (-{hint["deduction"]} points)""", callback_data=f"ctf_view_hint_{t_idx}:{challenge_number}")
-                    )
+                        keyboard[-1].append(
+                            InlineKeyboardButton(
+                                f"""Hint {t_idx+1} (-{hint["deduction"]} points)""", callback_data=f"ctf_view_hint_{t_idx}:{challenge_number}")
+                        )
         else:
             text_body += f"You earned <u>{effective_score} points</u>\n\n"
             # if is_multiple_choices and total_points_deduction > 0:
@@ -617,13 +621,13 @@ class Ctf(object):
                 text_body += "\n\n"
 
             if hints_exist:
-                if is_challenge_completed and challenge["total_hints_deduction"] > 0:
+                if (is_challenge_completed or not can_attempt) and challenge["total_hints_deduction"] > 0:
                     text_body += "Hints used:\n"
                 for t_idx, hint in enumerate(challenge["hints"]):
                     is_hint_used = hint["used"]
 
                     # Displays the hints depending on whether they have been used else placeholder text is used
-                    if not is_challenge_completed or is_hint_used:
+                    if (not is_challenge_completed and can_attempt) or is_hint_used:
                         text_body += MESSAGE_DIVIDER
                         text_body += f"Hint {t_idx+1}: "
 
