@@ -440,7 +440,8 @@ class Ctf(object):
         else:
             return self.SUBMIT_CHALLENGE
 
-    def view_leaderboard(self, update: Update, context: CallbackContext) -> USERSTATE:
+    def view_leaderboard(self, update: Update, context: CallbackContext,
+                         overflow_checker: bool = False) -> USERSTATE:
         query = update.callback_query
         query.answer()
 
@@ -455,8 +456,6 @@ class Ctf(object):
         text_body += f"<b><u>LEADERBOARD (TOP {MAX_LEADERBOARD_VIEW})</u></b>\n\n"
 
         if len(self.leaderboard) > 0:
-            updated_leaderboard = False
-
             for idx, placing_array in enumerate(self.leaderboard):
                 total_score, top_users = placing_array
 
@@ -477,9 +476,10 @@ class Ctf(object):
                         top_user_name = top_user.data.get("username")
 
                         # Leaderboard is stale due to admin modifying in-memory data
-                        if top_user_name == '' and not updated_leaderboard:
-                            updated_leaderboard = True
+                        if top_user_name == '':
                             self.update_leaderboard()
+                            if not overflow_checker:
+                                return self.view_leaderboard(update, context, True)
 
                         placing_text += top_user_name
                         placing_text += ", "
@@ -490,9 +490,6 @@ class Ctf(object):
 
                 text_body += placing_text
                 text_body += f"  |  <u>{total_score} points</u>\n\n"
-
-            if updated_leaderboard:
-                text_body += "\n\n⚠️ OUTDATED. Re-open Leaderboard from Menu. ⚠️\n\n"
         else:
             text_body += "🦗 It appears no one has gotten any points yet...\n\n"
 
@@ -760,8 +757,9 @@ class Ctf(object):
             for _, user in self.users_manager.users.items():
                 ctf_state = user.data.get("ctf_state")
                 user_total_score = str(ctf_state["total_score"])
+                user_name = user.data.get("username")
 
-                if int(user_total_score) > 0:
+                if int(user_total_score) > 0 and user_name != '':
                     if user_total_score not in dict_scoring_list:
                         dict_scoring_list.update({user_total_score: []})
 
