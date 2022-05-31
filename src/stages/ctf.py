@@ -158,7 +158,7 @@ class Ctf(object):
     def exit_ctf(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query
         if query:
-            query.answer(keep_message="-")
+            query.answer()
 
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
