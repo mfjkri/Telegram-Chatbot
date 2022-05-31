@@ -476,7 +476,7 @@ class Ctf(object):
                         top_user_name = top_user.data.get("username")
 
                         # Leaderboard is stale due to admin modifying in-memory data
-                        if top_user_name == '':
+                        if not top_user_name:  # meaning top_user_name is either False or ''
                             self.update_leaderboard()
                             if not overflow_checker:
                                 return self.view_leaderboard(update, context, True)

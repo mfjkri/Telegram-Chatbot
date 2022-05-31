@@ -98,7 +98,7 @@ def update_leaderboard_webpage(leaderboard: list) -> None:
 
         for user in top_users:
             if idx < MAX_LEADERBOARD_VIEW:
-                if not user["name"] or user["name"] == "":
+                if not user["name"]:
                     user["name"] = f"""User:{user["chatid"]}"""
                 file_lines.append(
                     f"\"{idx}\"" + " : {" +

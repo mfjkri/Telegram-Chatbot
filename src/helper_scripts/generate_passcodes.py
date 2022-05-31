@@ -53,7 +53,7 @@ def generate_passcodes(new_users: list) -> None:
 
         random_passcode = ""
 
-        while random_passcode == "" or random_passcode in current_passcodes:
+        while not random_passcode or random_passcode in current_passcodes:
             # string.ascii_uppercase - (I, L, O, U, V)
             possible_letters = "ABCDEFGHJKMNPQRSTWXYZ"
             letter = random.choices(possible_letters, k=1)
