@@ -52,12 +52,12 @@ def update_leaderboard(top_placing: int = MAX_LEADERBOARD_VIEW) -> None:
                             else:
                                 user_teams = []
 
-                            if user_name and user_name != '':
+                            if user_name:
                                 scoring_dict[user_total_score].append(
                                     {
                                         "name": user_name,
-                                        "phone number": user_phonenumber if (user_phonenumber and user_phonenumber != '') else "no_phonenumber_found",
-                                        "email": user_email if (user_email and user_email != '') else "no_email_found",
+                                        "phone number": user_phonenumber if user_phonenumber else "no_phonenumber_found",
+                                        "email": user_email if user_email else "no_email_found",
                                         "teams": '+'.join(user_teams if len(user_teams) > 0 else ["no_team_found"]),
                                         "chatid": chatid,
                                         "last_score_update": ctf_state.get("last_score_update")

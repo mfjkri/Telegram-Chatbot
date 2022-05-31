@@ -383,7 +383,7 @@ class Bot(object):
             user: User = context.user_data.get("user")
             saved_data = user.data.get(data_label)
 
-            if saved_data and saved_data != "" and use_last_saved:
+            if saved_data and use_last_saved:
                 if allow_update:
                     user.logger.info("USER_DATA_INPUT_UPDATE_PROMPT",
                                      f"User:{user.chatid} is choosing whether to update input({data_label})")

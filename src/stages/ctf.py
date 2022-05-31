@@ -291,7 +291,7 @@ class Ctf(object):
             ctf_menu_msg += "You have attempted / solved all the challenges!\n\n"
         else:
             username = user.data.get("username")
-            if username and username != "":
+            if username:
                 ctf_menu_msg += f"Welcome {username}:\n\n"
             ctf_menu_msg += f"""🔥 Capture The Flag (CTF) Challenges\n\n"""
 
@@ -759,7 +759,7 @@ class Ctf(object):
                 user_total_score = str(ctf_state["total_score"])
                 user_name = user.data.get("username")
 
-                if int(user_total_score) > 0 and user_name != '':
+                if int(user_total_score) > 0 and user_name:
                     if user_total_score not in dict_scoring_list:
                         dict_scoring_list.update({user_total_score: []})
 
