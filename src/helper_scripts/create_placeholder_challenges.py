@@ -5,6 +5,8 @@ import os
 import shutil
 import argparse
 import copy
+import random
+import string
 from typing import Union
 
 from utils import utils
@@ -56,6 +58,27 @@ def main(challenge_yaml_file: Union[bool, str], no_of_challenges: int = 4) -> No
         challenge_data = copy.deepcopy(template_challenge_data)
         challenge_name = convert_int_to_word(challenge_number)
         challenge_answer = f"flag@{challenge_name.lower()}"
+
+        if challenge_data["multiple_choices"]:
+            answers = []
+
+            for _ in range(0, 3):
+                letter = random.choices(string.ascii_letters, k=3)
+                numbers = random.choices(string.digits, k=2)
+                numbers[:] = [str(x) for x in numbers]
+
+                random_answer = letter + numbers
+                random.shuffle(random_answer)
+
+                random_answer = "flag@" + ''.join(random_answer)
+                answers.append(random_answer)
+
+            answers.append(challenge_answer)
+            random.shuffle(answers)
+
+            challenge_data.update({
+                "multiple_choices": answers
+            })
 
         challenge_data.update({
             "description": f"This is Challenge {challenge_name}. {template_challenge_data['description']}",
