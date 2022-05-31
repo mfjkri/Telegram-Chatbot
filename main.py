@@ -95,7 +95,9 @@ def main():
     # Stage collect:username
     def format_name_input(input_str: Union[str, bool]):
         if input_str is not True:
-            return utils.format_input_str(input_str, True, "' ")
+            return utils.format_input_str(input_str, True)
+        elif input_str is True:
+            return "Only alphanumeric characters"
     bot.get_info_from_user(  # This stage id is collect:username
         data_label="username",
         next_stage_id=STAGE_DISCLAIMER,
