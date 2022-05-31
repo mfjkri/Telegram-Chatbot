@@ -60,25 +60,72 @@ from user import (User, UserManager)
 
 
 class Example(object):
+    # Initializer function
     def __init__(self, bot: Bot):
+        # Store a reference to Bot and user singletons
         self.bot: Bot = bot
         self.user_manager: UserManager = UserManager()
 
+        # Initializes
         self.stage = None
         self.states = []
         self.stage_id = None
         self.next_stage_id = None
 
         bot.add_custom_stage_handler(self)
+
         self.init_users_data()
 
     def init_users_data(self) -> None:
+        """
+        Appends any user data used by this stage into the main user data
+        using the UserManager which will handle all the initializing and actual loading/saving.
+
+        The data name and init value is passed.
+
+        The general guideline for stages is to bundle all its relevant data into
+        a "state" dict like below and set an init value for each key entry as well.
+        """
         self.user_manager.add_data_field("example_state", {
             "score": 0,
             "color": None,
         })
 
     def entry_example(self, update: Update, context: CallbackContext) -> USERSTATE:
+        """
+        This is the function called when another stage/state is proceeding to it:
+
+            in some other stage or state
+
+            return self.bot.proceed_next_stage(
+                current_stage_id = some_other_stage_id,
+                next_stage_id = THIS_STAGE_ID,
+                update = update, context = context
+            )
+
+
+        The two parameters @update and @context is always assured to exist.
+        update will contain information about the trigger leading to this stage
+        context will be a "shared" dict passed between all callbacks
+            you can find the user class in this
+
+                user: User = context.user_data.get("user")
+                
+
+        For safety, always check in the entry function whether the previous action
+        was an InlineKeyboardButton which will have a CallbackQuery that needs to be answered
+        Hence this few lines of code should always be at the top of your stages entry function:
+
+            query = update.callback_query
+            if query:
+                query.answer()
+
+
+        Normally what hapens after depends on your stage but the most common example,
+        is to just call some loader function to display your stage menu.
+
+            return self.load_menu(update, context)
+        """
         query = update.callback_query
         if query:
             query.answer()
