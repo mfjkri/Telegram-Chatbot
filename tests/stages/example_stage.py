@@ -62,7 +62,7 @@ from user import (User, UserManager)
 class Example(object):
     # Initializer function
     def __init__(self, bot: Bot):
-        # Store a reference to Bot and user singletons
+        # Store a reference to Bot and UserManager singletons
         self.bot: Bot = bot
         self.user_manager: UserManager = UserManager()
 
@@ -78,13 +78,15 @@ class Example(object):
 
     def init_users_data(self) -> None:
         """
-        Appends any user data used by this stage into the main user data
+        Appends any userdata used by this stage into the main userdata dict
         using the UserManager which will handle all the initializing and actual loading/saving.
 
-        The data name and init value is passed.
+        The data label and init value is passed.
 
         The general guideline for stages is to bundle all its relevant data into
         a "state" dict like below and set an init value for each key entry as well.
+
+        This is to prevent naming conflicts for the data label with other stages.
         """
         self.user_manager.add_data_field("example_state", {
             "score": 0,
@@ -110,7 +112,7 @@ class Example(object):
             you can find the user class in this
 
                 user: User = context.user_data.get("user")
-                
+
 
         For safety, always check in the entry function whether the previous action
         was an InlineKeyboardButton which will have a CallbackQuery that needs to be answered
@@ -133,6 +135,28 @@ class Example(object):
         return self.load_menu(update, context)
 
     def exit_example(self, update: Update, context: CallbackContext) -> USERSTATE:
+        """
+        This is a function called internally (within this stage).
+        It will never be called from outside this stage by default.
+
+        This function is not required but is recommended to be used.
+        This ensures that your stage only has only "exit".
+
+        However if your stage design does require there to be multiple exits,
+        then you can handle it accordingly and leave this function like this.
+
+        Exiting the stage from within it:
+
+            in some callback function:
+
+            def process_user_input(self, update : Update, context : CallbackContext) -> USERSTATE:
+                query = update.callback_query
+                query.answer()
+
+                # --- 
+
+                return self.exit_example(update,context)
+        """
         query = update.callback_query
         if query:
             query.answer()
