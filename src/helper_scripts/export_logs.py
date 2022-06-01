@@ -21,11 +21,23 @@ Exporting Process:
             source venv/bin/activate
     
     2) Running the script
-        python src/helper_scripts/export_logs.py --export "example_export"
+        python src/helper_scripts/export_logs.py -o "example_export"
         
-        Argument is the name of the exported CSV file (it will be created if not found).
+        The argument "-o" is the name of the exported CSV file (it will be created if not found).
         Do not include the file extension in the argument
         The argument is optional and defaults to "exported_logs"
+        
+        There are also two other OPTIONAL arguments that can be used to specify the user chatid or 
+        user groups that you want to export data for.
+        
+            If specified, then it will only export logs for the users that 
+            match the specifiers provided.
+            
+            -u Specifies user chatid (can only export for one user)
+            -g Specifies user group (will export logs for every user belonging to that group)
+            
+            Please ensure that you type in the arguments carefully. The specifiers 
+            argument are not case-sensitive unlike the output file name argument.
     
     3) TADA! We have the exported CSV file :)
 -------------------------------------------------------------------------------------
@@ -113,11 +125,14 @@ def extract_data_type_from_line(data_type: str, log_line: str) -> Union[str, Non
     return matches.group(0) if matches else None
 
 
-def get_users() -> dict:
+def get_users(chatid_specificer: str, group_specifier: str) -> dict:
     users = {}
 
     users_directory = os.path.join("users")
     for chatid in os.listdir(users_directory):
+        if chatid_specificer and chatid.lower() != chatid_specificer.lower():
+            continue
+
         user_directory = os.path.join(users_directory, chatid)
         if os.path.isdir(user_directory):
             user_data_yaml = os.path.join(user_directory, f"{chatid}.yaml")
@@ -129,6 +144,9 @@ def get_users() -> dict:
 
                 if user_data:
                     name, group = user_data.get("name"), user_data.get("group")
+
+                    if group_specifier and group.lower() != group_specifier.lower():
+                        continue
 
                     with open(user_log_file, 'r') as stream:
                         user_logs = list((line.rstrip()
@@ -150,8 +168,8 @@ def get_users() -> dict:
     return users
 
 
-def export_log_files(export_file_name: str) -> None:
-    users = get_users()
+def export_log_files(export_file_name: str, chatid_specificer: str, group_specifier: str) -> None:
+    users = get_users(chatid_specificer, group_specifier)
 
     cached_scores = {}  # A useful mapping dictionary to cache new score for next iterations
 
@@ -233,8 +251,17 @@ if __name__ == "__main__":
 
     PARSER = argparse.ArgumentParser()
     PARSER.add_argument(
-        "--export", type=str, help="Exports the log file for visualisation.", default="", required=False)
+        "-o", type=str,
+        help="File name to output exported logs to. Defaults to exported_logs.",
+        default="exported_logs", required=False)
+    PARSER.add_argument(
+        "-u", type=str,
+        help="Specify a chatid to export logs from.",
+        default="", required=False)
+    PARSER.add_argument(
+        "-g", type=str,
+        help="Specify a group to export logs from.",
+        default="", required=False)
     ARGS = PARSER.parse_args()
 
-    # exported_logs is the default name if you don't use the argument variable
-    export_log_files(ARGS.export or "exported_logs")
+    export_log_files(ARGS.o, ARGS.u, ARGS.g)
