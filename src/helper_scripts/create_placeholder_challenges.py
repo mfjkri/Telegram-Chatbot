@@ -54,6 +54,8 @@ def main(challenge_yaml_file: Union[bool, str], no_of_challenges: int = 4) -> No
     template_challenge_data = utils.load_yaml_file(
         challenge_yaml_file) if challenge_yaml_file and os.path.isfile(challenge_yaml_file) else DEFAULT_CHALLENGE_DATA
 
+    assert template_challenge_data, "The input challenge.yaml is not of the right format."
+
     for challenge_number in range(1, no_of_challenges + 1):
         challenge_data = copy.deepcopy(template_challenge_data)
         challenge_name = convert_int_to_word(challenge_number)
