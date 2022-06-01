@@ -107,7 +107,6 @@ class Authenticate(object):
             entry=self.entry_authenticate,
             exit=self.exit_authenticate,
             states={
-                # TODO : Add States and stages for verification process
                 "IDENTITY_CONFIRMATION": [
                     CallbackQueryHandler(
                         self.confirm_choice, pattern=f"^auth_accept_identity$", run_async=True),
