@@ -12,8 +12,8 @@ CONFIG = utils.load_yaml_file(os.path.join("config.yaml"))
 ADMIN_CHATIDS = CONFIG["ADMIN_CHATIDS"]
 
 # --------------------------------- FEATURES --------------------------------- #
-# - Delete Username
 # - Delete Me
+# - Delete Username
 # - Delete User
 # - Delete All Users
 # - Ban User
@@ -107,9 +107,9 @@ class AdminConsole(object):
             states={
                 "MENU": [
                     CallbackQueryHandler(
-                        self.prompt_delete_user_name, pattern="^admin_delete_user_name$", run_async=True),
-                    CallbackQueryHandler(
                         self.prompt_delete_me, pattern="^admin_delete_me$", run_async=True),
+                    CallbackQueryHandler(
+                        self.prompt_delete_user_name, pattern="^admin_delete_user_name$", run_async=True),
                     CallbackQueryHandler(
                         self.prompt_delete_user, pattern="^admin_delete_user$", run_async=True),
                     CallbackQueryHandler(
@@ -177,9 +177,9 @@ class AdminConsole(object):
             f"Welcome to the Admin Console",
             reply_markup=InlineKeyboardMarkup([
                 [InlineKeyboardButton(
-                    "Delete User's Username", callback_data="admin_delete_user_name")],
-                [InlineKeyboardButton(
                     "Delete Me", callback_data="admin_delete_me")],
+                [InlineKeyboardButton(
+                    "Delete User's Username", callback_data="admin_delete_user_name")],
                 [InlineKeyboardButton(
                     "Delete User", callback_data="admin_delete_user")],
                 [InlineKeyboardButton(
@@ -195,6 +195,15 @@ class AdminConsole(object):
 
         return self.MENU
 
+    def prompt_delete_me(self, update: Update, context: CallbackContext) -> USERSTATE:
+        query = update.callback_query
+        query.answer()
+
+        user: User = context.user_data.get("user")
+        user.reset_user()
+
+        return self.load_admin(update, context)
+
     def prompt_delete_user_name(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query
         query.answer()
@@ -204,15 +213,6 @@ class AdminConsole(object):
             next_stage_id=self.DELETE_USER_NAME_STAGE,
             update=update, context=context
         )
-
-    def prompt_delete_me(self, update: Update, context: CallbackContext) -> USERSTATE:
-        query = update.callback_query
-        query.answer()
-
-        user: User = context.user_data.get("user")
-        user.reset_user()
-
-        return self.load_admin(update, context)
 
     def prompt_delete_user(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query
