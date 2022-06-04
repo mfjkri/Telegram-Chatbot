@@ -722,6 +722,18 @@ def some_state_or_stage(update : Update, context : CallbackContext) -> USERSTATE
 
 &nbsp;
 
+### Prequisites:
+
+Creating custom stages will require you to have knowledge about working with [`python-telegram-bot`](https://github.com/python-telegram-bot/python-telegram-bot/)
+
+Do read more and understand the [examples](https://github.com/python-telegram-bot/python-telegram-bot/tree/master/examples) before continuing.\
+The relevant examples are: [ConversationBot](https://github.com/python-telegram-bot/python-telegram-bot/blob/master/examples/conversationbot.py) and [ConversationBot2](https://github.com/python-telegram-bot/python-telegram-bot/blob/master/examples/conversationbot2.py).
+
+In our application, `USERSTATE` is a created data-type with an integral value to signify the state of the CallbackHandler.\
+`GENDER, PHOTO, LOCATION, BIO ` (found in [ConversationBot](https://github.com/python-telegram-bot/python-telegram-bot/blob/master/examples/conversationbot.py) are examples of USERSTATE in our application.
+
+&nbsp;
+
 ### Custom stage (`Example`):
 
 [src/stages/example_stage.py](src/stages/)
