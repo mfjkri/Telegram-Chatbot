@@ -5,9 +5,9 @@
      - [**setup.py**](#111-setuppy)
      - [Building manually](#112-building-manually)
    - [1.2 Configuring **config.yaml**](#12-configuring-configyaml)
-   - [1.2 Adding CTF Challenges](#13-adding-ctf-challenges)
-   - [1.3 Running Chatbot](#14-running-the-chatbot)
-   - [1.3 Using runtime helper_scripts](#)
+   - [1.3 Adding CTF Challenges](#13-adding-ctf-challenges)
+   - [1.4 Running Chatbot](#14-running-the-chatbot)
+   - [1.5 Using runtime helper_scripts](#15-using-runtime-helperscripts)
 2. [States & Stages](#2-states--stages)
    - [2.1 Inbuilt stages](#21-inbuilt-stages):
      - [let_user_choose](#211-letuserchoose)
@@ -519,6 +519,15 @@ Before running the chatbot,
    ```
 
 &nbsp;
+
+---
+
+&nbsp;
+
+## 1.5) Using runtime helper_scripts
+
+`Warning: Do not use the helper scripts unless you know what you are doing.`\
+`Some scripts can cause irrevisble changes to your project.`
 
 ---
 
