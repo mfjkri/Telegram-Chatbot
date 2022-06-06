@@ -470,11 +470,9 @@ files: []
 
 ## 1.4) Running the Chatbot
 
-Before running the chatbot,
+1. Ensure [`config.yaml`](config.yaml) is configured correctly.
 
-1. Please ensure that you have configured `config.yaml` correctly:
-
-   Refer to [this](#12-configuring-configyaml) if you have not done so.
+   Please refer to [this](#12-configuring-configyaml) if you have not done so.
 
 2. Run the project.
 
@@ -506,7 +504,7 @@ Before running the chatbot,
      $(venv) python .\main.py
      ```
 
-   Or if you don't wish to activate venv:
+   Or if you don't wish or can't get venv activated:
 
    ```bash
    # cd ${rootDir}
@@ -529,6 +527,27 @@ Before running the chatbot,
 `Warning: Do not use the helper scripts unless you know what you are doing.`\
 `Some scripts can cause irrevisble changes to your project.`
 
+Helper scripts are scripts that are designed to be used either before, during or after a session of [running](main.py) the Telegram Bot.
+
+They help to make your life easier by executing common tasks or tasks that are repetitive and can be automated or even help you out in testing and debugging of the bot.
+
+Scripts that are ran before a session include:
+
+- [`create_fake_users`](src/helper_scripts/create_fake_users.py)
+- [`create_placeholder_challenges`](src/helper_scripts/create_placeholder_challenges.py)
+- [`generate_passcodes`](src/helper_scripts/generate_passcodes.py)
+
+Scripts that are ran during a session include:
+
+- [`leaderboard`](src/helper_scripts/leaderboard.py)
+
+Scripts that are ran after a session include:
+
+- [`notify_winners`](src/helper_scripts/notify_winners.py)
+- [`export_logs`](src/helper_scripts/export_logs.py)
+
+&nbsp;
+
 Below is a brief description of what each script does and how to use them.
 
 - [`ban_all_users`](/src/helper_scripts/ban_all_users.py):
@@ -541,7 +560,7 @@ Below is a brief description of what each script does and how to use them.
 
   ```bash
   # Replace python with your system python keyword
-  # Replace the forward slash with backslash for Windows"
+  # Replace the forward slash with backslash for Windows
   $ python src/helper_scripts/ban_all_users.py
   ```
 
@@ -551,7 +570,7 @@ Below is a brief description of what each script does and how to use them.
 
   It is useful for populating the leaderboard during testing and also for creating test export log files (more on that below).
 
-  Currently the fake users are only configure to attempt and do CTF Challenges and not any other stages that might be used like [Guardian](src/stages/guardian.py).
+  Currently the fake users are only configured to attempt CTF Challenges and not any other stages such as [Guardian](src/stages/guardian.py).
 
   Arguments:
 
@@ -568,6 +587,8 @@ Below is a brief description of what each script does and how to use them.
   Usage:
 
   ```bash
+  # Replace python with your system python keyword
+  # Replace the forward slash with backslash for Windows
   $ python src/helper_scripts/create_fake_users.py -n 20 -c 4
   ```
 
@@ -577,7 +598,7 @@ Below is a brief description of what each script does and how to use them.
 
 - [`create_placeholder_challenges`](/src/helper_scripts/create_placeholder_challenges.py):
 
-  This script will create placeholder challenges either based on the inbuilt challenge.yaml template or using a provided file.
+  This script will create placeholder challenges either based on the in-built challenge.yaml template or using a provided file.
 
   It is useful for testing purposes and removing the need to update challenges manually everytime when testing a new feature.
 
@@ -598,6 +619,8 @@ Below is a brief description of what each script does and how to use them.
   Usage:
 
   ```bash
+  # Replace python with your system python keyword
+  # Replace the forward slash with backslash for Windows
   $ python src/helper_scripts/create_placeholder_challenges.py -n 10
   ```
 
@@ -607,9 +630,9 @@ Below is a brief description of what each script does and how to use them.
 
 - [`export_logs`](/src/helper_scripts/export_logs.py):
 
-  This script will generate a CSV file that can be imported into Excel for visualization of users data.
+  This script will generate a [CSV](https://en.wikipedia.org/wiki/Comma-separated_values) file that can be imported into Excel for visualization of users data.
 
-  It will only include user actions that are relevant to their scoring such as:
+  It will only extract from the user logs, actions that are relevant to their scoring such as:
 
   - Viewing of hints
   - Attempting the challenge
@@ -631,6 +654,8 @@ Below is a brief description of what each script does and how to use them.
   Usage:
 
   ```bash
+  # Replace python with your system python keyword
+  # Replace the forward slash with backslash for Windows
   $ python src/helper_scripts/export_logs.py -o "example_export"
   ```
 
