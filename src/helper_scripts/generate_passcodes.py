@@ -9,6 +9,25 @@ import argparse
 from datetime import datetime
 from utils.utils import load_yaml_file
 
+# ----------------------------- USING THIS SCRIPT ---------------------------- #
+# INPUT FILE EXAMPLE: userlist.txt
+"""
+Johnny Smith, GroupA
+Bobby Fisher, Group B
+Tom Hank
+Samantha Lee, Group A
+"""
+
+# In this example, Tom Hank will be assigned a group of "none"
+
+# Using script with example:
+# $ python src/helper_scripts/generate_passcodes.py -i path/to/userlist.txt
+
+# Now look in config.yaml.
+# You should find the newly generated passcodes for the names
+# in userlist.txt
+# ---------------------------------------------------------------------------- #
+
 
 def strip_string_constructors(s: str) -> str:
     return ''.join([char for char in s if char not in '",'])
@@ -103,14 +122,11 @@ def get_new_users_from_file(file_name: str) -> list:
 if __name__ == "__main__":
     PARSER = argparse.ArgumentParser()
     PARSER.add_argument(
-        "-i", type=str, help="Input file with users list.", default=None, required=False)
+        "-i", type=str,
+        help="Input file with users list.\n\n",
+        required=True)
     ARGS = PARSER.parse_args()
 
     generate_passcodes(
-        get_new_users_from_file(ARGS.i) if ARGS.i else [
-            ["Johnny Smith", "guest"],
-            ["Samantha Tan", "guest"],
-            ["Rock Lee", "member"],
-            "Sonya Anhak",
-        ]
+        get_new_users_from_file(ARGS.i)
     )
