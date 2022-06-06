@@ -529,6 +529,117 @@ Before running the chatbot,
 `Warning: Do not use the helper scripts unless you know what you are doing.`\
 `Some scripts can cause irrevisble changes to your project.`
 
+Below is a brief description of what each script does and how to use them.
+
+- [`ban_all_users`](/src/helper_scripts/ban_all_users.py):
+
+  This script will get all the existing users found in the [users directory](/users/) and add their chatids to the [banned_users.yaml](/users/banned_users.yaml) file. It will NOT DELETE their files, if you wish to do that, you will have to it manually.
+
+  It is useful for preventing users from an earlier session from joining in on a later session.
+
+  Usage:
+
+  ```bash
+  # Replace python with your system python keyword
+  # Replace the forward slash with backslash for Windows"
+  $ python src/helper_scripts/ban_all_users.py
+  ```
+
+- [`create_fake_users`](/src/helper_scripts/create_fake_users.py):
+
+  This script will generate fake users that will "attempt" and "complete" some of the existing CTF challenges.
+
+  It is useful for populating the leaderboard during testing and also for creating test export log files (more on that below).
+
+  Currently the fake users are only configure to attempt and do CTF Challenges and not any other stages that might be used like [Guardian](src/stages/guardian.py).
+
+  Arguments:
+
+  ```
+  $ python src/helper_scripts/create_fake_users.py -h
+  usage: create_fake_users.py [-h] [-n N] [-c C]
+
+  optional arguments:
+    -h, --help  show this help message and exit
+    -n N        Number of users to generate. Max is 26. If set to 0 then max will be taken.
+    -c C        Number of challenges to attempt per user.
+  ```
+
+  Usage:
+
+  ```bash
+  $ python src/helper_scripts/create_fake_users.py -n 20 -c 4
+  ```
+
+  `-n` argument is for the number of fake users to create. It is capped at 26.
+
+  `-c` argument is for the number of challenges to attempt per user. It will be capped at the number of current existing CTF challenges.
+
+- [`create_placeholder_challenges`](/src/helper_scripts/create_placeholder_challenges.py):
+
+  This script will create placeholder challenges either based on the inbuilt challenge.yaml template or using a provided file.
+
+  It is useful for testing purposes and removing the need to update challenges manually everytime when testing a new feature.
+
+  **Warning**: This script **WILL DELETE ALL** current challenges found in the [challenges directory](/ctf//challenges/).
+
+  Arguments:
+
+  ```
+  $ python src/helper_scripts/create_placeholder_challenges.py -h
+  usage: create_placeholder_challenges.py [-h] [-i I] [-n N]
+
+  optional arguments:
+    -h, --help  show this help message and exit
+    -i I        challenge.yaml input file as template
+    -n N        Number of challenges to generate. If omitted, defaults to 4.
+  ```
+
+  Usage:
+
+  ```bash
+  $ python src/helper_scripts/create_placeholder_challenges.py -n 10
+  ```
+
+  `-i` argument is for providing a custom challenge.yaml to use as template when creating the placeholder challenges.
+
+  `-n` argument is for the number of placeholder challenges to create.
+
+- [`export_logs`](/src/helper_scripts/export_logs.py):
+
+  This script will generate a CSV file that can be imported into Excel for visualization of users data.
+
+  It will only include user actions that are relevant to their scoring such as:
+
+  - Viewing of hints
+  - Attempting the challenge
+  - Completing the challenge
+
+  Arguments:
+
+  ```
+  $ python src/helper_scripts/export_logs.py -h
+  usage: export_logs.py [-h] [-o O] [-u U] [-g G]
+
+  optional arguments:
+    -h, --help  show this help message and exit
+    -o O        File name to output exported logs to. Defaults to exported_logs.
+    -u U        Specify a chatid to export logs from.
+    -g G        Specify a group to export logs from.
+  ```
+
+  Usage:
+
+  ```bash
+  $ python src/helper_scripts/export_logs.py -o "example_export"
+  ```
+
+  `-o` argument is for the exported csv filename. The ".csv" file extension should not be included in the argument
+
+  `-u` argument is for if you want to export logs from only one user (provide the chatid here).
+
+  `-g` argument is for if you want to export logs from only one user group (provide group name here).
+
 ---
 
 &nbsp;
