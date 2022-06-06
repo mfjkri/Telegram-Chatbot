@@ -113,7 +113,7 @@ def update_leaderboard_webpage(leaderboard: list) -> None:
                 idx += 1
 
     with open(leaderboard_json_file, 'w') as stream:
-        json.dump(leaderboard_json, stream)
+        json.dump(leaderboard_json, stream, indent=4)
 
 
 def update_leaderboard_file(scoring_list) -> None:
