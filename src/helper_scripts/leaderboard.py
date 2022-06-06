@@ -3,6 +3,7 @@ sys.path.append("src")
 
 import os
 import time
+import json
 
 from stages.ctf import MAX_LEADERBOARD_VIEW
 from stages.guardian import TEAMS_DESC
@@ -14,7 +15,7 @@ leaderboard_export_file = os.path.join("exports", "exported_leaderboard.csv")
 leaderboard_json_file = os.path.join("leaderboard.txt")
 
 
-def update_leaderboard(top_placing: int = MAX_LEADERBOARD_VIEW) -> None:
+def update_leaderboard() -> None:
     scoring_dict = {}
     scoring_list = []
 
@@ -38,9 +39,16 @@ def update_leaderboard(top_placing: int = MAX_LEADERBOARD_VIEW) -> None:
                             if user_total_score not in scoring_dict:
                                 scoring_dict.update({user_total_score: []})
 
-                            user_name = userdata.get("name")
-                            user_phonenumber = userdata.get("phone number")
-                            user_email = userdata.get("email")
+                            # In our curent version, we use username for display on leaderboard
+                            # instead of name, do change this according to your format
+                            # user_name = userdata.get("name")
+                            user_name = userdata.get("username")
+
+                            # Old userdata we used to collect
+                            # user_phonenumber = userdata.get("phone number")
+                            # user_email = userdata.get("email")
+
+                            # Teams is a userdata used by stage:guardian
                             user_teams = guardian_state.get("teams", [])
                             user_teams = user_teams if len(
                                 user_teams) > 0 else guardian_state.get("teams.history")
@@ -56,8 +64,8 @@ def update_leaderboard(top_placing: int = MAX_LEADERBOARD_VIEW) -> None:
                                 scoring_dict[user_total_score].append(
                                     {
                                         "name": user_name,
-                                        "phone number": user_phonenumber if user_phonenumber else "no_phonenumber_found",
-                                        "email": user_email if user_email else "no_email_found",
+                                        # "phone number": user_phonenumber if user_phonenumber else "no_phonenumber_found",
+                                        # "email": user_email if user_email else "no_email_found",
                                         "teams": '+'.join(user_teams if len(user_teams) > 0 else ["no_team_found"]),
                                         "chatid": chatid,
                                         "last_score_update": ctf_state.get("last_score_update")
@@ -78,8 +86,8 @@ def update_leaderboard(top_placing: int = MAX_LEADERBOARD_VIEW) -> None:
         [0, [
             {
                 "name": "",
-                "phone number": "",
-                "email": "",
+                # "phone number": "",
+                # "email": "",
                 "teams": "",
                 "chatid": "",
             }
@@ -90,7 +98,7 @@ def update_leaderboard(top_placing: int = MAX_LEADERBOARD_VIEW) -> None:
 
 
 def update_leaderboard_webpage(leaderboard: list) -> None:
-    file_lines = ["{\n"]
+    leaderboard_json = []
     idx = 0
 
     for placing_array in leaderboard:
@@ -98,31 +106,34 @@ def update_leaderboard_webpage(leaderboard: list) -> None:
 
         for user in top_users:
             if idx < MAX_LEADERBOARD_VIEW:
-                if not user["name"]:
-                    user["name"] = f"""User:{user["chatid"]}"""
-                file_lines.append(
-                    f"\"{idx}\"" + " : {" +
-                    f""""username" : "{user["name"]}","score" : {total_score}""" + "},\n"
-                )
+                leaderboard_json.append({
+                    "username": user["name"] or f"""User:{user["chatid"]}""",
+                    "score": total_score
+                })
                 idx += 1
 
-    file_lines[-1] = file_lines[-1][:-2] + "\n"
-    file_lines.append("}")
     with open(leaderboard_json_file, 'w') as stream:
-        stream.writelines(file_lines)
+        json.dump(leaderboard_json, stream)
 
 
 def update_leaderboard_file(scoring_list) -> None:
     lines_to_write = []
 
-    lines_to_write.append("Score,Name,Phone Number,Email,Guardian Team\n")
+    lines_to_write.append(
+        # "Score,Name,Phone Number,Email,Guardian Team\n"
+        "Score,Name,Guardian Team, ChatID\n"
+    )
 
     for idx, placing_array in enumerate(scoring_list):
         total_score, top_users = placing_array
 
         for user in top_users:
-            line = (f"""{total_score},{user["name"]},{user["phone number"]},{user["email"]},""" +
-                    f"""{user["teams"]}\n""")  # {user["chatid"]}
+            line = (f"""{total_score},"""
+                    f"""{user["name"]},"""
+                    f"""{user["teams"]},"""
+                    f"""{user["chatid"]}\n""")
+            # {user["phone number"]},\
+            # {user["email"]},\
 
             lines_to_write.append(line)
 
