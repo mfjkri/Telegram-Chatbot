@@ -11,8 +11,8 @@ from utils.utils import load_yaml_file
 
 users_directory = os.path.join("users")
 leaderboard_export_file = os.path.join("exports", "exported_leaderboard.csv")
-# os.getcwd(), "..", "Chatbot-Leaderboard", "leaderboard.txt"
-leaderboard_json_file = os.path.join("leaderboard.txt")
+# os.getcwd(), "..", "Chatbot-Leaderboard", "leaderboard.json"
+leaderboard_json_file = os.path.join("leaderboard.json")
 
 
 def update_leaderboard() -> None:
