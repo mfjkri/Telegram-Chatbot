@@ -710,7 +710,7 @@ Below is a more in-depth description however you might find it still insufficien
 - A `state` is a condition of outcome that the `User` is in.
 
   A state is identified as as a unique `integer` hence the user can only be ONE state at any given time.\
-  The actual integral value of the state has no meaning other than to signifiy the sequence of instantiation (order of which we defined the states).
+  The actual integral value of the state has no meaning other than to signify the sequence of instantiation (order of which we defined the states).
 
   When creating a state, we define a list of `callback handlers` to handle the next input provided by the user and decide on an outcome.
 
@@ -720,9 +720,9 @@ Below is a more in-depth description however you might find it still insufficien
      This handler is specific to the button meaning that the `pattern` of the CallbackQueryHandler must match the `callback_data` of the InlineKeyboardButton.
 
   2. `MessageHandler` - called when user sends a message \
-     This handler is non-specific and will be called for every message the user sends. Proper steps must be taken to prevent user from submitting data more than once.
+     This handler is non-specific and will be called for every message the user sends. Proper steps must be taken to to filter repeated user input (debounce check etc..).
 
-- A `stage` is a essentially a collection of states with added functionality to allow the creation of complex logic. Stages can also be nested within stages allowing the use of inbuilt stages in your custom stages.
+- A `stage` is essentially a collection of states with added functionality to allow the creation of complex logic. Stages can also be nested within stages allowing for the use of inbuilt stages in your custom stages.
 
   Each stage has:
 
@@ -746,7 +746,7 @@ Below is a more in-depth description however you might find it still insufficien
         }
       ```
 
-For a more detailed explanation, please refer to the [Implementation Documentation](www.google.com) page.
+For a more detailed explanation, please refer to the [Example Stage](examples/stages/example_stage.py) for an in-depth look on implementationd.
 
 ---
 
