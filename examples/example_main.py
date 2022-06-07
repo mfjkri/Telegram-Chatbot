@@ -2,10 +2,10 @@
 import sys
 sys.path.append("src")
 
-# Our custom stage is at ${rootDir}/tests/stages/example_stage.py
-# To be able to import it, we must append dir:${rootDir}/tests/ to path
+# Our custom stage is at ${rootDir}/examples/stages/example_stage.py
+# To be able to import it, we must append dir:${rootDir}/examples/ to path
 # For an actual main.py at ${rootDir}/main.py, there is no need to do this
-sys.path.append("tests")
+sys.path.append("examples")
 from stages.example_stage import Example
 
 import logging
