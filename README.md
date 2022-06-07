@@ -550,9 +550,9 @@ Scripts that are ran after a session include:
 
 Below is a brief description of what each script does and how to use them.
 
-- [`ban_all_users`](/src/helper_scripts/ban_all_users.py):
+- [`ban_all_users`](src/helper_scripts/ban_all_users.py):
 
-  This script will get all the existing users found in the [users directory](/users/) and add their chatids to the [banned_users.yaml](/users/banned_users.yaml) file. It will NOT DELETE their files, if you wish to do that, you will have to it manually.
+  This script will get all the existing users found in the [users directory](users/) and add their chatids to the [banned_users.yaml](users/banned_users.yaml) file. It will NOT DELETE their files, if you wish to do that, you will have to it manually.
 
   It is useful for preventing users from an earlier session from joining in on a later session.
 
@@ -564,7 +564,7 @@ Below is a brief description of what each script does and how to use them.
   $ python src/helper_scripts/ban_all_users.py
   ```
 
-- [`create_fake_users`](/src/helper_scripts/create_fake_users.py):
+- [`create_fake_users`](src/helper_scripts/create_fake_users.py):
 
   This script will generate fake users that will "attempt" and "complete" some of the existing CTF challenges.
 
@@ -596,13 +596,13 @@ Below is a brief description of what each script does and how to use them.
 
   `-c` argument is for the number of challenges to attempt per user. It will be capped at the number of current existing CTF challenges.
 
-- [`create_placeholder_challenges`](/src/helper_scripts/create_placeholder_challenges.py):
+- [`create_placeholder_challenges`](src/helper_scripts/create_placeholder_challenges.py):
 
   This script will create placeholder challenges either based on the in-built challenge.yaml template or using a provided file.
 
   It is useful for testing purposes and removing the need to update challenges manually everytime when testing a new feature.
 
-  **Warning**: This script **WILL DELETE ALL** current challenges found in the [challenges directory](/ctf//challenges/).
+  **Warning**: This script **WILL DELETE ALL** current challenges found in the [challenges directory](ctf//challenges/).
 
   Arguments:
 
@@ -628,7 +628,7 @@ Below is a brief description of what each script does and how to use them.
 
   `-n` argument is for the number of placeholder challenges to create.
 
-- [`export_logs`](/src/helper_scripts/export_logs.py):
+- [`export_logs`](src/helper_scripts/export_logs.py):
 
   This script will generate a [CSV](https://en.wikipedia.org/wiki/Comma-separated_values) file that can be imported into Excel for visualization of users data.
 
@@ -664,6 +664,33 @@ Below is a brief description of what each script does and how to use them.
   `-u` argument is for if you want to export logs from only one user (provide the chatid here).
 
   `-g` argument is for if you want to export logs from only one user group (provide group name here).
+
+- [`generate_passcodes`](src/helper_scripts/generate_passcodes.py):
+
+  This script will generate a list of passcodes from a list of user (names) and append the passcodes into [config.yaml](config.yaml).
+
+  This script is useful for getting unique passcodes for a list of users in bulk as doing it by-hand is time consuming and prone to mistakes (might have duplicate passcodes).
+
+  **Note**: These passcodes are used by the stage [Authenticate](src/stages/authenticate.py) to grant users access to the bot hence it is assumed that the stage is in use for the bot session.
+
+  Arguments:
+
+  ```
+  python src/helper_scripts/generate_passcodes.py -h
+  usage: generate_passcodes.py [-h] -i I
+
+  optional arguments:
+    -h, --help  show this help message and exit
+    -i I        Input file with users list.
+  ```
+
+  Usage:
+
+  ```bash
+  $ python src/helper_scripts/generate_passcodes.py -i path/to/userlist.txt
+  ```
+
+  `-i` argument is the input file with the names and groups of users to be added.
 
 ---
 
