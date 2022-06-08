@@ -22,7 +22,7 @@ class User():
         self.chatid = chatid
         self.data = None
         self.is_banned = False
-        self.UsersManager = UsersManager
+        self.users_manager = UsersManager
         self.answered_callback_queries = []
 
         self.directory = os.path.join(users_directory, chatid)
@@ -45,13 +45,13 @@ class User():
         self.logger.info("CREATING_NEW_USER",
                          f"User:{self.chatid} is a new user. Creating their files...")
 
-        user_data = copy.deepcopy(self.UsersManager.data_fields)
+        user_data = copy.deepcopy(self.users_manager.data_fields)
         self.data = user_data
 
         return os.path.join(self.directory, f"{self.chatid}.yaml")
 
     def update_user_data_from_file(self, user_data: dict) -> dict:
-        self.update_userdata_format(self.UsersManager.data_fields, user_data)
+        self.update_userdata_format(self.users_manager.data_fields, user_data)
         return user_data
 
     def load_user_from_file(self) -> None:

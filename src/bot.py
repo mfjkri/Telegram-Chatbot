@@ -541,7 +541,7 @@ class Bot(object):
         states = stage["states"]
         INPUT_HANDLER, INPUT_CONFIRMATION = self.unpack_states(states)
 
-        self.users.add_data_field(data_label, "")
+        self.users_manager.add_data_field(data_label, "")
         return stage_id
 
     def end_of_chatbot(self, update: Update, context: CallbackContext) -> None:
@@ -566,7 +566,7 @@ class Bot(object):
             chatid = str(update.message.chat_id)
 
             cached_user: User = context.user_data.get("user")
-            user: User = cached_user or self.users.new(chatid)
+            user: User = cached_user or self.users_manager.new(chatid)
 
             if user:
                 if not cached_user:
@@ -631,7 +631,7 @@ class Bot(object):
             )
         )
 
-        self.users.load_users_from_file()
+        self.users_manager.load_users_from_file()
 
         for handlers in self.stages_handlers:
             init_callback = getattr(handlers, "init_with_users_loaded", None)
@@ -687,7 +687,7 @@ class Bot(object):
         self.updater = updater
         self.dispatcher = dispatcher
 
-        self.users = UserManager()
+        self.users_manager = UserManager()
         self.stages_handlers = []
 
         self.behavior_remove_inline_markup = BOT_CONFIG["REMOVE_INLINE_KEYBOARD_MARKUP"]
@@ -699,7 +699,7 @@ class Bot(object):
                             do_nothing: bool = False,
                             *args) -> None:
             chatid = str(query.message.chat_id)
-            user: User = self.users.users.get(chatid)
+            user: User = self.users_manager.users.get(chatid)
             if query.id not in user.answered_callback_queries:
                 if self.behavior_remove_inline_markup:
                     try:
