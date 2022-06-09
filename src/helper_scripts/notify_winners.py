@@ -4,6 +4,7 @@ sys.path.append("src")
 import os
 import requests
 
+from bot import MESSAGE_DIVIDER
 from helper_scripts.leaderboard import update_leaderboard
 from utils.utils import load_yaml_file
 
@@ -21,7 +22,7 @@ def send_message(chatid: str, name: str, title: str, message: str) -> None:
 
 
 def message_top_3() -> None:
-    top_users = update_leaderboard(top_placing=3)
+    top_users = update_leaderboard(max_leaderboard_view=3)
 
     placing_decorater = ["st 🥇", "nd 🥈", "rd 🥉"]
 
@@ -37,8 +38,10 @@ def message_top_3() -> None:
             send_message(
                 chatid=chatid,
                 name=name,
-                title=f"\nCONGRATULATIONS {name.upper()}!! 🎉🎉\n\n You placed {placing_text}\n",
-                message="Come down to the booth by 3pm to collect your prize.\nAny prizes not collected by end of the day will be forfeited!"
+                title=f"🎉 Congrats {name}!! 🎉\n\n"
+                f"{MESSAGE_DIVIDER}You placed {placing_text}\n{MESSAGE_DIVIDER}",
+                message="Come down to the booth by 3pm to collect your prize.\n"
+                        "Any prizes not collected by end of the day will be forfeited!"
             )
 
 

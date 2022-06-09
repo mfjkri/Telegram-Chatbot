@@ -14,7 +14,7 @@ users_directory = os.path.join("users")
 leaderboard_export_file = os.path.join("exports", "exported_leaderboard.csv")
 
 
-def update_leaderboard(max_view: int) -> list[list[int, list[dict[str, str]]]]:
+def update_leaderboard(max_leaderboard_view: int) -> list[list[int, list[dict[str, str]]]]:
 
     scoring_dict = {}
     scoring_list = []
