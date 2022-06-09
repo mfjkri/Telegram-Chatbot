@@ -159,12 +159,15 @@ if __name__ == "__main__":
     PARSER = argparse.ArgumentParser()
     PARSER.add_argument(
         "-n", type=int,
-        help="Limit leaderbaord up to a certain placing. Defaults to no limit (all users will be ranked).",
+        help="Limit leaderboard up to a certain placing. Defaults to no limit (all users will be ranked).",
         default=0, required=False)
     PARSER.add_argument(
         "-o", type=str,
         help="Path to output the leaderboard JSON file to. Defaults to root directory: ${rootDir} / leaderboard.json",
         default="", required=False)
+    PARSER.add_argument(
+        "--disable_webpage_leaderboard_file", type=bool,
+        help="If set to any value, the leaderboard.json file will not be generated.")
     ARGS = PARSER.parse_args()
 
     max_leaderboard_view = ARGS.n or len(os.listdir(users_directory)) - 2
@@ -173,5 +176,7 @@ if __name__ == "__main__":
     while True:
         scoring_list = update_leaderboard(max_leaderboard_view)
         update_leaderboard_file(list(scoring_list))
-        update_leaderboard_webpage(list(scoring_list), ARGS.o)
+
+        if not ARGS.disable_webpage_leaderboard_file:
+            update_leaderboard_webpage(list(scoring_list), ARGS.o)
         time.sleep(1)
