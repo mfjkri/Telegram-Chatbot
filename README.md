@@ -676,7 +676,7 @@ Below is a brief description of what each script does and how to use them.
   Arguments:
 
   ```
-  python src/helper_scripts/generate_passcodes.py -h
+  $ python src/helper_scripts/generate_passcodes.py -h
   usage: generate_passcodes.py [-h] -i I
 
   optional arguments:
@@ -694,9 +694,55 @@ Below is a brief description of what each script does and how to use them.
 
 - [`leaderboard`](src/helper_scripts/leaderboard.py):
 
-  This script will read [user files](users) and generate a leaderboard rankings from their scores. It will also create two output files that are
+  This script will read [user files](users) and generate a leaderboard rankings from their scores. It will also create two output files:
 
-  While the stage [CTF](src/stages/ctf.py) does have an inbuilt leaderboard functionality, this allows you to r
+  - ../leaderboard.json
+
+    This is used by Chatbot-Leaderboard Website hence if you are running Chatbot-Leaderboard ensure that you provide a path to the webpage root directory (see Arguments and Usage below).
+
+    If you do not have the website enabled, you can pass the disable-webpage flag to not create this file (see Arguments and Usage).
+
+  - [${rootDir}/exports](exports/)/exported_leaderboard.csv
+
+    This is a `CSV` file that you can use to view in realtime the scoring and rankings of the current users. The list is ordered and be configured to include any other relevant userdata collected or generated (such as email etc).
+
+  While the stage [CTF](src/stages/ctf.py) does have an inbuilt leaderboard functionality, this allows you have a second independent leaderboard running on a separate thread.
+
+  Arguments:
+
+  ```
+  $ python src/helper_scripts/leaderboard.py -h
+  usage: leaderboard.py [-h] [-n N] [-o O] [--disable_webpage_leaderboard_file DISABLE_WEBPAGE_LEADERBOARD_FILE]
+
+  options:
+    -h, --help            show this help message and exit
+    -n N                  Limit leaderboard up to a certain placing. Defaults to no limit (all users will be ranked).
+    -o O                  Path to output the leaderboard JSON file to. Defaults to root directory: ${rootDir} / leaderboard.json
+    --disable_webpage_leaderboard_file DISABLE_WEBPAGE_LEADERBOARD_FILE
+                          If set to any value, the leaderboard.json file will not be generated.
+  ```
+
+  Usage:
+
+  ```bash
+  $ python src/helper_scripts/leaderboard.py -o ../../Chatbot-Leaderboard/
+  ```
+
+  ```
+  # Limit number of displayed top users to X
+  $ $ python src/helper_scripts/leaderboard.py -o ../../Chatbot-Leaderboard/ -n X
+  ```
+
+  ```bash
+  # Without webpage enabled:
+  $ python src/helper_scripts/leaderboard.py --disable_webpage_leaderboard_file true
+  ```
+
+  `-n` argument is the number of top users to display. If not set, it will display all users.
+
+  `-o` argument is where to create the output `leaderboard.json` to.
+
+  `--disable_webpage_leaderboard_file` argument is whether to enable the webpage. If set, then `leaderboard.json` will not be created.
 
 ---
 
