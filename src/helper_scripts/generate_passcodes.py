@@ -33,7 +33,7 @@ def strip_string_constructors(s: str) -> str:
     return ''.join([char for char in s if char not in '",'])
 
 
-def generate_passcodes(new_users: list) -> None:
+def generate_passcodes(new_users: list[list[str, str]]) -> None:
     config_yaml_file = os.path.join("config.yaml")
     assert os.path.isfile(config_yaml_file), "config.yaml not found"
 

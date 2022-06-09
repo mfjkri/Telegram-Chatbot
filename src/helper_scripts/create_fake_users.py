@@ -42,7 +42,7 @@ chatids = [chatid for chatid in os.listdir(
 
 
 class Emulator:
-    def __init__(self, names: list):
+    def __init__(self, names: list[str]):
         self.logger: Log = Log(
             name=__name__,
             log_level=logging.DEBUG,

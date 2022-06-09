@@ -18,7 +18,8 @@ MESSAGE_DIVIDER = "————————————————————�
 
 
 class Bot(object):
-    def add_state(self, stage_id: str, state_name: str, callbacks: list) -> USERSTATE:
+    def add_state(self, stage_id: str, state_name: str,
+                  callbacks: list[CallbackQueryHandler, MessageHandler]) -> USERSTATE:
         """
         Internal private function to add a state to bot's states.
         This function is normally called from Bot.add_stage.
@@ -43,7 +44,8 @@ class Bot(object):
         self.states.append(new_state)
         return len(self.states) - 1
 
-    def add_stage(self, stage_id: str, entry: Callable, exit: Callable, states: dict) -> dict:
+    def add_stage(self, stage_id: str, entry: Callable, exit: Callable,
+                  states: dict[str, list[CallbackQueryHandler, MessageHandler]]) -> dict:
         """
         Helper function to create a stage.
         Use this in your custom_stage.setup to create your stage and add it to the global stages.
@@ -94,7 +96,8 @@ class Bot(object):
 
         self.stages_handlers.append(stage_handler)
 
-    def unpack_states(self, states: dict) -> list:
+    def unpack_states(self,
+                      states: dict[str, Union[str, CallbackQueryHandler, MessageHandler]]) -> list:
         """
         Helper function to unpack states.
         Converts the states dictionary into an ordered list which can later be unpacked.
@@ -219,7 +222,7 @@ class Bot(object):
     def let_user_choose(self,
                         choice_label: str,
                         choice_text: str,
-                        choices: list,
+                        choices: list[dict[str, str]],
                         choices_per_row: Union[int, None] = None) -> str:
         """
         In-built function to create a stage that presents the user with a series of choices.
