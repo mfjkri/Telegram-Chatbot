@@ -1,5 +1,4 @@
 import sys
-from tracemalloc import stop
 sys.path.append("src")
 
 import os
@@ -13,11 +12,9 @@ from utils.utils import load_yaml_file
 
 users_directory = os.path.join("users")
 leaderboard_export_file = os.path.join("exports", "exported_leaderboard.csv")
-# os.getcwd(), "..", "Chatbot-Leaderboard", "leaderboard.json"
-leaderboard_json_file = os.path.join("leaderboard.json")
 
 
-def update_leaderboard(max_view: int) -> None:
+def update_leaderboard(max_view: int) -> list[list[int, list[dict[str, str]]]]:
 
     scoring_dict = {}
     scoring_list = []
@@ -99,8 +96,7 @@ def update_leaderboard(max_view: int) -> None:
     scoring_list[row][1] = scoring_list[row][1][:col]
     scoring_list = scoring_list[:row + 1]
 
-    update_leaderboard_file(list(scoring_list))
-    update_leaderboard_webpage(list(scoring_list))
+    return scoring_list
 
     # scoring_list
     [
@@ -116,10 +112,9 @@ def update_leaderboard(max_view: int) -> None:
         ]],
     ]
 
-    return scoring_list
 
-
-def update_leaderboard_webpage(scoring_list: list[list[int, dict]]) -> None:
+def update_leaderboard_webpage(scoring_list: list[list[int, dict]],
+                               path_to_leaderboard_json_file: str) -> None:
     leaderboard_json = []
 
     for placing_array in scoring_list:
@@ -131,7 +126,7 @@ def update_leaderboard_webpage(scoring_list: list[list[int, dict]]) -> None:
                 "score": total_score
             })
 
-    with open(leaderboard_json_file, 'w') as stream:
+    with open(os.path.join(path_to_leaderboard_json_file, "leaderboard.json"), 'w') as stream:
         json.dump(leaderboard_json, stream, indent=4)
 
 
@@ -166,11 +161,17 @@ if __name__ == "__main__":
         "-n", type=int,
         help="Limit leaderbaord up to a certain placing. Defaults to no limit (all users will be ranked).",
         default=0, required=False)
+    PARSER.add_argument(
+        "-o", type=str,
+        help="Path to output the leaderboard JSON file to. Defaults to root directory: ${rootDir} / leaderboard.json",
+        default="", required=False)
     ARGS = PARSER.parse_args()
 
-    print("Leaderboard.py is now running... (Press CTRL + C to stop)")
-
     max_leaderboard_view = ARGS.n or len(os.listdir(users_directory)) - 2
+
+    print("Leaderboard.py is now running... (Press CTRL + C to stop)")
     while True:
-        update_leaderboard(max_leaderboard_view)
+        scoring_list = update_leaderboard(max_leaderboard_view)
+        update_leaderboard_file(list(scoring_list))
+        update_leaderboard_webpage(list(scoring_list), ARGS.o)
         time.sleep(1)
