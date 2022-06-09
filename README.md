@@ -694,7 +694,7 @@ Below is a brief description of what each script does and how to use them.
 
 - [`leaderboard`](src/helper_scripts/leaderboard.py):
 
-  This script will read [user files](users) and generate a leaderboard rankings from their scores. It will also create two output files:
+  This script will read [user files](users) and generate a leaderboard rankings from their scores. It will output the rankings to two files:
 
   - ../leaderboard.json
 
@@ -743,6 +743,18 @@ Below is a brief description of what each script does and how to use them.
   `-o` argument is where to create the output `leaderboard.json` to.
 
   `--disable_webpage_leaderboard_file` argument is whether to enable the webpage. If set, then `leaderboard.json` will not be created.
+
+- [`notify_winners`](src/helper_scripts/notify_winners.py):
+
+  This script will notify the top 3 users (considers users and not placings meaning that users who are tied may not be considered, first to attain score basis) via a message sent through the bot. The message will not be successfully delivered if the user has stopped and blocked the bot after use.
+
+  This script is useful if you do not have any means of contact to the users such as their phone numbers or email addresses as it allows you to contact them via the bot using only their chatid.
+
+  Usage:
+
+  ```bash
+  $ python src/helper_scripts/notify_winners.py
+  ```
 
 ---
 
