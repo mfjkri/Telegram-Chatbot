@@ -692,6 +692,12 @@ Below is a brief description of what each script does and how to use them.
 
   `-i` argument is the input file with the names and groups of users to be added.
 
+- [`leaderboard`](src/helper_scripts/leaderboard.py):
+
+  This script will read [user files](users) and generate a leaderboard rankings from their scores. It will also create two output files that are
+
+  While the stage [CTF](src/stages/ctf.py) does have an inbuilt leaderboard functionality, this allows you to r
+
 ---
 
 &nbsp;
