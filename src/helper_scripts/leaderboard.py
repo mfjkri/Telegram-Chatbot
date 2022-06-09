@@ -1,9 +1,11 @@
 import sys
+from tracemalloc import stop
 sys.path.append("src")
 
 import os
 import time
 import json
+import argparse
 
 from stages.ctf import MAX_LEADERBOARD_VIEW
 from stages.guardian import TEAMS_DESC
@@ -15,7 +17,8 @@ leaderboard_export_file = os.path.join("exports", "exported_leaderboard.csv")
 leaderboard_json_file = os.path.join("leaderboard.json")
 
 
-def update_leaderboard() -> None:
+def update_leaderboard(max_view: int) -> None:
+
     scoring_dict = {}
     scoring_list = []
 
@@ -77,6 +80,25 @@ def update_leaderboard() -> None:
         scoring_list.append([int(total_score), users])
     scoring_list.sort(reverse=True, key=lambda a: a[0])
 
+    row, col, count, stopped = 0, 0, 0, False
+
+    for p in scoring_list:
+        col = 0
+        for u in p[1]:
+            count += 1
+            if count > min(MAX_LEADERBOARD_VIEW, max_leaderboard_view):
+                stopped = True
+                break
+            col += 1
+
+        if stopped:
+            break
+        else:
+            row += 1
+
+    scoring_list[row][1] = scoring_list[row][1][:col]
+    scoring_list = scoring_list[:row + 1]
+
     update_leaderboard_file(list(scoring_list))
     update_leaderboard_webpage(list(scoring_list))
 
@@ -97,26 +119,23 @@ def update_leaderboard() -> None:
     return scoring_list
 
 
-def update_leaderboard_webpage(leaderboard: list) -> None:
+def update_leaderboard_webpage(scoring_list: list[list[int, dict]]) -> None:
     leaderboard_json = []
-    idx = 0
 
-    for placing_array in leaderboard:
+    for placing_array in scoring_list:
         total_score, top_users = placing_array
 
         for user in top_users:
-            if idx < MAX_LEADERBOARD_VIEW:
-                leaderboard_json.append({
-                    "username": user["name"] or f"""User:{user["chatid"]}""",
-                    "score": total_score
-                })
-                idx += 1
+            leaderboard_json.append({
+                "username": user["name"] or f"""User:{user["chatid"]}""",
+                "score": total_score
+            })
 
     with open(leaderboard_json_file, 'w') as stream:
         json.dump(leaderboard_json, stream, indent=4)
 
 
-def update_leaderboard_file(scoring_list) -> None:
+def update_leaderboard_file(scoring_list: list[list[int, dict]]) -> None:
     lines_to_write = []
 
     lines_to_write.append(
@@ -124,7 +143,7 @@ def update_leaderboard_file(scoring_list) -> None:
         "Score,Name,Guardian Team, ChatID\n"
     )
 
-    for idx, placing_array in enumerate(scoring_list):
+    for placing_array in scoring_list:
         total_score, top_users = placing_array
 
         for user in top_users:
@@ -142,7 +161,16 @@ def update_leaderboard_file(scoring_list) -> None:
 
 
 if __name__ == "__main__":
+    PARSER = argparse.ArgumentParser()
+    PARSER.add_argument(
+        "-n", type=int,
+        help="Limit leaderbaord up to a certain placing. Defaults to no limit (all users will be ranked).",
+        default=0, required=False)
+    ARGS = PARSER.parse_args()
+
     print("Leaderboard.py is now running... (Press CTRL + C to stop)")
+
+    max_leaderboard_view = ARGS.n or len(os.listdir(users_directory)) - 2
     while True:
-        update_leaderboard()
+        update_leaderboard(max_leaderboard_view)
         time.sleep(1)
