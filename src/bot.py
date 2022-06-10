@@ -1,4 +1,3 @@
-import os
 import time
 from typing import (Any, Callable, Union)
 
@@ -12,7 +11,6 @@ import utils.utils as utils
 from user import UserManager, User
 from utils.log import Log
 
-BOT_CONFIG = utils.load_yaml_file(os.path.join("config.yaml"))["BOT"]
 USERSTATE = int
 MESSAGE_DIVIDER = "—————————————————————————\n"
 
@@ -667,7 +665,7 @@ class Bot(object):
         """
         self.end_of_chatbot = end_of_chatbot
 
-    def init(self, token: str, logger: Log) -> None:
+    def init(self, token: str, logger: Log, config: dict[str:Any]) -> None:
         """
         Initializes the Bot class.
 
@@ -693,7 +691,12 @@ class Bot(object):
         self.users_manager = UserManager()
         self.stages_handlers = []
 
-        self.behavior_remove_inline_markup = BOT_CONFIG["REMOVE_INLINE_KEYBOARD_MARKUP"]
+        self.config = config
+        self.bot_config = config["BOT"]
+        self.admin_chatids = config.get("ADMIN_CHATIDS", [])
+        self.user_passcodes = config.get("USER_PASSCODES", [])
+
+        self.behavior_remove_inline_markup = self.bot_config["REMOVE_INLINE_KEYBOARD_MARKUP"]
 
         answer_query = telegram.CallbackQuery.answer
 

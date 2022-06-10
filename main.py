@@ -66,7 +66,9 @@ def main():
         logger, "LOG_USER_TO_APP_LOGS" in CONFIG and CONFIG["LOG_USER_TO_APP_LOGS"])
 
     bot = Bot()
-    bot.init(BOT_TOKEN, logger)
+    bot.init(token=BOT_TOKEN,
+             logger=logger,
+             config=CONFIG)
 
     # Bot flow:
     #   admin -> authenticate -> collect:username -> choose:disclaimer -> CTF -> end

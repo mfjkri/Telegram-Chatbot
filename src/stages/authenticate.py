@@ -1,5 +1,3 @@
-import os
-
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
 from telegram.ext import (CallbackQueryHandler, CallbackContext)
 
@@ -7,8 +5,6 @@ from user import UserManager, User
 from bot import (MESSAGE_DIVIDER, Bot, USERSTATE)
 import utils.utils as utils
 
-CONFIG = utils.load_yaml_file(os.path.join("config.yaml"))
-PASSCODES = CONFIG["USER_PASSCODES"]
 
 # --------------------------------- FEATURES --------------------------------- #
 # - Only allow authorized users to use Bot
@@ -139,12 +135,13 @@ class Authenticate(object):
         sanitized_input = utils.format_input_str(
             input_passcode, alphanumeric=True)
 
-        if sanitized_input in PASSCODES:
+        passcodes = self.bot.user_passcodes
+        if sanitized_input in passcodes:
             user.logger.info(f"USER_AUTHENTICATE_CORRECT_PASSCODE",
                              f"User:{user.chatid} has entered a valid passcode")
 
-            lookup, is_lookup_an_array = PASSCODES[sanitized_input], type(
-                PASSCODES[sanitized_input]) is list
+            lookup, is_lookup_an_array = passcodes[sanitized_input], type(
+                passcodes[sanitized_input]) is list
             name = lookup[0] if is_lookup_an_array else lookup
             group = lookup[1] if is_lookup_an_array else "none"
 
