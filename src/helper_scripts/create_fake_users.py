@@ -21,10 +21,6 @@ MAX_NUMBER_OF_USERS = len(string.ascii_uppercase)
 FAKE_GROUPS = ["Alpha", "Beta", "Charlie"]
 TEMP_LOG_FILE = os.path.join("logs", "create_fake_users.log")
 
-CONFIG = utils.load_yaml_file(os.path.join("config.yaml"))
-LIVE_MODE = CONFIG["RUNTIME"]["LIVE_MODE"]
-BOT_TOKEN = CONFIG["BOT_TOKENS"]["LIVE"] if LIVE_MODE else CONFIG["BOT_TOKENS"]["TEST"]
-
 
 # 2022-05-20 13:13:11,681 [INFO] $CODE::CREATING_NEW_USER || User:0 is a new user. Creating their files...
 # 2022-05-20 13:16:03,170 [INFO] $CODE::USER_CTF_VIEW_HINT_0_0 || User:0 has revealed hint 0 for Challenge 0
@@ -41,6 +37,19 @@ chatids = [chatid for chatid in os.listdir(
     users_directory) if os.path.isdir(os.path.join(users_directory, chatid))]
 
 
+def override_init(self, logger: Log) -> None:
+    self.logger = logger
+
+    self.stages = {}
+    self.states = []
+
+    self.users_manager = UserManager()
+    self.stages_handlers = []
+
+
+Bot.init = override_init
+
+
 class Emulator:
     def __init__(self, names: list[str]):
         self.logger: Log = Log(
@@ -50,7 +59,7 @@ class Emulator:
         )
 
         self.bot: Bot = Bot()
-        self.bot.init(BOT_TOKEN, self.logger)
+        self.bot.init(self.logger)
 
         self.user_manager: UserManager = UserManager()
         self.user_manager.init(self.logger, False)
