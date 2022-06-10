@@ -6,6 +6,7 @@ ctf/challenges/*
 users/*/
 project_setup.log
 config.yaml
+TODO.md
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
