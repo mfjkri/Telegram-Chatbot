@@ -43,7 +43,7 @@ class Bot(object):
         return len(self.states) - 1
 
     def add_stage(self, stage_id: str, entry: Callable, exit: Callable,
-                  states: dict[str, list[CallbackQueryHandler, MessageHandler]]) -> dict:
+                  states: dict[str: list[CallbackQueryHandler, MessageHandler]]) -> dict:
         """
         Helper function to create a stage.
         Use this in your custom_stage.setup to create your stage and add it to the global stages.
@@ -95,7 +95,7 @@ class Bot(object):
         self.stages_handlers.append(stage_handler)
 
     def unpack_states(self,
-                      states: dict[str, Union[str, CallbackQueryHandler, MessageHandler]]) -> list:
+                      states: dict[str: Union[str, CallbackQueryHandler, MessageHandler]]) -> list:
         """
         Helper function to unpack states.
         Converts the states dictionary into an ordered list which can later be unpacked.

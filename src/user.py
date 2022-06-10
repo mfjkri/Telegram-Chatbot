@@ -50,7 +50,7 @@ class User():
 
         return os.path.join(self.directory, f"{self.chatid}.yaml")
 
-    def update_user_data_from_file(self, user_data: dict[str, Any]) -> dict:
+    def update_user_data_from_file(self, user_data: dict[str: Any]) -> dict:
         self.update_userdata_format(self.users_manager.data_fields, user_data)
         return user_data
 
