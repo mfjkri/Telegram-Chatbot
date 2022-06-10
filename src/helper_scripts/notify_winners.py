@@ -1,16 +1,13 @@
 import sys
-sys.path.append("src")
+sys.path.extend(["src", "."])
 
 import os
 import requests
 
+from main import BOT_TOKEN
 from bot import MESSAGE_DIVIDER
 from helper_scripts.leaderboard import update_leaderboard
 from utils.utils import load_yaml_file
-
-CONFIG = load_yaml_file(os.path.join("config.yaml"))
-LIVE_MODE = CONFIG["RUNTIME"]["LIVE_MODE"]
-BOT_TOKEN = CONFIG["BOT_TOKENS"]["LIVE"] if LIVE_MODE else CONFIG["BOT_TOKENS"]["TEST"]
 
 
 def send_message(chatid: str, name: str, title: str, message: str) -> None:
