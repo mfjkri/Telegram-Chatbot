@@ -700,6 +700,9 @@ class Bot(object):
 
         answer_query = telegram.CallbackQuery.answer
 
+        # FIXME Find a better way to override this
+        # Maybe do away with overriding it entirely
+
         def override_answer(query: CallbackQuery,
                             keep_message: Union[bool, str] = False,
                             do_nothing: bool = False,
