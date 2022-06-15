@@ -1,13 +1,11 @@
 import sys
 sys.path.extend(["src", "."])
 
-import os
 import requests
 
 from main import BOT_TOKEN
 from bot import MESSAGE_DIVIDER
 from helper_scripts.leaderboard import update_leaderboard
-from utils.utils import load_yaml_file
 
 
 def send_message(chatid: str, name: str, title: str, message: str) -> None:
