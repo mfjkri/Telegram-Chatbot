@@ -24,6 +24,7 @@ from stages.authenticate import Authenticate
 LOG_FILE = os.path.join("logs", f"csabot.log")
 
 CONFIG = utils.load_yaml_file(os.path.join("config.yaml"))
+assert CONFIG, "Failed to load config.yaml. Fatal error, please remedy."
 LIVE_MODE = CONFIG["RUNTIME"]["LIVE_MODE"]
 FRESH_START = CONFIG["RUNTIME"]["FRESH_START"] if not LIVE_MODE else False
 BOT_TOKEN = CONFIG["BOT_TOKENS"]["LIVE"] if LIVE_MODE else CONFIG["BOT_TOKENS"]["TEST"]

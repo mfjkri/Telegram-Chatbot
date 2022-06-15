@@ -81,6 +81,9 @@ class Ctf(object):
                     challenge_yaml_file, self.bot.logger)
                 if challenge_data:
                     self.challenges.append(challenge_data)
+                else:
+                    self.bot.logger.error(
+                        "CTF_CHALLENGE_FAILED_TO_LOAD", f"Failed to load the challenge.yaml file for Challenge: {name}.")
 
     def init_users_data(self) -> None:
         """

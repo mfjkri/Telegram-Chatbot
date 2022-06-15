@@ -84,7 +84,10 @@ class User():
             return user_yaml_file
 
     def save_user_to_file(self) -> None:
-        utils.dump_to_yaml_file(self.data, self.yaml_file, self.logger)
+        if not utils.dump_to_yaml_file(
+                self.data, self.yaml_file, self.logger):
+            self.logger.error("USERDATA_FAILED_TO_SAVE",
+                              f"User:{self.chatid} userdata has failed to be saved. Trying again later...")
 
     def update_user_data(self, data_label: str, data_value: Any) -> None:
         self.data.update({data_label: data_value})
