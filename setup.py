@@ -118,7 +118,7 @@ if __name__ == "__main__":
         if is_linux:
             data[0] = f"#!{os.path.join(prjDir, 'venv', 'bin', python_ver_keyword)}\n"
         elif is_windows:
-            data[0] = f"#!{os.path.join(prjDir, 'venv', 'Scripts', 'python.exe')}\n"
+            data[0] = f"#!{os.path.join(prjDir, 'venv', 'Scripts', f'{python_ver_keyword}.exe')}\n"
         else:
             data[0] = f"#SETUP_ERROR: Operating system shebang format unknown."
         with open(main_py_file, 'w', encoding="utf-8") as main_py:
