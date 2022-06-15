@@ -570,21 +570,21 @@ class Bot(object):
             user: User = cached_user or self.users_manager.new(chatid)
 
             if user:
-                if not cached_user:
-                    context.user_data.update({"user": user})
+                context.user_data.update({"user": user})
 
-                return self.proceed_next_stage(
-                    current_stage_id="start",
-                    next_stage_id=self.first_stage,
-                    update=update, context=context
-                )
-            else:
-                # User has been banned
-                return self.proceed_next_stage(
-                    current_stage_id="start",
-                    next_stage_id="end",
-                    update=update, context=context
-                )
+                if not user.is_banned:
+                    return self.proceed_next_stage(
+                        current_stage_id="start",
+                        next_stage_id=self.first_stage,
+                        update=update, context=context
+                    )
+
+            # User has been banned or an unknown exception was raised.
+            return self.proceed_next_stage(
+                current_stage_id="start",
+                next_stage_id="end",
+                update=update, context=context
+            )
         else:
             self.logger.error("USER_MESSAGE_INVALID",
                               f"Unknown user has entered a message with no valid update")

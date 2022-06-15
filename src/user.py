@@ -118,7 +118,7 @@ class User():
 
 
 class UserManager(object):
-    def new(self, chatid: str) -> Union[User, None]:
+    def new(self, chatid: str) -> User:
         # self.update_banned_list()
         if chatid not in self.users:
             self.logger.info("CREATING_USER_CLASS",
