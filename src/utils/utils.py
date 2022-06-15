@@ -2,7 +2,7 @@ import shutil
 import os
 import yaml
 import re
-from typing import Any, Tuple, Union
+from typing import (Any, List, Dict, Tuple, Union)
 from datetime import date, datetime
 
 
@@ -39,7 +39,7 @@ def load_yaml_file(file_path: str, log=DEFAULT_LOG) -> Union[Any, bool]:
         return config
 
 
-def dump_to_yaml_file(data: dict[str: Any], file_path: str, log=DEFAULT_LOG) -> bool:
+def dump_to_yaml_file(data: Dict[str, Any], file_path: str, log=DEFAULT_LOG) -> bool:
     with open(file_path, 'w') as file:
         write_status = True
         try:
@@ -57,21 +57,21 @@ def create_template_from(target_template: str, destination: str) -> Union[bool, 
     return False
 
 
-def init_config_with_default(config: dict[str: Any], default_config: dict[str: Any]) -> dict:
+def init_config_with_default(config: Dict[str, Any], default_config: Dict[str, Any]) -> Dict:
     for configValue, configType in enumerate(default_config):
         if not check_key_existence_in_dict(config, configType):
             config[configType] = configValue
     return config
 
 
-def check_key_value_pair_exist_in_dict(dic: dict, key: Any, value: Any) -> bool:
+def check_key_value_pair_exist_in_dict(dic: Dict[str, Any], key: Any, value: Any) -> bool:
     try:
         return dic[key] == value
     except KeyError:
         return False
 
 
-def check_key_existence_in_dict(dic: dict[str: Any], key: Any) -> bool:
+def check_key_existence_in_dict(dic: Dict[str, Any], key: Any) -> bool:
     try:
         _ = dic[key]
         return True
@@ -104,7 +104,7 @@ def clear_directory(directory: str, log=DEFAULT_LOG) -> None:
                       (file_path, e))
 
 
-def remove_files(files: list[str], log=DEFAULT_LOG) -> None:
+def remove_files(files: List[str], log=DEFAULT_LOG) -> None:
     for file in files:
         if os.path.exists(file):
             try:

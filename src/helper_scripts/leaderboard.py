@@ -5,6 +5,7 @@ import os
 import time
 import json
 import argparse
+from typing import (List, Dict, Union)
 
 from stages.ctf import MAX_LEADERBOARD_VIEW
 from stages.guardian import TEAMS_DESC
@@ -14,7 +15,7 @@ users_directory = os.path.join("users")
 leaderboard_export_file = os.path.join("exports", "exported_leaderboard.csv")
 
 
-def update_leaderboard(max_leaderboard_view: int) -> list[list[int, list[dict[str, str]]]]:
+def update_leaderboard(max_leaderboard_view: int) -> List[List[Union[int, List[Dict[str, str]]]]]:
 
     scoring_dict = {}
     scoring_list = []
@@ -113,7 +114,7 @@ def update_leaderboard(max_leaderboard_view: int) -> list[list[int, list[dict[st
     ]
 
 
-def update_leaderboard_webpage(scoring_list: list[list[int, dict]],
+def update_leaderboard_webpage(scoring_list: List[List[Union[int, Dict]]],
                                path_to_leaderboard_json_file: str) -> None:
     leaderboard_json = []
 
@@ -130,7 +131,7 @@ def update_leaderboard_webpage(scoring_list: list[list[int, dict]],
         json.dump(leaderboard_json, stream, indent=4)
 
 
-def update_leaderboard_file(scoring_list: list[list[int, dict]]) -> None:
+def update_leaderboard_file(scoring_list: List[List[Union[int, Dict]]]) -> None:
     lines_to_write = []
 
     lines_to_write.append(

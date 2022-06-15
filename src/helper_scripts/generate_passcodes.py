@@ -5,6 +5,7 @@ import os
 import random
 import string
 import argparse
+from typing import List
 
 from datetime import datetime
 from utils.utils import load_yaml_file
@@ -33,7 +34,7 @@ def strip_string_constructors(s: str) -> str:
     return ''.join([char for char in s if char not in '",'])
 
 
-def generate_passcodes(new_users: list[list[str, str]]) -> None:
+def generate_passcodes(new_users: List[List[str]]) -> None:
     config_yaml_file = os.path.join("config.yaml")
     assert os.path.isfile(config_yaml_file), "config.yaml not found"
 
@@ -60,12 +61,12 @@ def generate_passcodes(new_users: list[list[str, str]]) -> None:
 
     for passcode, data in config["USER_PASSCODES"].items():
         current_passcodes.update({
-            passcode: data[0] if type(data) is list else data
+            passcode: data[0] if isinstance(data, list) else data
         })
 
     for user_info in new_users:
         user, group = None, None
-        if type(user_info) is list:
+        if isinstance(user_info, list):
             user, group = user_info
         else:
             user, group = user_info, "none"
@@ -99,7 +100,7 @@ def generate_passcodes(new_users: list[list[str, str]]) -> None:
         config_file.writelines(raw_data)
 
 
-def get_new_users_from_file(file_name: str) -> list:
+def get_new_users_from_file(file_name: str) -> List:
     file = os.path.join(file_name)
 
     assert os.path.isfile(

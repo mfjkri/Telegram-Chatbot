@@ -1,5 +1,5 @@
 import time
-from typing import (Any, Callable, Union)
+from typing import (Any, Callable, Dict, List, Union)
 
 import telegram
 from telegram import (CallbackQuery, InlineKeyboardButton,
@@ -17,7 +17,7 @@ MESSAGE_DIVIDER = "————————————————————�
 
 class Bot(object):
     def add_state(self, stage_id: str, state_name: str,
-                  callbacks: list[CallbackQueryHandler, MessageHandler]) -> USERSTATE:
+                  callbacks: List[Union[CallbackQueryHandler, MessageHandler]]) -> USERSTATE:
         """
         Internal private function to add a state to bot's states.
         This function is normally called from Bot.add_stage.
@@ -43,7 +43,7 @@ class Bot(object):
         return len(self.states) - 1
 
     def add_stage(self, stage_id: str, entry: Callable, exit: Callable,
-                  states: dict[str: list[CallbackQueryHandler, MessageHandler]]) -> dict:
+                  states: Dict[str, List[Union[CallbackQueryHandler, MessageHandler]]]) -> Dict:
         """
         Helper function to create a stage.
         Use this in your custom_stage.setup to create your stage and add it to the global stages.
@@ -95,7 +95,7 @@ class Bot(object):
         self.stages_handlers.append(stage_handler)
 
     def unpack_states(self,
-                      states: dict[str: Union[str, CallbackQueryHandler, MessageHandler]]) -> list:
+                      states: Dict[str, Union[str, CallbackQueryHandler, MessageHandler]]) -> List:
         """
         Helper function to unpack states.
         Converts the states dictionary into an ordered list which can later be unpacked.
@@ -220,7 +220,7 @@ class Bot(object):
     def let_user_choose(self,
                         choice_label: str,
                         choice_text: str,
-                        choices: list[dict[str, str]],
+                        choices: List[Dict[str, str]],
                         choices_per_row: Union[int, None] = None) -> str:
         """
         In-built function to create a stage that presents the user with a series of choices.
@@ -245,7 +245,8 @@ class Bot(object):
         callbacks, keyboard = [], [[]]
 
         for idx, choice in enumerate(choices):
-            def callback_wrapper(update: Update, context: CallbackContext, choice: dict = choice) -> USERSTATE:
+            def callback_wrapper(update: Update, context: CallbackContext,
+                                 choice: Dict[str, Union[str, Callable]] = choice) -> USERSTATE:
                 query = update.callback_query
                 query.answer()
                 return choice["callback"](update, context)
@@ -665,7 +666,7 @@ class Bot(object):
         """
         self.end_of_chatbot = end_of_chatbot
 
-    def init(self, token: str, logger: Log, config: dict[str:Any]) -> None:
+    def init(self, token: str, logger: Log, config: Dict[str, Any]) -> None:
         """
         Initializes the Bot class.
 

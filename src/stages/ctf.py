@@ -5,6 +5,7 @@ import datetime
 import re
 import functools
 import operator
+from typing import List
 
 from telegram import (InlineKeyboardButton,
                       InlineKeyboardMarkup, Update)
@@ -752,7 +753,7 @@ class Ctf(object):
 
             return self.CHALLENGE_WRONG
 
-    def update_leaderboard(self, top_placing: int = MAX_LEADERBOARD_VIEW) -> list:
+    def update_leaderboard(self, top_placing: int = MAX_LEADERBOARD_VIEW) -> List:
         if self.leaderboard_active:
             dict_scoring_list = {}
             scoring_list = []

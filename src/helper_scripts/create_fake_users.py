@@ -8,6 +8,7 @@ import shutil
 import datetime
 import argparse
 import string
+from typing import List
 
 from bot import Bot
 from user import User, UserManager
@@ -51,7 +52,7 @@ Bot.init = override_init
 
 
 class Emulator:
-    def __init__(self, names: list[str]):
+    def __init__(self, names: List[str]):
         self.logger: Log = Log(
             name=__name__,
             log_level=logging.DEBUG,
@@ -196,7 +197,7 @@ class Emulator:
 
                 attempted_challenges.append(challenge_number)
                 challenge_number -= 1
-                challenge_data: list = self.challenges[challenge_number]
+                challenge_data: List = self.challenges[challenge_number]
                 total_possible_hints = len(challenge_data["hints"])
 
                 hints_to_use = random.randint(0, total_possible_hints)

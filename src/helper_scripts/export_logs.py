@@ -99,7 +99,7 @@ sys.path.append("src")
 import os
 import argparse
 import re
-from typing import Union
+from typing import (Dict, Union)
 
 from utils.utils import load_yaml_file, get_dir_or_create
 
@@ -125,7 +125,7 @@ def extract_data_type_from_line(data_type: str, log_line: str) -> Union[str, Non
     return matches.group(0) if matches else None
 
 
-def get_users(chatid_specificer: str, group_specifier: str) -> dict:
+def get_users(chatid_specificer: str, group_specifier: str) -> Dict:
     users = {}
 
     users_directory = os.path.join("users")

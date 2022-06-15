@@ -140,8 +140,8 @@ class Authenticate(object):
             user.logger.info(f"USER_AUTHENTICATE_CORRECT_PASSCODE",
                              f"User:{user.chatid} has entered a valid passcode")
 
-            lookup, is_lookup_an_array = passcodes[sanitized_input], type(
-                passcodes[sanitized_input]) is list
+            lookup, is_lookup_an_array = passcodes[sanitized_input], isinstance(
+                passcodes[sanitized_input], list)
             name = lookup[0] if is_lookup_an_array else lookup
             group = lookup[1] if is_lookup_an_array else "none"
 

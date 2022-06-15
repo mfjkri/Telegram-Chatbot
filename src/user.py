@@ -2,7 +2,7 @@ import sys
 import os
 import copy
 import logging
-from typing import (Any, Union)
+from typing import (Any, Dict, Union)
 
 import utils.utils as utils
 from utils.log import Log
@@ -50,7 +50,7 @@ class User():
 
         return os.path.join(self.directory, f"{self.chatid}.yaml")
 
-    def update_user_data_from_file(self, user_data: dict[str: Any]) -> dict:
+    def update_user_data_from_file(self, user_data: Dict[str, Any]) -> Dict:
         self.update_userdata_format(self.users_manager.data_fields, user_data)
         return user_data
 
