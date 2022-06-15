@@ -101,7 +101,7 @@ import argparse
 import re
 from typing import (Dict, Union)
 
-from utils.utils import load_yaml_file, get_dir_or_create
+from utils.utils import (load_yaml_file, get_dir_or_create)
 
 
 EXPORTS_DIRECTORY = get_dir_or_create("exports")

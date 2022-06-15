@@ -2,9 +2,8 @@ from typing import (Union)
 
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
 from telegram.ext import (CallbackQueryHandler, CallbackContext)
-
-from user import UserManager, User
 from bot import (Bot, USERSTATE)
+from user import (UserManager, User)
 
 
 # --------------------------------- FEATURES --------------------------------- #

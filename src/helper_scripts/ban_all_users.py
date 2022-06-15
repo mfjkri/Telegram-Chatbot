@@ -3,7 +3,7 @@ sys.path.append("src")
 
 import os
 
-from utils.utils import load_yaml_file, dump_to_yaml_file
+from utils.utils import (load_yaml_file, dump_to_yaml_file)
 
 users_directory = os.path.join("users")
 banned_users_file = os.path.join(users_directory, "banned_users.yaml")

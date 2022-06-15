@@ -12,8 +12,8 @@ from telegram import (InlineKeyboardButton,
 from telegram.ext import (CallbackQueryHandler,
                           MessageHandler, CallbackContext, Filters)
 
-from user import UserManager, User
 from bot import (Bot, USERSTATE, MESSAGE_DIVIDER)
+from user import (UserManager, User)
 import utils.utils as utils
 
 MAX_LEADERBOARD_VIEW = 10

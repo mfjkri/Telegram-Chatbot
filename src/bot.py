@@ -8,7 +8,7 @@ from telegram.ext import (Updater, CommandHandler, ConversationHandler,
                           CallbackQueryHandler, MessageHandler, CallbackContext, Filters)
 
 import utils.utils as utils
-from user import UserManager, User
+from user import (UserManager, User)
 from utils.log import Log
 
 USERSTATE = int

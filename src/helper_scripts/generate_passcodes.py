@@ -6,8 +6,8 @@ import random
 import string
 import argparse
 from typing import List
-
 from datetime import datetime
+
 from utils.utils import load_yaml_file
 
 # ----------------------------- USING THIS SCRIPT ---------------------------- #

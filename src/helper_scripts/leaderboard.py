@@ -7,9 +7,9 @@ import json
 import argparse
 from typing import (List, Dict, Union)
 
+from utils.utils import load_yaml_file
 from stages.ctf import MAX_LEADERBOARD_VIEW
 from stages.guardian import TEAMS_DESC
-from utils.utils import load_yaml_file
 
 users_directory = os.path.join("users")
 leaderboard_export_file = os.path.join("exports", "exported_leaderboard.csv")

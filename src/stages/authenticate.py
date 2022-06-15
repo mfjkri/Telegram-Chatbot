@@ -3,8 +3,8 @@ from typing import List
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
 from telegram.ext import (CallbackQueryHandler, CallbackContext)
 
-from user import UserManager, User
 from bot import (MESSAGE_DIVIDER, Bot, USERSTATE)
+from user import (UserManager, User)
 import utils.utils as utils
 
 

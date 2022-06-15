@@ -3,7 +3,7 @@ import os
 import yaml
 import re
 from typing import (Any, List, Dict, Tuple, Union)
-from datetime import date, datetime
+from datetime import (date, datetime)
 
 
 class DEFAULT_LOG:

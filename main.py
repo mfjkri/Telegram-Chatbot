@@ -5,10 +5,13 @@ sys.path.append("src")
 import logging
 import os
 import shutil
-
 from typing import Union
-from bot import MESSAGE_DIVIDER, USERSTATE, Bot, Update, CallbackContext
-from user import UserManager, User
+
+from telegram import Update
+from telegram.ext import CallbackContext
+
+from bot import (MESSAGE_DIVIDER, USERSTATE, Bot)
+from user import (UserManager, User)
 import utils.utils as utils
 from utils.log import Log
 from stages.admin import AdminConsole
