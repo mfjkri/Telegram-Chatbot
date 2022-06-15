@@ -106,7 +106,7 @@ class Ctf(object):
             challenge_data.update({"completed": False})
             challenge_data.update({"total_hints_deduction": 0})
 
-            if type(challenge_data["time_based"]) is int:
+            if isinstance(challenge_data["time_based"], int):
                 challenge_data["time_based"] = {
                     "limit": int(challenge_data["time_based"]),
                     "start_time": False,

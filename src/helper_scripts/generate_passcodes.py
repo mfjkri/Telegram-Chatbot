@@ -61,12 +61,12 @@ def generate_passcodes(new_users: List[List[str]]) -> None:
 
     for passcode, data in config["USER_PASSCODES"].items():
         current_passcodes.update({
-            passcode: data[0] if isinstance(data, list) else data
+            passcode: data[0] if isinstance(data, List) else data
         })
 
     for user_info in new_users:
         user, group = None, None
-        if isinstance(user_info, list):
+        if isinstance(user_info, List):
             user, group = user_info
         else:
             user, group = user_info, "none"

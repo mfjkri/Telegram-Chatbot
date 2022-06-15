@@ -1,3 +1,5 @@
+from typing import List
+
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
 from telegram.ext import (CallbackQueryHandler, CallbackContext)
 
@@ -141,7 +143,7 @@ class Authenticate(object):
                              f"User:{user.chatid} has entered a valid passcode")
 
             lookup, is_lookup_an_array = passcodes[sanitized_input], isinstance(
-                passcodes[sanitized_input], list)
+                passcodes[sanitized_input], List)
             name = lookup[0] if is_lookup_an_array else lookup
             group = lookup[1] if is_lookup_an_array else "none"
 

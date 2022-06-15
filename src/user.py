@@ -2,7 +2,7 @@ import sys
 import os
 import copy
 import logging
-from typing import (Any, Dict, Union)
+from typing import (Any, List, Dict, Union)
 
 import utils.utils as utils
 from utils.log import Log
@@ -98,22 +98,22 @@ class User():
         self.save_user_to_file()
 
     def update_userdata_format(self, node: Any, data_node: Any) -> None:
-        if isinstance(node, dict):
+        if isinstance(node, Dict):
             for key, value in node.items():
                 if not key in data_node:
                     data_node.update({key: copy.deepcopy(value)})
                 else:
-                    if isinstance(value, (dict, list)):
+                    if isinstance(value, (Dict, List)):
                         self.update_userdata_format(value, data_node.get(key))
-        elif isinstance(node, list) and isinstance(data_node, list):
+        elif isinstance(node, List) and isinstance(data_node, List):
             if len(data_node) != len(node):
                 data_node.clear()
                 for index, value in enumerate(node):
                     data_node.append(copy.deepcopy(value))
             else:
                 for index, value in enumerate(node):
-                    if isinstance(value, (dict, list)):
-                        if isinstance(data_node[index], (dict, list)):
+                    if isinstance(value, (Dict, List)):
+                        if isinstance(data_node[index], (Dict, List)):
                             self.update_userdata_format(
                                 value, data_node[index])
                         else:
