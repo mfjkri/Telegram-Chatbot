@@ -536,6 +536,7 @@ Scripts that are ran before a session include:
 - [`create_fake_users`](src/helper_scripts/create_fake_users.py)
 - [`create_placeholder_challenges`](src/helper_scripts/create_placeholder_challenges.py)
 - [`generate_passcodes`](src/helper_scripts/generate_passcodes.py)
+- [`reset_project`](src/helper_scripts/reset_project.py)
 
 Scripts that are ran during a session include:
 
@@ -543,6 +544,7 @@ Scripts that are ran during a session include:
 
 Scripts that are ran after a session include:
 
+- [`ban_all_users`](src/helper_scripts/ban_all_users.py)
 - [`notify_winners`](src/helper_scripts/notify_winners.py)
 - [`export_logs`](src/helper_scripts/export_logs.py)
 
@@ -754,6 +756,20 @@ Below is a brief description of what each script does and how to use them.
 
   ```bash
   $ python src/helper_scripts/notify_winners.py
+  ```
+
+- [`reset_project`](src/helper_scripts/reset_project.py):
+
+  This script will delete any existing log and user files.
+
+  This script is useful for resetting the state of the bot between runs especailly during testing phases.
+
+  **Warning**: This script **WILL DELETE ALL** user files found in the [users directory](users/) and log files found in the [logs directory](logs/).
+
+  Usage:
+
+  ```bash
+  $ python src/helper_scripts/reset_project.py
   ```
 
 ---
