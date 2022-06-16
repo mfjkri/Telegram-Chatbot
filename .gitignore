@@ -1,12 +1,13 @@
 temp/
 exports/
-logs/
-archives/
 ctf/challenges/*
 users/*/
+
+logs/
 project_setup.log
-config.yaml
 TODO.md
+
+config.yaml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
