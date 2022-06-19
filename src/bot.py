@@ -10,6 +10,7 @@ from telegram.ext import (Updater, CommandHandler, ConversationHandler,
 import utils.utils as utils
 from user import (UserManager, User)
 from utils.log import Log
+from stage import (Stage, LetUserChoose, EndConversation)
 
 USERSTATE = int
 MESSAGE_DIVIDER = "—————————————————————————\n"
@@ -41,6 +42,18 @@ class Bot(object):
         }
         self.states.append(new_state)
         return len(self.states) - 1
+
+    def register_stage(self, stage: Stage) -> Dict[str, List[Union[CallbackQueryHandler, MessageHandler]]]:
+        self.stages.update({stage.stage_id: stage})
+
+        states = {}
+        for state_name, callback_handlers in stage._states.items():
+            states.update({state_name: self.add_state(
+                stage_id=stage.stage_id,
+                state_name=stage.stage_id + state_name,
+                callbacks=callback_handlers
+            )})
+        return states
 
     def add_stage(self, stage_id: str, entry: Callable, exit: Callable,
                   states: Dict[str, List[Union[CallbackQueryHandler, MessageHandler]]]) -> Dict:
@@ -135,13 +148,13 @@ class Bot(object):
         """
 
         user: User = context.user_data.get("user")
-        next_stage = self.stages.get(
+        next_stage: Stage = self.stages.get(
             next_stage_id) if next_stage_id else self.stages.get(self.states[0]["stage_id"])
 
         if next_stage and user and not user.is_banned:
             user.logger.info("PROCEED_NEXT_STAGE",
                              f"User:{user.chatid} is moving on from: {current_stage_id} to: {next_stage_id}")
-            return next_stage["entry"](update, context)
+            return next_stage.stage_entry(update, context)
         else:
             if not user:
                 chatid, _ = context._user_id_and_data
@@ -171,7 +184,11 @@ class Bot(object):
                     "If you are seeing this, please contact your System Administrator."
                 )
 
-            return self.stages.get("end")["entry"](update, context)
+            return self.proceed_next_stage(
+                current_stage_id=current_stage_id,
+                next_stage_id="end",
+                update=update, context=context
+            )
 
     def edit_or_reply_message(self,
                               update: Update, context: CallbackContext,
@@ -241,45 +258,17 @@ class Bot(object):
         """
 
         stage_id = f"choose:{choice_label}"
-        CHOICE_CONFIRMATION = None
-        callbacks, keyboard = [], [[]]
-
-        for idx, choice in enumerate(choices):
-            def callback_wrapper(update: Update, context: CallbackContext,
-                                 choice: Dict[str, Union[str, Callable]] = choice) -> USERSTATE:
-                query = update.callback_query
-                query.answer()
-                return choice["callback"](update, context)
-
-            if choices_per_row and idx % choices_per_row == 0:
-                keyboard.append([])
-            callbacks.append(CallbackQueryHandler(
-                callback_wrapper, pattern=f"^{choice_label}:choice:{idx}$", run_async=True))
-            keyboard[-1].append(InlineKeyboardButton(choice["text"],
-                                callback_data=f"{choice_label}:choice:{idx}"))
-
-        def prompt_entry(update: Update, context: CallbackContext) -> USERSTATE:
-            query = update.callback_query
-            if query:
-                query.answer()
-
-            self.edit_or_reply_message(
-                update, context,
-                choice_text,
-                reply_markup=InlineKeyboardMarkup(keyboard)
-            )
-            return CHOICE_CONFIRMATION
-
-        stage = self.add_stage(
+        stage = LetUserChoose(
             stage_id=stage_id,
-            entry=prompt_entry,
-            exit=None,
-            states={
-                choice_label + "confirmation": callbacks
-            }
-        )
-        states = stage["states"]
-        CHOICE_CONFIRMATION = self.unpack_states(states)[0]
+            next_stage_id="",
+            bot=self)
+
+        stage.setup(
+            choice_label=choice_label,
+            choice_text=choice_text,
+            choices=choices,
+            choices_per_row=choices_per_row)
+
         return stage_id
 
     def get_input_from_user(self,
@@ -613,8 +602,13 @@ class Bot(object):
 
         :return: None
         """
-        self.add_stage("end", entry=self.conversation_exit,
-                       exit=None, states={})
+
+        end: EndConversation = EndConversation(
+            stage_id="end",
+            next_stage_id=None,
+            bot=self
+        )
+        end.setup()
 
         conversation_states = {}
         for idx, state in enumerate(self.states):
