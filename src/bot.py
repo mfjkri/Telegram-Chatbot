@@ -7,10 +7,9 @@ from telegram import (CallbackQuery, InlineKeyboardButton,
 from telegram.ext import (Updater, CommandHandler, ConversationHandler,
                           CallbackQueryHandler, MessageHandler, CallbackContext, Filters)
 
-import utils.utils as utils
 from user import (UserManager, User)
 from utils.log import Log
-from stage import (Stage, LetUserChoose, EndConversation)
+from stage import (Stage, LetUserChoose, GetInputFromUser, EndConversation)
 
 USERSTATE = int
 MESSAGE_DIVIDER = "—————————————————————————\n"
@@ -290,44 +289,18 @@ class Bot(object):
         """
 
         stage_id = f"input:{input_label}"
-        INPUT_MESSAGE_HANDLER = None
-        debounce = True
-
-        def prompt_input(update: Update, context: CallbackContext) -> USERSTATE:
-            nonlocal debounce
-
-            query = update.callback_query
-            if query:
-                query.answer()
-
-            self.edit_or_reply_message(
-                update, context,
-                input_text
-            )
-
-            debounce = False
-
-            return INPUT_MESSAGE_HANDLER
-
-        def message_handler(update: Update, context: CallbackContext) -> USERSTATE:
-            nonlocal debounce
-            if not debounce and update.message:
-                debounce = True
-                if utils.format_input_str(update.message.text, False, "/cancel") == "/cancel" and exitable:
-                    return self.conversation_exit(update, context)
-                else:
-                    return input_handler(update.message.text, update, context)
-
-        stage = self.add_stage(
+        stage = GetInputFromUser(
             stage_id=stage_id,
-            entry=prompt_input,
-            exit=None,
-            states={
-                input_label + "message_handler": [MessageHandler(Filters.all, message_handler, run_async=True)]
-            }
+            next_stage_id="",
+            bot=self)
+
+        stage.setup(
+            input_label=input_label,
+            input_text=input_text,
+            input_handler=input_handler,
+            exitable=exitable
         )
-        states = stage["states"]
-        INPUT_MESSAGE_HANDLER = self.unpack_states(states)[0]
+
         return stage_id
 
     def get_info_from_user(self,
@@ -579,20 +552,14 @@ class Bot(object):
             self.logger.error("USER_MESSAGE_INVALID",
                               f"Unknown user has entered a message with no valid update")
 
-    def conversation_exit(self, update: Update, context: CallbackContext) -> USERSTATE:
-        query = update.callback_query
-        query.answer()
-
-        user: User = context.user_data.get("user")
-        if user:
-            user.logger.info("USER_REACHED_END_OF_CONVERSATION",
-                             f"User:{user.chatid} has reached the end of the conversation")
-        else:
-            self.logger.info("UNREGISTERED_USER_END_OF_CONVERSATION",
-                             f"Unregistered or banned user has reached the end of the conversation")
-
-        self.end_of_chatbot(update, context)
-        return ConversationHandler.END
+    def exit_conversation(self,
+                          current_stage_id: str,
+                          update: Update, context: CallbackContext) -> USERSTATE:
+        return self.proceed_next_stage(
+            current_stage_id=current_stage_id,
+            next_stage_id="end",
+            update=update, context=context
+        )
 
     def start(self, live_mode: bool = False) -> None:
         """

@@ -7,6 +7,7 @@ from telegram import (CallbackQuery, InlineKeyboardButton,
 from telegram.ext import (Updater, CommandHandler, ConversationHandler,
                           CallbackQueryHandler, MessageHandler, CallbackContext, Filters)
 
+import utils.utils as utils
 from user import (UserManager, User)
 
 USERSTATE = int
@@ -56,7 +57,8 @@ class EndConversation(Stage):
 
     def stage_entry(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query
-        query.answer()
+        if query:
+            query.answer()
 
         user: User = context.user_data.get("user")
         if user:
@@ -123,3 +125,54 @@ class LetUserChoose(Stage):
 
     def stage_exit(self, update: Update, context: CallbackContext) -> USERSTATE:
         return super().stage_exit(update, context)
+
+
+class GetInputFromUser(Stage):
+    def __init__(self, stage_id: str, next_stage_id: str, bot):
+        return super().__init__(stage_id, next_stage_id, bot)
+
+    def setup(self,
+              input_label: str,
+              input_text: str,
+              input_handler: Callable,
+              exitable: bool = False) -> None:
+
+        self.input_text = input_text
+        self.input_handler = input_handler
+        self.exitable = exitable
+
+        self.debounce = True
+
+        self._states = {
+            input_label + "message_handler": [
+                MessageHandler(Filters.all, self.message_handler, run_async=True)]
+        }
+        self.states = self.bot.register_stage(self)
+        self.INPUT_MESSAGE_HANDLER = self.bot.unpack_states(self.states)[0]
+
+    def init_users_data(self) -> None:
+        return super().init_users_data()
+
+    def stage_entry(self, update: Update, context: CallbackContext) -> USERSTATE:
+        query = update.callback_query
+        if query:
+            query.answer()
+
+        self.bot.edit_or_reply_message(
+            update, context,
+            self.input_text
+        )
+
+        self.debounce = False
+        return self.INPUT_MESSAGE_HANDLER
+
+    def stage_exit(self, update: Update, context: CallbackContext) -> USERSTATE:
+        return super().stage_exit(update, context)
+
+    def message_handler(self, update: Update, context: CallbackContext) -> USERSTATE:
+        if not self.debounce and update.message:
+            self.debounce = True
+            if utils.format_input_str(update.message.text, False, "/cancel") == "/cancel" and self.exitable:
+                return self.bot.exit_conversation(update, context)
+            else:
+                return self.input_handler(update.message.text, update, context)
