@@ -150,7 +150,7 @@ class Bot(object):
         next_stage: Stage = self.stages.get(
             next_stage_id) if next_stage_id else self.stages.get(self.states[0]["stage_id"])
 
-        if next_stage and user and not user.is_banned:
+        if next_stage and user and (not user.is_banned or next_stage_id == self.end_stage.stage_id):
             user.logger.info("PROCEED_NEXT_STAGE",
                              f"User:{user.chatid} is moving on from: {current_stage_id} to: {next_stage_id}")
             return next_stage.stage_entry(update, context)
@@ -185,7 +185,7 @@ class Bot(object):
 
             return self.proceed_next_stage(
                 current_stage_id=current_stage_id,
-                next_stage_id="end",
+                next_stage_id=self.end_stage.stage_id,
                 update=update, context=context
             )
 
@@ -406,7 +406,7 @@ class Bot(object):
                 formatted_user_input = input_formatter(user_input)
 
                 if user_input == "cancel":
-                    return self.proceed_next_stage(stage_id, "end", update, context)
+                    return self.proceed_next_stage(stage_id, self.end_stage.stage_id, update, context)
                 # elif user_input == "/start":
                     # return self.proceed_next_stage(stage_id, None, update, context)
 
@@ -535,17 +535,16 @@ class Bot(object):
             if user:
                 context.user_data.update({"user": user})
 
-                if not user.is_banned:
-                    return self.proceed_next_stage(
-                        current_stage_id="start",
-                        next_stage_id=self.first_stage,
-                        update=update, context=context
-                    )
+                return self.proceed_next_stage(
+                    current_stage_id="start",
+                    next_stage_id=self.first_stage,
+                    update=update, context=context
+                )
 
-            # User has been banned or an unknown exception was raised.
+            # An unknown exception was raised.
             return self.proceed_next_stage(
                 current_stage_id="start",
-                next_stage_id="end",
+                next_stage_id=self.end_stage.stage_id,
                 update=update, context=context
             )
         else:
@@ -557,7 +556,7 @@ class Bot(object):
                           update: Update, context: CallbackContext) -> USERSTATE:
         return self.proceed_next_stage(
             current_stage_id=current_stage_id,
-            next_stage_id="end",
+            next_stage_id=self.end_stage.stage_id,
             update=update, context=context
         )
 
@@ -570,12 +569,12 @@ class Bot(object):
         :return: None
         """
 
-        end: EndConversation = EndConversation(
+        self.end_stage: EndConversation = EndConversation(
             stage_id="end",
             next_stage_id=None,
             bot=self
         )
-        end.setup()
+        self.end_stage.setup()
 
         conversation_states = {}
         for idx, state in enumerate(self.states):
