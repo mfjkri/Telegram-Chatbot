@@ -7,7 +7,7 @@
    - [1.2 Configuring **config.yaml**](#12-configuring-configyaml)
    - [1.3 Adding CTF Challenges](#13-adding-ctf-challenges)
    - [1.4 Running Chatbot](#14-running-the-chatbot)
-   - [1.5 Using runtime helper_scripts](#15-using-runtime-helperscripts)
+   - [1.5 Using runtime helper_scripts](#15-using-helper-scripts)
 2. [States & Stages](#2-states--stages)
    - [2.1 Inbuilt stages](#21-inbuilt-stages):
      - [let_user_choose](#211-letuserchoose)
@@ -522,9 +522,9 @@ files: []
 
 &nbsp;
 
-## 1.5) Using runtime helper_scripts
+## 1.5) Using helper scripts
 
-`Warning: Do not use the helper scripts unless you know what you are doing.`\
+`Warning: Please refer and read through what each script does before using it.`\
 `Some scripts can cause irrevisble changes to your project.`
 
 Helper scripts are scripts that are designed to be used either before, during or after a session of [running](main.py) the Telegram Bot.
