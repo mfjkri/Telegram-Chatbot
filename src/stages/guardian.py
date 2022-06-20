@@ -3,49 +3,10 @@ import time
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
 from telegram.ext import (CallbackQueryHandler, CallbackContext)
 
-from bot import (Bot, USERSTATE, MESSAGE_DIVIDER)
-from user import (UserManager, User)
+from bot import (USERSTATE, MESSAGE_DIVIDER)
+from user import User
+from stage import Stage
 
-QUESTIONS = {
-    "blue": [
-        "Triage and Investigate of cyber incidents",
-        "Use threat intelligence to improve security posture",
-        "Stop zero-day exploits and cyber crimes",
-        "Contain and remediate incidents"
-    ],
-    "red": [
-        "Exploit web applications to find flaws and weaknesses",
-        "Analyze web traffic to discover security issues",
-        "Developing scripts to bypass system controls",
-        "Analyse and research into malware and social engineering"
-    ],
-    "yellow": [
-        "Design layered defenses around business and risk requirements",
-        "Implement technologies for prevention and response",
-        "Analyze security architecture for deficiencies",
-        "Roll out appropriate network and server security solutions"
-    ]
-}
-TEAMS_DESC = {
-    "red": {
-        "icon": "⚔️",
-        "title": "Attack Team",
-        "desc": "You assume the role of a hacker in identifying an attack path that breaches the organization's security defense.",
-    },
-    "blue": {
-        "icon": "🛡",
-        "title": "Defend Team",
-        "desc": "You are responsible for defending the organization use of information systems by maintaining its security posture against attackers.",
-    },
-    "yellow": {
-        "icon": "🔎",
-        "title": "Consultancy / Project Management Team",
-        "desc": "You work to plan activities that are designed to reduce risk of exploitation by hackers and help the organization thrive.",
-    }
-}
-DEFAULT_TEAM = "red"
-TOTAL_QUESTIONS = len(QUESTIONS[DEFAULT_TEAM])
-NUMER_OF_OPTIONS_PER_QUESTION = len(QUESTIONS.keys())
 
 # --------------------------------- FEATURES --------------------------------- #
 # - A range of questions and options to find users aptitude in cybersecurity
@@ -75,7 +36,8 @@ NUMER_OF_OPTIONS_PER_QUESTION = len(QUESTIONS.keys())
 #   guardian: Guardian = Guardian(bot)
 #   guardian.setup(
 #       stage_id=STAGE_GUARDIAN,
-#       next_stage_id=NEXT_STAGE
+#       next_stage_id=NEXT_STAGE,
+#       bot=bot
 #   )
 #
 #   ...
@@ -85,70 +47,82 @@ NUMER_OF_OPTIONS_PER_QUESTION = len(QUESTIONS.keys())
 # ---------------------------------------------------------------------------- #
 
 
-class Guardian(object):
-    def __init__(self, bot: Bot):
-        self.bot: Bot = bot
-        self.user_manager: UserManager = UserManager()
-
-        self.stage = None
-        self.states = []
-        self.stage_id = None
-        self.next_stage_id = None
-
-        bot.add_custom_stage_handler(self)
-        self.init_users_data()
-
-    def init_users_data(self) -> None:
-        guardian_state = {
-            "teams": [],
-            "teams.history": [],
-            "options_picked": []
-        }
-
-        self.user_manager.add_data_field("guardian_state", guardian_state)
-
-    def entry_guardian(self, update: Update, context: CallbackContext) -> USERSTATE:
-        query = update.callback_query
-        if query:
-            query.answer()
-
-        return self.intro_view(update, context)
-
-    def exit_guardian(self, update: Update, context: CallbackContext) -> USERSTATE:
-        query = update.callback_query
-        if query:
-            query.answer()
-
-        return self.bot.proceed_next_stage(
-            current_stage_id=self.stage_id,
-            next_stage_id=self.next_stage_id,
-            update=update, context=context
-        )
-
-    def setup(self, stage_id: str, next_stage_id: str = "end") -> None:
-        self.stage_id = stage_id
-        self.next_stage_id = next_stage_id
-
-        questions_text = [
-            "Which of the following appeals to you the most?",
-            "I am most interested in ________?",
-            "Which would you like to do the most?",
-            "Which of the following interest you the most?",
+GUARDIAN_TEAMS = {
+    "blue": {
+        "icon": "🛡",
+        "title": "Defend Team",
+        "desc": "You are responsible for defending the organization use of information systems by maintaining its security posture against attackers.",
+        "options": [
+            "Triage and Investigate of cyber incidents",
+            "Use threat intelligence to improve security posture",
+            "Stop zero-day exploits and cyber crimes",
+            "Contain and remediate incidents"
         ]
-        options_text = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+    },
+    "red": {
+        "icon": "⚔️",
+        "title": "Attack Team",
+        "desc": "You assume the role of a hacker in identifying an attack path that breaches the organization's security defense.",
+        "options": [
+            "Exploit web applications to find flaws and weaknesses",
+            "Analyze web traffic to discover security issues",
+            "Developing scripts to bypass system controls",
+            "Analyse and research into malware and social engineering"
+        ]
+    },
+    "yellow": {
+        "icon": "🔎",
+        "title": "Consultancy / Project Management Team",
+        "desc": "You work to plan activities that are designed to reduce risk of exploitation by hackers and help the organization thrive.",
+        "options": [
+            "Design layered defenses around business and risk requirements",
+            "Implement technologies for prevention and response",
+            "Analyze security architecture for deficiencies",
+            "Roll out appropriate network and server security solutions"
+        ]
+    }
+}
+DEFAULT_TEAM = "red"
+TOTAL_QUESTIONS = len(GUARDIAN_TEAMS[DEFAULT_TEAM]["options"])
+NUMER_OF_OPTIONS_PER_QUESTION = len(GUARDIAN_TEAMS.keys())
+
+QUESTIONS_TEXT = [
+    "Which of the following appeals to you the most?",
+    "I am most interested in ________?",
+    "Which would you like to do the most?",
+    "Which of the following interest you the most?",
+]
+OPTIONS_TEXT = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+
+MAX_OPTIONS_COUNT = len(OPTIONS_TEXT)
+
+
+assert NUMER_OF_OPTIONS_PER_QUESTION <= MAX_OPTIONS_COUNT, "Number of options exceeds supported number.\n\n"\
+    f"Supported option count: {MAX_OPTIONS_COUNT}\n"\
+    f"Current option count >= {NUMER_OF_OPTIONS_PER_QUESTION}"
+
+
+class Guardian(Stage):
+    def __init__(self, stage_id: str, next_stage_id: str, bot):
+        return super().__init__(stage_id, next_stage_id, bot)
+
+    def setup(self) -> None:
+        self.init_users_data()
 
         for i in range(0, TOTAL_QUESTIONS):
             current_question_id = f"guardian:qn:{i}"
 
             choices = []
-            question_text = f"<b>Q{i + 1}) {questions_text[i%4]}</b>\n"
+            question_text = f"<b>Q{i + 1}) {QUESTIONS_TEXT[i%4]}</b>\n"
             question_text += MESSAGE_DIVIDER + "\n"
 
             option_idx = 0
-            for team, options in QUESTIONS.items():
-                option_text = options_text[option_idx]
+            for team, data in GUARDIAN_TEAMS.items():
+                team_options = data["options"]
 
-                question_text += f"({option_text}) {options[i]}\n\n"
+                option_text = OPTIONS_TEXT[option_idx]
+
+                question_text += f"({option_text}) {team_options[i]}\n\n"
                 choices.append({
                     "text": option_text,
                     "callback": lambda update, context, i=i, team=team: self.option_selected(update, context, i, team)
@@ -162,26 +136,40 @@ class Guardian(object):
                 choices_per_row=3
             )
 
-        self.stage = self.bot.add_stage(
-            stage_id=stage_id,
-            entry=self.entry_guardian,
-            exit=self.exit_guardian,
-            states={
-                "INTRO_VIEW": [
-                    CallbackQueryHandler(
-                        self.load_guardian, pattern="^guardian_begin$", run_async=True),
-                    CallbackQueryHandler(
-                        self.skip_guardian, pattern="^guardian_skip$", run_async=True)
-                ],
-                "RESULTS_VIEW": [
-                    CallbackQueryHandler(
-                        self.exit_guardian, pattern="^guardian_finished$", run_async=True)
-                ]
-            }
-        )
-        self.states = self.stage["states"]
+        self._states = {
+            "INTRO_VIEW": [
+                CallbackQueryHandler(
+                    self.load_guardian, pattern="^guardian_begin$", run_async=True),
+                CallbackQueryHandler(
+                    self.skip_guardian, pattern="^guardian_skip$", run_async=True)
+            ],
+            "RESULTS_VIEW": [
+                CallbackQueryHandler(
+                    self.stage_exit, pattern="^guardian_finished$", run_async=True)
+            ]
+        }
+        self.states = self.bot.register_stage(self)
         self.INTRO_VIEW, self.RESULTS_VIEW = self.bot.unpack_states(
             self.states)
+
+    def init_users_data(self) -> None:
+        guardian_state = {
+            "teams": [],
+            "teams.history": [],
+            "options_picked": []
+        }
+
+        self.user_manager.add_data_field("guardian_state", guardian_state)
+
+    def stage_entry(self, update: Update, context: CallbackContext) -> USERSTATE:
+        query = update.callback_query
+        if query:
+            query.answer()
+
+        return self.intro_view(update, context)
+
+    def stage_exit(self, update: Update, context: CallbackContext) -> USERSTATE:
+        return super().stage_exit(update, context)
 
     def option_selected(self,
                         update: Update, context: CallbackContext,
@@ -212,7 +200,7 @@ class Guardian(object):
         query = update.callback_query
         query.answer()
 
-        return self.exit_guardian(update, context)
+        return self.stage_exit(update, context)
 
     def intro_view(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query
@@ -304,7 +292,7 @@ class Guardian(object):
         text_body = "You are most interested in:\n\n"
 
         for team_name in teams_picked:
-            team = TEAMS_DESC[team_name]
+            team = GUARDIAN_TEAMS[team_name]
             text_body += f"""<b><u>{team["title"]}</u> {team["icon"]}</b>\n{team["desc"]}\n\n\n"""
 
         self.bot.edit_or_reply_message(

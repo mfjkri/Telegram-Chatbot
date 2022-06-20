@@ -9,7 +9,7 @@ from typing import (List, Dict, Union)
 
 from utils.utils import load_yaml_file
 from stages.ctf import MAX_LEADERBOARD_VIEW
-from stages.guardian import TEAMS_DESC
+from stages.guardian import GUARDIAN_TEAMS
 
 users_directory = os.path.join("users")
 leaderboard_export_file = os.path.join("exports", "exported_leaderboard.csv")
@@ -56,7 +56,7 @@ def update_leaderboard(max_leaderboard_view: int) -> List[List[Union[int, List[D
 
                             if user_teams:
                                 for idx, team in enumerate(user_teams):
-                                    user_teams[idx] = TEAMS_DESC.get(
+                                    user_teams[idx] = GUARDIAN_TEAMS.get(
                                         team, "no_team_found")
                             else:
                                 user_teams = []
