@@ -12,79 +12,85 @@ from telegram import (InlineKeyboardButton,
 from telegram.ext import (CallbackQueryHandler,
                           MessageHandler, CallbackContext, Filters)
 
-from bot import (Bot, USERSTATE, MESSAGE_DIVIDER)
-from user import (UserManager, User)
-import utils.utils as utils
+from bot import (USERSTATE, MESSAGE_DIVIDER)
+from user import User
+from utils import utils
+from stage import Stage
 
 MAX_LEADERBOARD_VIEW = 10
 
 
-class Ctf(object):
-    def __init__(self, directory: str, bot: Bot):
+class Ctf(Stage):
+    def __init__(self, stage_id: str, next_stage_id: str, bot):
         self.challenges = []
-        self.directory = directory
-        self.challenges_directory = os.path.join(directory, "challenges")
 
-        self.bot: Bot = bot
-        self.users_manager: UserManager = UserManager()
-
-        self.stage = None
-        self.states = []
-        self.stage_id = None
-        self.next_stage_id = None
+        self.directory = os.path.join("ctf")
+        self.challenges_directory = os.path.join(self.directory, "challenges")
 
         self.leaderboard_active = True
         self.leaderboard = []
         # self.leaderboard_file = os.path.join(directory, "leaderboard.txt")
+        return super().__init__(stage_id, next_stage_id, bot)
 
-        bot.add_custom_stage_handler(self)
+    def setup(self) -> None:
         self.load_challenges()
         self.init_users_data()
 
-    # Internal function called within bot.start
+        menu_view_callbacks = [
+            CallbackQueryHandler(
+                self.view_leaderboard, pattern="^ctf_view_leaderboard$", run_async=True),
+            CallbackQueryHandler(
+                self.stage_exit, pattern="^ctf_exit$", run_async=True)
+        ]
+        challenge_view_callbacks = [CallbackQueryHandler(
+            self.load_menu, pattern="^ctf_return_to_menu$", run_async=True)]
+        retry_challenge_callbacks = [CallbackQueryHandler(
+            self.load_menu, pattern="^ctf_return_to_menu$", run_async=True)]
 
-    def init_with_users_loaded(self) -> None:
-        """
-        Internal function for final initialization.
-        Called after users are loaded from file (before bot is started): bot.start.
+        for idx_c, challenge in enumerate(self.challenges):
+            menu_view_callbacks.append(
+                CallbackQueryHandler(
+                    self.view_challenge, pattern=f"^ctf_menu_view_challenge_{idx_c}$", run_async=True)
+            )
+            challenge_view_callbacks.extend([
+                CallbackQueryHandler(
+                    self.submit_answer, pattern=f"^ctf_submit_answer_{idx_c}$", run_async=True),
+                # CallbackQueryHandler(
+                #     self.view_challenge, pattern=f"^ctf_refresh_challenge_{idx_c}$", run_async=True)
+            ])
+            retry_challenge_callbacks.extend([
+                CallbackQueryHandler(
+                    self.submit_answer, pattern=f"^ctf_submit_answer_{idx_c}$", run_async=True),
+                CallbackQueryHandler(
+                    self.view_challenge, pattern=f"^ctf_return_to_challenge_{idx_c}$", run_async=True)
+            ])
 
-        :return: None
-        """
-        self.update_leaderboard()
+            if challenge["multiple_choices"]:
+                for idx_a, _ in enumerate(challenge["multiple_choices"]):
+                    challenge_view_callbacks.append(
+                        CallbackQueryHandler(
+                            self.submit_choice_answer, pattern=f"^ctf_select_choice_{idx_a}:{idx_c}$", run_async=True)
+                    )
 
-    def load_challenges(self) -> None:
-        """
-        Internal function to load challenges from file.
-        Called during initialization of CTF handler.
+            for idx_h, _ in enumerate(challenge["hints"]):
+                challenge_view_callbacks.append(
+                    CallbackQueryHandler(
+                        self.reveal_hint, pattern=f"^ctf_view_hint_{idx_h}:{idx_c}$", run_async=True)
+                )
 
-        :return: None
-        """
-        self.challenges = []
-
-        challenges_names = os.listdir(self.challenges_directory)
-        assert functools.reduce(
-            operator.and_,
-            [re.search(r"[0-9]+", cn) is not None for cn in challenges_names]
-        ), "Please ensure that the directory names of the challenges in ctf/challenges/"\
-            " are of the format:\n\tNUMBER-ChallengeName\n\te.g. 13-Decryption"\
-            "\n\nFor more info, refer to README.md -> 1.2 Adding CTF Challenges"
-
-        challenges_names.sort(
-            key=lambda a: int(re.search(r"[0-9]+", a).group(0))
-        )
-        for _, name in enumerate(challenges_names):
-            challenge_directory = os.path.join(self.challenges_directory, name)
-            challenge_yaml_file = os.path.join(
-                challenge_directory, "challenge.yaml")
-
-            if os.path.isfile(challenge_yaml_file):
-                challenge_data = utils.load_yaml_file(
-                    challenge_yaml_file, self.bot.logger)
-                if challenge_data:
-                    self.challenges.append(challenge_data)
-                else:
-                    self.bot.logger.error(
-                        "CTF_CHALLENGE_FAILED_TO_LOAD", f"Failed to load the challenge.yaml file for Challenge: {name}.")
+        self._states = {
+            "MENU": menu_view_callbacks,
+            "CHALLENGE_VIEW": challenge_view_callbacks,
+            "LEADERBOARD_VIEW": [CallbackQueryHandler(self.load_menu, pattern="^ctf_return_to_menu$", run_async=True)],
+            "SUBMIT_CHALLENGE": [MessageHandler(Filters.all, self.handle_answer, run_async=True)],
+            "CHALLENGE_SUCCESS": [CallbackQueryHandler(self.load_menu, pattern="^ctf_return_to_menu$", run_async=True)],
+            "CHALLENGE_WRONG": retry_challenge_callbacks
+        }
+        self.states = self.bot.register_stage(self)
+        (
+            self.MENU, self.CHALLENGE_VIEW, self.LEADERBOARD_VIEW,
+            self.SUBMIT_CHALLENGE, self.CHALLENGE_SUCCESS, self.CHALLENGE_WRONG,
+        ) = self.bot.unpack_states(self.states)
 
     def init_users_data(self) -> None:
         """
@@ -154,86 +160,47 @@ class Ctf(object):
                     "choice C", ...
                 ] or False
             }
-        self.users_manager.add_data_field("ctf_state", ctf_state)
+        self.user_manager.add_data_field("ctf_state", ctf_state)
 
-    def entry_ctf(self, update: Update, context: CallbackContext) -> USERSTATE:
+    def stage_entry(self, update: Update, context: CallbackContext) -> USERSTATE:
         return self.load_menu(update, context)
 
-    def exit_ctf(self, update: Update, context: CallbackContext) -> USERSTATE:
-        query = update.callback_query
-        if query:
-            query.answer()
+    def stage_exit(self, update: Update, context: CallbackContext) -> USERSTATE:
+        return super().stage_exit(update, context)
 
-        return self.bot.proceed_next_stage(
-            current_stage_id=self.stage_id,
-            next_stage_id=self.next_stage_id,
-            update=update, context=context
+    def load_challenges(self) -> None:
+        """
+        Internal function to load challenges from file.
+        Called during initialization of CTF handler.
+
+        :return: None
+        """
+        self.challenges = []
+
+        challenges_names = os.listdir(self.challenges_directory)
+        assert functools.reduce(
+            operator.and_,
+            [re.search(r"[0-9]+", cn) is not None for cn in challenges_names]
+        ), "Please ensure that the directory names of the challenges in ctf/challenges/"\
+            " are of the format:\n\tNUMBER-ChallengeName\n\te.g. 13-Decryption"\
+            "\n\nFor more info, refer to README.md -> 1.2 Adding CTF Challenges"
+
+        challenges_names.sort(
+            key=lambda a: int(re.search(r"[0-9]+", a).group(0))
         )
+        for _, name in enumerate(challenges_names):
+            challenge_directory = os.path.join(self.challenges_directory, name)
+            challenge_yaml_file = os.path.join(
+                challenge_directory, "challenge.yaml")
 
-    def setup(self, stage_id: str, next_stage_id: str = "end") -> None:
-        self.stage_id = stage_id
-        self.next_stage_id = next_stage_id
-
-        menu_view_callbacks = [
-            CallbackQueryHandler(
-                self.view_leaderboard, pattern="^ctf_view_leaderboard$", run_async=True),
-            CallbackQueryHandler(
-                self.exit_ctf, pattern="^ctf_exit$", run_async=True)
-        ]
-        challenge_view_callbacks = [CallbackQueryHandler(
-            self.load_menu, pattern="^ctf_return_to_menu$", run_async=True)]
-        retry_challenge_callbacks = [CallbackQueryHandler(
-            self.load_menu, pattern="^ctf_return_to_menu$", run_async=True)]
-
-        for idx_c, challenge in enumerate(self.challenges):
-            menu_view_callbacks.append(
-                CallbackQueryHandler(
-                    self.view_challenge, pattern=f"^ctf_menu_view_challenge_{idx_c}$", run_async=True)
-            )
-            challenge_view_callbacks.extend([
-                CallbackQueryHandler(
-                    self.submit_answer, pattern=f"^ctf_submit_answer_{idx_c}$", run_async=True),
-                # CallbackQueryHandler(
-                #     self.view_challenge, pattern=f"^ctf_refresh_challenge_{idx_c}$", run_async=True)
-            ])
-            retry_challenge_callbacks.extend([
-                CallbackQueryHandler(
-                    self.submit_answer, pattern=f"^ctf_submit_answer_{idx_c}$", run_async=True),
-                CallbackQueryHandler(
-                    self.view_challenge, pattern=f"^ctf_return_to_challenge_{idx_c}$", run_async=True)
-            ])
-
-            if challenge["multiple_choices"]:
-                for idx_a, _ in enumerate(challenge["multiple_choices"]):
-                    challenge_view_callbacks.append(
-                        CallbackQueryHandler(
-                            self.submit_choice_answer, pattern=f"^ctf_select_choice_{idx_a}:{idx_c}$", run_async=True)
-                    )
-
-            for idx_h, _ in enumerate(challenge["hints"]):
-                challenge_view_callbacks.append(
-                    CallbackQueryHandler(
-                        self.reveal_hint, pattern=f"^ctf_view_hint_{idx_h}:{idx_c}$", run_async=True)
-                )
-
-        self.stage = self.bot.add_stage(
-            stage_id=stage_id,
-            entry=self.entry_ctf,
-            exit=self.exit_ctf,
-            states={
-                "MENU": menu_view_callbacks,
-                "CHALLENGE_VIEW": challenge_view_callbacks,
-                "LEADERBOARD_VIEW": [CallbackQueryHandler(self.load_menu, pattern="^ctf_return_to_menu$", run_async=True)],
-                "SUBMIT_CHALLENGE": [MessageHandler(Filters.all, self.handle_answer, run_async=True)],
-                "CHALLENGE_SUCCESS": [CallbackQueryHandler(self.load_menu, pattern="^ctf_return_to_menu$", run_async=True)],
-                "CHALLENGE_WRONG": retry_challenge_callbacks
-            },
-        )
-        self.states = self.stage["states"]
-        (
-            self.MENU, self.CHALLENGE_VIEW, self.LEADERBOARD_VIEW,
-            self.SUBMIT_CHALLENGE, self.CHALLENGE_SUCCESS, self.CHALLENGE_WRONG,
-        ) = self.bot.unpack_states(self.states)
+            if os.path.isfile(challenge_yaml_file):
+                challenge_data = utils.load_yaml_file(
+                    challenge_yaml_file, self.bot.logger)
+                if challenge_data:
+                    self.challenges.append(challenge_data)
+                else:
+                    self.bot.logger.error(
+                        "CTF_CHALLENGE_FAILED_TO_LOAD", f"Failed to load the challenge.yaml file for Challenge: {name}.")
 
     def load_menu(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query
@@ -758,7 +725,7 @@ class Ctf(object):
             dict_scoring_list = {}
             scoring_list = []
 
-            for _, user in self.users_manager.users.items():
+            for _, user in self.user_manager.users.items():
                 ctf_state = user.data.get("ctf_state")
                 user_total_score = str(ctf_state["total_score"])
                 user_name = user.data.get("username")
