@@ -44,8 +44,7 @@ def override_init(self, logger: Log) -> None:
     self.stages = {}
     self.states = []
 
-    self.users_manager = UserManager()
-    self.stages_handlers = []
+    self.user_manager = UserManager()
 
 
 Bot.init = override_init

@@ -43,19 +43,6 @@ class Bot(object):
         return len(self.states) - 1
 
     def register_stage(self, stage: Stage) -> Dict[str, List[Union[CallbackQueryHandler, MessageHandler]]]:
-        self.stages.update({stage.stage_id: stage})
-
-        states = {}
-        for state_name, callback_handlers in stage._states.items():
-            states.update({state_name: self.add_state(
-                stage_id=stage.stage_id,
-                state_name=stage.stage_id + state_name,
-                callbacks=callback_handlers
-            )})
-        return states
-
-    def add_stage(self, stage_id: str, entry: Callable, exit: Callable,
-                  states: Dict[str, List[Union[CallbackQueryHandler, MessageHandler]]]) -> Dict:
         """
         Helper function to create a stage.
         Use this in your custom_stage.setup to create your stage and add it to the global stages.
@@ -77,34 +64,16 @@ class Bot(object):
         :return: Returns the stage as a dictionary.
         """
 
-        states_dict = {}
+        self.stages.update({stage.stage_id: stage})
 
-        for state_name, callback_handlers in states.items():
-            states_dict.update({state_name: self.add_state(
-                stage_id=stage_id,
-                state_name=stage_id + state_name,
+        states = {}
+        for state_name, callback_handlers in stage._states.items():
+            states.update({state_name: self.add_state(
+                stage_id=stage.stage_id,
+                state_name=stage.stage_id + state_name,
                 callbacks=callback_handlers
             )})
-
-        self.stages.update({stage_id: {
-            "entry": entry,
-            "exit": exit,
-            "states": states_dict
-        }})
-
-        return self.stages.get(stage_id)
-
-    def add_custom_stage_handler(self, stage_handler: Any) -> None:
-        """
-        Helper function to add handler for a given custom stage.
-        The handler callback is called in Bot.start (right after users data have been loaded from file)
-
-        :param stage_handler: Callable function handler. (Required)
-
-        :return: Returns None.
-        """
-
-        self.stages_handlers.append(stage_handler)
+        return states
 
     def unpack_states(self,
                       states: Dict[str, Union[str, CallbackQueryHandler, MessageHandler]]) -> List:
@@ -127,6 +96,15 @@ class Bot(object):
             states_list.append(state)
 
         return states_list
+
+    def exit_conversation(self,
+                          current_stage_id: str,
+                          update: Update, context: CallbackContext) -> USERSTATE:
+        return self.proceed_next_stage(
+            current_stage_id=current_stage_id,
+            next_stage_id=self.end_stage.stage_id,
+            update=update, context=context
+        )
 
     def proceed_next_stage(self,
                            current_stage_id: str,
@@ -183,9 +161,8 @@ class Bot(object):
                     "If you are seeing this, please contact your System Administrator."
                 )
 
-            return self.proceed_next_stage(
+            return self.exit_conversation(
                 current_stage_id=current_stage_id,
-                next_stage_id=self.end_stage.stage_id,
                 update=update, context=context
             )
 
@@ -347,29 +324,12 @@ class Bot(object):
 
         return stage_id
 
-    def end_of_chatbot(self, update: Update, context: CallbackContext) -> None:
-        """
-        Default function that is called in conversation_exit, when user reaches end of conversation.
-
-        :param update: (Required)
-        :param context: (Required)
-
-        :return: None
-        """
-
-        self.edit_or_reply_message(
-            update, context,
-            text="Find out more about what we do at www.csa.gov.sg!"
-            "\n\nUse /start to resume where you left off.",
-            reply_message=True
-        )
-
     def conversation_entry(self, update: Update, context: CallbackContext) -> USERSTATE:
         if update.message:
             chatid = str(update.message.chat_id)
 
             cached_user: User = context.user_data.get("user")
-            user: User = cached_user or self.users_manager.new(chatid)
+            user: User = cached_user or self.user_manager.new(chatid)
 
             if user:
                 context.user_data.update({"user": user})
@@ -390,13 +350,21 @@ class Bot(object):
             self.logger.error("USER_MESSAGE_INVALID",
                               f"Unknown user has entered a message with no valid update")
 
-    def exit_conversation(self,
-                          current_stage_id: str,
-                          update: Update, context: CallbackContext) -> USERSTATE:
-        return self.proceed_next_stage(
-            current_stage_id=current_stage_id,
-            next_stage_id=self.end_stage.stage_id,
-            update=update, context=context
+    def end_of_chatbot(self, update: Update, context: CallbackContext) -> None:
+        """
+        Default function that is called in bot.end_stage.stage_entry, when user reaches end of conversation.
+
+        :param update: (Required)
+        :param context: (Required)
+
+        :return: None
+        """
+
+        self.edit_or_reply_message(
+            update, context,
+            text="Find out more about what we do at www.csa.gov.sg!"
+            "\n\nUse /start to resume where you left off.",
+            reply_message=True
         )
 
     def start(self, live_mode: bool = False) -> None:
@@ -432,12 +400,7 @@ class Bot(object):
             )
         )
 
-        self.users_manager.load_users_from_file()
-
-        for handlers in self.stages_handlers:
-            init_callback = getattr(handlers, "init_with_users_loaded", None)
-            if init_callback:
-                init_callback()
+        self.user_manager.load_users_from_file()
 
         self.logger.info(False, '-')
         self.logger.info(False, "Bot is now listening!")
@@ -488,8 +451,7 @@ class Bot(object):
         self.updater = updater
         self.dispatcher = dispatcher
 
-        self.users_manager = UserManager()
-        self.stages_handlers = []
+        self.user_manager = UserManager()
 
         self.config = config
         self.bot_config = config["BOT"]
@@ -508,7 +470,7 @@ class Bot(object):
                             do_nothing: bool = False,
                             *args) -> None:
             chatid = str(query.message.chat_id)
-            user: User = self.users_manager.users.get(chatid)
+            user: User = self.user_manager.users.get(chatid)
             if query.id not in user.answered_callback_queries:
                 if self.behavior_remove_inline_markup:
                     try:
