@@ -3,9 +3,10 @@ from typing import List
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
 from telegram.ext import (CallbackQueryHandler, CallbackContext)
 
-from bot import (MESSAGE_DIVIDER, Bot, USERSTATE)
-from user import (UserManager, User)
-import utils.utils as utils
+from bot import (MESSAGE_DIVIDER, USERSTATE)
+from user import User
+from utils import utils
+from stage import Stage
 
 
 # --------------------------------- FEATURES --------------------------------- #
@@ -34,7 +35,8 @@ import utils.utils as utils
 #   authenticate: Authenticate = Authenticate(bot)
 #   authenticate.setup(
 #       stage_id=STAGE_AUTHENTICATE,
-#       next_stage_id=NEXT_STAGE
+#       next_stage_id=NEXT_STAGE,
+#       bot=bot
 #   )
 #
 #   ...
@@ -52,73 +54,30 @@ import utils.utils as utils
 # ---------------------------------------------------------------------------- #
 
 
-class Authenticate(object):
-    def __init__(self, bot: Bot):
-        self.bot: Bot = bot
-        self.user_manager: UserManager = UserManager()
+class Authenticate(Stage):
+    def __init__(self, stage_id: str, next_stage_id: str, bot):
+        return super().__init__(stage_id, next_stage_id, bot)
 
-        self.stage = None
-        self.states = []
-        self.stage_id = None
-        self.next_stage_id = None
-
-        bot.add_custom_stage_handler(self)
+    def setup(self) -> None:
         self.init_users_data()
 
-    def init_users_data(self) -> None:
-        self.user_manager.add_data_field("name", "")
-        self.user_manager.add_data_field("group", "")
-
-    def entry_authenticate(self, update: Update, context: CallbackContext) -> USERSTATE:
-        query = update.callback_query
-        if query:
-            query.answer()
-
-        user: User = context.user_data.get("user")
-
-        if user.data.get("name"):
-            return self.exit_authenticate(update, context)
-        else:
-            return self.bot.proceed_next_stage(
-                current_stage_id=self.stage_id,
-                next_stage_id=self.PROMPT_AUTHENTICATION,
-                update=update, context=context
-            )
-
-    def exit_authenticate(self, update: Update, context: CallbackContext) -> USERSTATE:
-        query = update.callback_query
-        if query and query:
-            query.answer()
-
-        return self.bot.proceed_next_stage(
-            current_stage_id=self.stage_id,
-            next_stage_id=self.next_stage_id,
-            update=update, context=context
-        )
-
-    def setup(self, stage_id: str, next_stage_id: str) -> None:
-        self.stage_id = stage_id
-        self.next_stage_id = next_stage_id
-
-        self.stage = self.bot.add_stage(
-            stage_id=stage_id,
-            entry=self.entry_authenticate,
-            exit=self.exit_authenticate,
-            states={
-                "IDENTITY_CONFIRMATION": [
-                    CallbackQueryHandler(
-                        self.confirm_choice, pattern=f"^auth_accept_identity$", run_async=True),
-                    CallbackQueryHandler(
-                        self.decline_identity, pattern=f"^auth_decline_identity$", run_async=True)
-                ],
-                "CONFIRM_CHOICE": [
-                    CallbackQueryHandler(
-                        self.accept_identity, pattern=f"^auth_confirm_choice$", run_async=True),
-                    CallbackQueryHandler(
-                        self.decline_identity, pattern=f"^auth_cancel_choice$", run_async=True)
-                ]
-            }
-        )
+        self._states = {
+            "IDENTITY_CONFIRMATION": [
+                CallbackQueryHandler(
+                    self.confirm_choice, pattern=f"^auth_accept_identity$", run_async=True),
+                CallbackQueryHandler(
+                    self.decline_identity, pattern=f"^auth_decline_identity$", run_async=True)
+            ],
+            "CONFIRM_CHOICE": [
+                CallbackQueryHandler(
+                    self.accept_identity, pattern=f"^auth_confirm_choice$", run_async=True),
+                CallbackQueryHandler(
+                    self.decline_identity, pattern=f"^auth_cancel_choice$", run_async=True)
+            ]
+        }
+        self.states = self.bot.register_stage(self)
+        self.IDENTITY_CONFIRMATION, self.CONFIRM_CHOICE = self.bot.unpack_states(
+            self.states)
 
         self.PROMPT_AUTHENTICATION = self.bot.get_input_from_user(
             input_label="authenticate:passcode",
@@ -127,9 +86,28 @@ class Authenticate(object):
             exitable=True
         )
 
-        self.states = self.stage["states"]
-        self.IDENTITY_CONFIRMATION, self.CONFIRM_CHOICE = self.bot.unpack_states(
-            self.states)
+    def init_users_data(self) -> None:
+        self.user_manager.add_data_field("name", "")
+        self.user_manager.add_data_field("group", "")
+
+    def stage_entry(self, update: Update, context: CallbackContext) -> USERSTATE:
+        query = update.callback_query
+        if query:
+            query.answer()
+
+        user: User = context.user_data.get("user")
+
+        if user.data.get("name"):
+            return self.stage_exit(update, context)
+        else:
+            return self.bot.proceed_next_stage(
+                current_stage_id=self.stage_id,
+                next_stage_id=self.PROMPT_AUTHENTICATION,
+                update=update, context=context
+            )
+
+    def stage_exit(self, update: Update, context: CallbackContext) -> USERSTATE:
+        return super().stage_exit(update, context)
 
     def check_passcode(self, input_passcode: str, update: Update, context: CallbackContext) -> USERSTATE:
 
@@ -149,7 +127,7 @@ class Authenticate(object):
 
             # This check is actually redundant since we already bypassed authenticated for users with a valid name field.
             if user.data.get("name") == name:
-                return self.exit_authenticate(update, context)
+                return self.stage_exit(update, context)
             else:
                 return self.confirm_identify(
                     name, group,
@@ -216,7 +194,7 @@ class Authenticate(object):
             context.user_data.pop("pending_group")
         )
 
-        return self.exit_authenticate(update, context)
+        return self.stage_exit(update, context)
 
     def decline_identity(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query
