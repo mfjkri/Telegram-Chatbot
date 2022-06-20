@@ -2,8 +2,9 @@ from typing import (Union)
 
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
 from telegram.ext import (CallbackQueryHandler, CallbackContext)
-from bot import (Bot, USERSTATE)
-from user import (UserManager, User)
+from bot import USERSTATE
+from user import User
+from stage import Stage
 
 
 # --------------------------------- FEATURES --------------------------------- #
@@ -36,7 +37,8 @@ from user import (UserManager, User)
 #   admin: AdminConsole = AdminConsole(bot)
 #   admin.setup(
 #     stage_id=STAGE_ADMIN,
-#     next_stage_id=NEXT_STAGE
+#     next_stage_id=NEXT_STAGE,
+#     bot=bot
 #   )
 #
 #   ...
@@ -52,72 +54,33 @@ from user import (UserManager, User)
 # ---------------------------------------------------------------------------- #
 
 
-class AdminConsole(object):
-    def __init__(self, bot: Bot):
-        self.bot: Bot = bot
-        self.user_manager: UserManager = UserManager()
+class AdminConsole(Stage):
+    def __init__(self, stage_id: str, next_stage_id: str, bot):
+        return super().__init__(stage_id, next_stage_id, bot)
 
-        self.stage = None
-        self.states = []
-        self.stage_id = None
-        self.next_stage_id = None
+    def setup(self) -> None:
+        self.init_users_data()
 
-        bot.add_custom_stage_handler(self)
-
-    def entry_admin(self, update: Update, context: CallbackContext) -> USERSTATE:
-        query = update.callback_query
-        if query:
-            query.answer()
-
-        user: User = context.user_data.get("user")
-
-        if user.chatid in self.bot.admin_chatids:
-            user.logger.info("USER_IS_ADMIN_USER",
-                             f"User:{user.chatid} is an  admin, loading admin console")
-            return self.load_admin(update, context)
-        else:
-            user.logger.info("USER_IS_NORMAL_USER",
-                             f"User:{user.chatid} does not have admin privilege, skipping admin console")
-            return self.exit_admin(update, context)
-
-    def exit_admin(self, update: Update, context: CallbackContext) -> USERSTATE:
-        query = update.callback_query
-        if query:
-            query.answer()
-
-        return self.bot.proceed_next_stage(
-            current_stage_id=self.stage_id,
-            next_stage_id=self.next_stage_id,
-            update=update, context=context
-        )
-
-    def setup(self, stage_id: str, next_stage_id: str) -> None:
-        self.stage_id = stage_id
-        self.next_stage_id = next_stage_id
-
-        self.stage = self.bot.add_stage(
-            stage_id=stage_id,
-            entry=self.entry_admin,
-            exit=self.exit_admin,
-            states={
-                "MENU": [
-                    CallbackQueryHandler(
-                        self.prompt_delete_me, pattern="^admin_delete_me$", run_async=True),
-                    CallbackQueryHandler(
-                        self.prompt_delete_user_name, pattern="^admin_delete_user_name$", run_async=True),
-                    CallbackQueryHandler(
-                        self.prompt_delete_user, pattern="^admin_delete_user$", run_async=True),
-                    CallbackQueryHandler(
-                        self.prompt_delete_all_users, pattern="^admin_delete_all_users$", run_async=True),
-                    CallbackQueryHandler(
-                        self.prompt_ban_user, pattern="^admin_ban_user$", run_async=True),
-                    CallbackQueryHandler(
-                        self.prompt_unban_user, pattern="^admin_unban_user$", run_async=True),
-                    CallbackQueryHandler(
-                        self.exit_admin, pattern="^admin_exit$", run_async=True),
-                ]
-            }
-        )
+        self._states = {
+            "MENU": [
+                CallbackQueryHandler(
+                    self.prompt_delete_me, pattern="^admin_delete_me$", run_async=True),
+                CallbackQueryHandler(
+                    self.prompt_delete_user_name, pattern="^admin_delete_user_name$", run_async=True),
+                CallbackQueryHandler(
+                    self.prompt_delete_user, pattern="^admin_delete_user$", run_async=True),
+                CallbackQueryHandler(
+                    self.prompt_delete_all_users, pattern="^admin_delete_all_users$", run_async=True),
+                CallbackQueryHandler(
+                    self.prompt_ban_user, pattern="^admin_ban_user$", run_async=True),
+                CallbackQueryHandler(
+                    self.prompt_unban_user, pattern="^admin_unban_user$", run_async=True),
+                CallbackQueryHandler(
+                    self.stage_exit, pattern="^admin_exit$", run_async=True),
+            ]
+        }
+        self.states = self.bot.register_stage(self)
+        self.MENU = self.bot.unpack_states(self.states)[0]
 
         self.DELETE_USER_NAME_STAGE = self.bot.get_input_from_user(
             input_label="admin_delete_user_name",
@@ -159,8 +122,27 @@ class AdminConsole(object):
             input_handler=self.unban_user
         )
 
-        self.states = self.stage["states"]
-        self.MENU = self.bot.unpack_states(self.states)[0]
+    def init_users_data(self) -> None:
+        return super().init_users_data()
+
+    def stage_entry(self, update: Update, context: CallbackContext) -> USERSTATE:
+        query = update.callback_query
+        if query:
+            query.answer()
+
+        user: User = context.user_data.get("user")
+
+        if user.chatid in self.bot.admin_chatids:
+            user.logger.info("USER_IS_ADMIN_USER",
+                             f"User:{user.chatid} is an  admin, loading admin console")
+            return self.load_admin(update, context)
+        else:
+            user.logger.info("USER_IS_NORMAL_USER",
+                             f"User:{user.chatid} does not have admin privilege, skipping admin console")
+            return self.stage_exit(update, context)
+
+    def stage_exit(self, update: Update, context: CallbackContext) -> USERSTATE:
+        return super().stage_exit(update, context)
 
     def load_admin(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query
