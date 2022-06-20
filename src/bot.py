@@ -1,16 +1,16 @@
-import time
 from typing import (Any, Callable, Dict, List, Union)
 
 import telegram
-from telegram import (CallbackQuery, InlineKeyboardButton,
-                      InlineKeyboardMarkup, ParseMode, ReplyMarkup, Update)
+from telegram import (CallbackQuery, ParseMode, ReplyMarkup, Update)
 from telegram.ext import (Updater, CommandHandler, ConversationHandler,
-                          CallbackQueryHandler, MessageHandler, CallbackContext, Filters)
+                          CallbackQueryHandler, MessageHandler, CallbackContext)
 
 from user import (UserManager, User)
 from utils.log import Log
-from stage import (Stage, LetUserChoose, GetInputFromUser, EndConversation)
+from stage import (Stage, LetUserChoose, GetInputFromUser,
+                   GetInfoFromUser, EndConversation)
 
+# TODO Move this constants to another module
 USERSTATE = int
 MESSAGE_DIVIDER = "—————————————————————————\n"
 
@@ -330,182 +330,21 @@ class Bot(object):
 
         :return: Returns the stage_id of the stage created.
         """
-        debounce = True
+
         stage_id = f"collect:{data_label}"
-        INPUT_HANDLER, INPUT_CONFIRMATION = None, None
+        stage = GetInfoFromUser(
+            stage_id=stage_id,
+            next_stage_id=next_stage_id,
+            bot=self)
 
-        confirm_input_pattern = f"collect:{data_label}:confirm"
-        retry_input_pattern = f"collect:{data_label}:retry"
-
-        def prompt_entry(update: Update, context: CallbackContext) -> USERSTATE:
-            query = update.callback_query
-            if query:
-                query.answer()
-
-            nonlocal debounce
-
-            user: User = context.user_data.get("user")
-            saved_data = user.data.get(data_label)
-
-            if saved_data and use_last_saved:
-                if allow_update:
-                    user.logger.info("USER_DATA_INPUT_UPDATE_PROMPT",
-                                     f"User:{user.chatid} is choosing whether to update input({data_label})")
-
-                    context.user_data.update(
-                        {f"input:{data_label}": saved_data})
-
-                    text = f"Confirm your <b><u>{data_label}</u></b>:\n\n"
-                    text += f"<i>{additional_text}</i>\n\n" if additional_text else ""
-                    text += MESSAGE_DIVIDER
-                    text += f"<b>{saved_data}</b>\n"
-                    text += MESSAGE_DIVIDER
-
-                    self.edit_or_reply_message(
-                        update, context,
-                        text=text,
-                        reply_markup=InlineKeyboardMarkup([
-                            [
-                                InlineKeyboardButton(
-                                    "Confirm", callback_data=confirm_input_pattern),
-                                InlineKeyboardButton(
-                                    "Edit", callback_data=retry_input_pattern),
-                            ]
-                        ]),
-                    )
-
-                    return INPUT_CONFIRMATION
-                else:
-                    user.logger.info("USER_DATA_INPUT_UPDATE_FORBIDDEN",
-                                     f"User:{user.chatid} is forbidden from updating input({data_label}). Using old value...")
-                    return prompt_exit(update, context)
-            else:
-                user.logger.info("USER_DATA_INPUT_INIT_PROMPT",
-                                 f"User:{user.chatid} is choosing input({data_label})")
-                self.edit_or_reply_message(
-                    update, context,
-                    text=f"Please enter your <b>{data_label}</b>:" +
-                    (f"\n\n<i>{additional_text}</i>" if additional_text else " ")
-                )
-                debounce = False
-                return INPUT_HANDLER
-
-        def prompt_exit(update: Update, context: CallbackContext) -> USERSTATE:
-            return self.proceed_next_stage(stage_id, next_stage_id, update, context)
-
-        # --
-        def input_handler(update: Update, context: CallbackContext) -> USERSTATE:
-            nonlocal debounce
-
-            if not debounce and update.message is not None:
-                debounce = True
-
-                user: User = context.user_data.get("user")
-
-                user_input = update.message.text
-                formatted_user_input = input_formatter(user_input)
-
-                if user_input == "cancel":
-                    return self.proceed_next_stage(stage_id, self.end_stage.stage_id, update, context)
-                # elif user_input == "/start":
-                    # return self.proceed_next_stage(stage_id, None, update, context)
-
-                if formatted_user_input:
-                    user.logger.info("USER_DATA_INPUT_CONFIRMATION",
-                                     f"User:{user.chatid} entered an input({data_label}) of @{user_input}@")
-
-                    context.user_data.update(
-                        {f"input:{data_label}": formatted_user_input})
-
-                    self.edit_or_reply_message(
-                        update, context,
-                        text=f"Is your {data_label}: <b>{formatted_user_input}</b>?",
-                        reply_markup=InlineKeyboardMarkup([
-                            [
-                                InlineKeyboardButton(
-                                    "Confirm", callback_data=confirm_input_pattern),
-                                InlineKeyboardButton(
-                                    "Edit", callback_data=retry_input_pattern),
-                            ]
-                        ])
-                    )
-
-                    return INPUT_CONFIRMATION
-                else:
-                    user.logger.warning("USER_DATA_INPUT_WRONG_FORMAT",
-                                        f"User:{user.chatid} entered an input({data_label}) of the wrong format. @{user_input}@")
-
-                    text = f"Your input: <b>{user_input}</b> is invalid."
-                    expected_input_format = input_formatter(True)
-                    if expected_input_format is not True:
-                        text += f"\n\nExpected format: {expected_input_format}"
-
-                    self.edit_or_reply_message(
-                        update, context,
-                        text=text
-                    )
-                    return prompt_entry(update, context)
-
-        def confirm_input(update: Update, context: CallbackContext) -> USERSTATE:
-            query = update.callback_query
-            query.answer()
-
-            user: User = context.user_data.get("user")
-            user.logger.info("USER_DATA_INPUT_CONFIRMED",
-                             f"User:{user.chatid} confirmed an input({data_label})")
-            user.update_user_data(
-                data_label, context.user_data[f"input:{data_label}"])
-
-            # If we are already removing buttons, then there
-            # is no need to have an extra visual delay
-            # to make the change obvious
-            if not self.behavior_remove_inline_markup:
-                self.edit_or_reply_message(
-                    update, context,
-                    "💭 Loading..."
-                )
-                time.sleep(0.25)
-
-            return prompt_exit(update, context)
-
-        def retry_input(update: Update, context: CallbackContext) -> USERSTATE:
-            query = update.callback_query
-            query.answer()
-
-            nonlocal debounce
-
-            user: User = context.user_data.get("user")
-            user.logger.info("USER_DATA_INPUT_RETRY",
-                             f"User:{user.chatid} retrying an input({data_label})")
-
-            self.edit_or_reply_message(
-                update, context,
-                f"Please enter your <b>{data_label}</b>:"
-            )
-            debounce = False
-            return INPUT_HANDLER
-        # --
-
-        stage = self.add_stage(
-            stage_id=f"collect:{data_label}",
-            entry=prompt_entry,
-            exit=prompt_exit,
-            states={
-                data_label + "input_handler": [
-                    MessageHandler(Filters.all, input_handler, run_async=True)
-                ],
-                data_label + "confirmation": [
-                    CallbackQueryHandler(
-                        retry_input, pattern=f"^{retry_input_pattern}$", run_async=True),
-                    CallbackQueryHandler(
-                        confirm_input, pattern=f"^{confirm_input_pattern}$", run_async=True),
-                ]
-            }
+        stage.setup(
+            data_label,
+            input_formatter=input_formatter,
+            additional_text=additional_text,
+            use_last_saved=use_last_saved,
+            allow_update=allow_update
         )
-        states = stage["states"]
-        INPUT_HANDLER, INPUT_CONFIRMATION = self.unpack_states(states)
 
-        self.users_manager.add_data_field(data_label, "")
         return stage_id
 
     def end_of_chatbot(self, update: Update, context: CallbackContext) -> None:
