@@ -8,7 +8,7 @@ from telegram import (InlineKeyboardButton,
 from telegram.ext import (ConversationHandler, CallbackQueryHandler,
                           MessageHandler, CallbackContext, Filters)
 
-import utils.utils as utils
+from utils import utils
 from user import (UserManager, User)
 
 # TODO Move this constants to another module

@@ -15,7 +15,7 @@ import shutil
 from typing import Union
 from bot import Bot
 from user import UserManager, User
-import utils.utils as utils
+from utils import utils
 from utils.log import Log
 
 from stages.admin import AdminConsole

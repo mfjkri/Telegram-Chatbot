@@ -1,7 +1,7 @@
 import logging
 from typing import (TextIO, Union, Any, Callable)
 
-import utils.utils as utils
+from utils import utils
 
 FORMATTER = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
 
