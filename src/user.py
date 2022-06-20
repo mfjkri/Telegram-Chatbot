@@ -2,9 +2,9 @@ import sys
 import os
 import copy
 import logging
-from typing import (Any, List, Dict, Union)
+from typing import (Any, Dict, Union)
 
-import utils.utils as utils
+from utils import utils
 from utils.log import Log
 
 users_directory = utils.get_dir_or_create(os.path.join("users"))
@@ -22,7 +22,7 @@ class User():
         self.chatid = chatid
         self.data = None
         self.is_banned = False
-        self.users_manager = UsersManager
+        self.user_manager = UsersManager
         self.answered_callback_queries = []
 
         self.directory = os.path.join(users_directory, chatid)
@@ -45,13 +45,13 @@ class User():
         self.logger.info("CREATING_NEW_USER",
                          f"User:{self.chatid} is a new user. Creating their files...")
 
-        user_data = copy.deepcopy(self.users_manager.data_fields)
+        user_data = copy.deepcopy(self.user_manager.data_fields)
         self.data = user_data
 
         return os.path.join(self.directory, f"{self.chatid}.yaml")
 
     def update_user_data_from_file(self, user_data: Dict[str, Any]) -> Dict:
-        self.update_userdata_format(self.users_manager.data_fields, user_data)
+        # TODO Update outdated user data with new data fields (user_manager.data_fields)
         return user_data
 
     def load_user_from_file(self) -> None:
@@ -96,28 +96,6 @@ class User():
     def reset_user(self) -> None:
         self.create_new_user()
         self.save_user_to_file()
-
-    def update_userdata_format(self, node: Any, data_node: Any) -> None:
-        if isinstance(node, Dict):
-            for key, value in node.items():
-                if not key in data_node:
-                    data_node.update({key: copy.deepcopy(value)})
-                else:
-                    if isinstance(value, (Dict, List)):
-                        self.update_userdata_format(value, data_node.get(key))
-        elif isinstance(node, List) and isinstance(data_node, List):
-            if len(data_node) != len(node):
-                data_node.clear()
-                for index, value in enumerate(node):
-                    data_node.append(copy.deepcopy(value))
-            else:
-                for index, value in enumerate(node):
-                    if isinstance(value, (Dict, List)):
-                        if isinstance(data_node[index], (Dict, List)):
-                            self.update_userdata_format(
-                                value, data_node[index])
-                        else:
-                            data_node[index] = copy.deepcopy(value)
 
 
 class UserManager(object):
