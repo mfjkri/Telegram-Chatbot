@@ -22,7 +22,7 @@ class Stage(ABC):
         from bot import Bot
 
         self.bot: Bot = bot
-        self.user_manager: UserManager = self.bot.users_manager
+        self.user_manager: UserManager = self.bot.user_manager
 
         self.stage_id = stage_id
         self.next_stage_id = next_stage_id
@@ -32,6 +32,7 @@ class Stage(ABC):
 
     @abstractmethod
     def setup(self) -> None:
+        self.init_users_data()
         self.states = self.bot.register_stage(self)
 
     @abstractmethod
@@ -44,9 +45,13 @@ class Stage(ABC):
 
     @abstractmethod
     def stage_exit(self, update: Update, context: CallbackContext) -> USERSTATE:
+        query = update.callback_query
+        if query:
+            query.answer()
+
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
-            next_stage_id=self.bot.end_stage.stage_id,
+            next_stage_id=self.next_stage_id or self.bot.end_stage.stage_id,
             update=update, context=context
         )
         """"""
@@ -60,6 +65,8 @@ class LetUserChoose(Stage):
               choice_text: str,
               choices: List[Dict[str, str]],
               choices_per_row: Union[int, None]) -> None:
+
+        self.init_users_data()
 
         callbacks = []
         self.choice_text = choice_text
@@ -114,6 +121,8 @@ class GetInputFromUser(Stage):
               input_handler: Callable,
               exitable: bool = False) -> None:
 
+        self.init_users_data()
+
         self.input_text = input_text
         self.input_handler = input_handler
         self.exitable = exitable
@@ -166,6 +175,8 @@ class GetInfoFromUser(Stage):
               allow_update: bool) -> None:
 
         self.data_label = data_label
+        self.init_users_data()
+
         self.input_formatter = input_formatter
         self.additional_text = additional_text
         self.use_last_saved = use_last_saved
@@ -192,7 +203,7 @@ class GetInfoFromUser(Stage):
             self.states)
 
     def init_users_data(self) -> None:
-        self.users_manager.add_data_field(self.data_label, "")
+        self.user_manager.add_data_field(self.data_label, "")
 
     def stage_entry(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query
