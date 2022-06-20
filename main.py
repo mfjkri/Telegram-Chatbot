@@ -1,5 +1,6 @@
 # shebang
 import sys
+
 sys.path.append("src")
 
 import logging
@@ -12,7 +13,7 @@ from telegram.ext import CallbackContext
 
 from bot import (MESSAGE_DIVIDER, USERSTATE, Bot)
 from user import (UserManager, User)
-import utils.utils as utils
+from utils import utils
 from utils.log import Log
 from stages.admin import AdminConsole
 from stages.authenticate import Authenticate
@@ -83,22 +84,24 @@ def main():
     STAGE_AUTHENTICATE = "authenticate"
     STAGE_COLLECT_USERNAME = "collect:username"
     STAGE_DISCLAIMER = "choose:disclaimer"
-    STAGE_CTF = "CTF"
+    STAGE_CTF = "ctf"
     STAGE_END = "end"
 
     # Stage admin
-    admin: AdminConsole = AdminConsole(bot)
-    admin.setup(
+    admin: AdminConsole = AdminConsole(
         stage_id=STAGE_ADMIN,
-        next_stage_id=STAGE_AUTHENTICATE
+        next_stage_id=STAGE_AUTHENTICATE,
+        bot=bot
     )
+    admin.setup()
 
     # Stage authenticate
-    authenticate: Authenticate = Authenticate(bot)
-    authenticate.setup(
+    authenticate: Authenticate = Authenticate(
         stage_id=STAGE_AUTHENTICATE,
-        next_stage_id=STAGE_COLLECT_USERNAME
+        next_stage_id=STAGE_COLLECT_USERNAME,
+        bot=bot
     )
+    authenticate.setup()
 
     # Stage collect:username
     def format_name_input(input_str: Union[str, bool]):
@@ -140,11 +143,12 @@ def main():
     )
 
     # Stage ctf
-    ctf: Ctf = Ctf(os.path.join("ctf"), bot)
-    ctf.setup(  # This stage id is CTF
+    ctf: Ctf = Ctf(
         stage_id=STAGE_CTF,
         next_stage_id=STAGE_END,
+        bot=bot
     )
+    ctf.setup()
 
     # Start Bot
     logger.info(False, "")
@@ -155,7 +159,8 @@ def main():
     bot.set_first_stage(STAGE_ADMIN)
     bot.set_end_of_chatbot(
         lambda update, context: bot.edit_or_reply_message(
-            update, context, "You have exited the conversation. \n\nUse /start to begin a new one.")
+            update, context, "You have exited the conversation. \n\nUse /start to begin a new one.",
+            reply_message=True)
     )
     bot.start(live_mode=LIVE_MODE)
 
