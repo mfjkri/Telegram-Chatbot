@@ -1,4 +1,4 @@
-from typing import (Union)
+from typing import Optional
 
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
 from telegram.ext import (CallbackQueryHandler, CallbackContext)
@@ -232,8 +232,7 @@ class AdminConsole(Stage):
         )
 
     def delete_user_name(self, chatid: str, update: Update, context: CallbackContext) -> USERSTATE:
-        target_user: Union[User,
-                           None] = self.user_manager.get_from_chatid(chatid)
+        target_user: Optional[User] = self.user_manager.get_from_chatid(chatid)
 
         if target_user:
             target_user.data.update({"username": ""})
@@ -242,8 +241,7 @@ class AdminConsole(Stage):
         return self.load_admin(update, context)
 
     def reset_user(self, chatid: str, update: Update, context: CallbackContext) -> USERSTATE:
-        target_user: Union[User,
-                           None] = self.user_manager.get_from_chatid(chatid)
+        target_user: Optional[User] = self.user_manager.get_from_chatid(chatid)
 
         if target_user:
             target_user.reset_user()
@@ -258,8 +256,7 @@ class AdminConsole(Stage):
         return self.load_admin(update, context)
 
     def ban_user(self, chatid: str, update: Update, context: CallbackContext) -> USERSTATE:
-        target_user: Union[User,
-                           None] = self.user_manager.get_from_chatid(chatid)
+        target_user: Optional[User] = self.user_manager.get_from_chatid(chatid)
 
         if target_user:
             self.user_manager.ban_user(chatid)

@@ -1,4 +1,4 @@
-from typing import (Any, Callable, Dict, List, Union)
+from typing import (Any, Callable, Dict, List, Union, Optional)
 
 import telegram
 from telegram import (CallbackQuery, ParseMode, ReplyMarkup, Update)
@@ -108,7 +108,7 @@ class Bot(object):
 
     def proceed_next_stage(self,
                            current_stage_id: str,
-                           next_stage_id: Union[str, None],
+                           next_stage_id: Optional[str],
                            update: Update, context: CallbackContext) -> USERSTATE:
         """
         Helper function to proceed from one stage to the next.
@@ -214,7 +214,7 @@ class Bot(object):
                         choice_label: str,
                         choice_text: str,
                         choices: List[Dict[str, str]],
-                        choices_per_row: Union[int, None] = None) -> str:
+                        choices_per_row: Optional[int] = None) -> str:
         """
         In-built function to create a stage that presents the user with a series of choices.
         stage_id of the stage created is of the format {choose:CHOICE_LABEL}

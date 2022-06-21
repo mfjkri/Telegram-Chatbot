@@ -99,7 +99,7 @@ sys.path.append("src")
 import os
 import argparse
 import re
-from typing import (Dict, Union)
+from typing import (Dict, Optional)
 
 from utils.utils import (load_yaml_file, get_dir_or_create)
 
@@ -115,7 +115,7 @@ LOGS_PATTERNS = {
 }
 
 
-def extract_data_type_from_line(data_type: str, log_line: str) -> Union[str, None]:
+def extract_data_type_from_line(data_type: str, log_line: str) -> Optional[str]:
     # 2022-04-28 14:22:46,376 [INFO] $CODE::USER_CTF_CORRECT_ANSWER_1 || User:1026217187 @40@ ____
 
     assert data_type in LOGS_PATTERNS, f"UNKNOWN OR MALFORMED DATA_TYPE LOOKUP: {data_type}"

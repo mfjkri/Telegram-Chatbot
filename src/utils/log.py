@@ -1,5 +1,5 @@
 import logging
-from typing import (TextIO, Union, Any, Callable)
+from typing import (TextIO, Union, Any, Callable, Optional)
 
 from utils import utils
 
@@ -8,7 +8,7 @@ FORMATTER = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
 
 class Log:
 
-    def __init__(self, name: str, stream_handle: Union[TextIO, None] = None, file_handle: Union[str, None] = None, log_level: int = logging.INFO):
+    def __init__(self, name: str, stream_handle: Optional[TextIO] = None, file_handle: Optional[str] = None, log_level: int = logging.INFO):
         logger = logging.getLogger(name)
 
         self.logger = logger

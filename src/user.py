@@ -2,7 +2,7 @@ import sys
 import os
 import copy
 import logging
-from typing import (Any, Dict, Union)
+from typing import (Any, Dict, Optional)
 
 from utils import utils
 from utils.log import Log
@@ -116,7 +116,7 @@ class UserManager(object):
                              f"Using cached UserClass for User:{chatid}.")
             return self.users.get(chatid)
 
-    def get_from_chatid(self, chatid: str) -> Union[User, None]:
+    def get_from_chatid(self, chatid: str) -> Optional[User]:
         return self.users.get(chatid)
 
     def update_banned_list(self) -> None:

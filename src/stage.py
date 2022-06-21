@@ -1,6 +1,6 @@
 import time
 from abc import (ABC, abstractmethod)
-from typing import (Callable, Dict, List, Union)
+from typing import (Callable, Dict, List, Union, Optional)
 
 
 from telegram import (InlineKeyboardButton,
@@ -64,7 +64,7 @@ class LetUserChoose(Stage):
     def setup(self, choice_label: str,
               choice_text: str,
               choices: List[Dict[str, str]],
-              choices_per_row: Union[int, None]) -> None:
+              choices_per_row: Optional[int]) -> None:
 
         self.init_users_data()
 
