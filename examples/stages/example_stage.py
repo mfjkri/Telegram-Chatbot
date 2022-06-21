@@ -1,8 +1,9 @@
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
 from telegram.ext import (CallbackQueryHandler, CallbackContext)
 
-from bot import (Bot, USERSTATE)
-from user import (User, UserManager)
+from bot import USERSTATE
+from user import User
+from stage import Stage
 
 
 # -------------------------------- TAKE NOTES -------------------------------- #
@@ -59,22 +60,57 @@ from user import (User, UserManager)
 # ---------------------------------------------------------------------------- #
 
 
-class Example(object):
+class Example(Stage):
     # Initializer function
-    def __init__(self, bot: Bot):
+    def __init__(self, stage_id: str, next_stage_id: str, bot):
         # Store a reference to Bot and UserManager singletons
-        self.bot: Bot = bot
-        self.user_manager: UserManager = UserManager()
+        # self.bot: Bot = bot
+        # self.user_manager: UserManager = UserManager()
 
         # Initializes
-        self.stage = None
-        self.states = []
-        self.stage_id = None
-        self.next_stage_id = None
+        # self.stage_id = None
+        # self.next_stage_id = None
+        # self._states = {}
+        # self.states = {}
 
-        bot.add_custom_stage_handler(self)
+        return super().__init__(stage_id, next_stage_id, bot)
 
-        self.init_users_data()
+    def setup(self) -> None:
+        self._states = {
+            "MENU": [
+                CallbackQueryHandler(
+                    self.prompt_question, pattern="^example_prompt_question$", run_async=True),
+                CallbackQueryHandler(
+                    self.prompt_color_selection, pattern="^example_prompt_color$", run_async=True),
+                CallbackQueryHandler(
+                    self.stage_exit, pattern="^example_exit$", run_async=True),
+            ]
+        }
+        self.states = self.bot.register_stage(self)
+        self.MENU = self.bot.unpack_states(self.states)[0]
+
+        self.SELECT_COLOR = self.bot.let_user_choose(
+            choice_label="example_color",
+            choice_text="Please select your color",
+            choices=[
+                {
+                    "text": "Red",
+                    "callback": lambda update, context: self.color_selected("Red", update, context)
+                },
+
+                {
+                    "text": "Blue",
+                    "callback": lambda update, context: self.color_selected("Blue", update, context)
+                },
+
+            ],
+            choices_per_row=2
+        )
+        self.QUESTION_STAGE = self.bot.get_input_from_user(
+            input_label="example_question",
+            input_text="What is 1 + 1?",
+            input_handler=self.check_answer
+        )
 
     def init_users_data(self) -> None:
         """
@@ -93,7 +129,7 @@ class Example(object):
             "color": None,
         })
 
-    def entry_example(self, update: Update, context: CallbackContext) -> USERSTATE:
+    def stage_entry(self, update: Update, context: CallbackContext) -> USERSTATE:
         """
         This is the function called when another stage/state is proceeding to it:
 
@@ -134,7 +170,7 @@ class Example(object):
 
         return self.load_menu(update, context)
 
-    def exit_example(self, update: Update, context: CallbackContext) -> USERSTATE:
+    def stage_exit(self, update: Update, context: CallbackContext) -> USERSTATE:
         """
         This is a function called internally (within this stage).
         It will never be called from outside this stage by default.
@@ -157,60 +193,17 @@ class Example(object):
 
                 return self.exit_example(update,context)
         """
-        query = update.callback_query
-        if query:
-            query.answer()
+        # query = update.callback_query
+        # if query:
+        #     query.answer()
 
-        return self.bot.proceed_next_stage(
-            current_stage_id=self.stage_id,
-            next_stage_id=self.next_stage_id,
-            update=update, context=context
-        )
+        # return self.bot.proceed_next_stage(
+        #     current_stage_id=self.stage_id,
+        #     next_stage_id=self.next_stage_id,
+        #     update=update, context=context
+        # )
 
-    def setup(self, stage_id: str, next_stage_id: str) -> None:
-        self.stage_id = stage_id
-        self.next_stage_id = next_stage_id
-
-        self.stage = self.bot.add_stage(
-            stage_id=stage_id,
-            entry=self.entry_example,
-            exit=self.exit_example,
-            states={
-                "MENU": [
-                    CallbackQueryHandler(
-                        self.prompt_question, pattern="^example_prompt_question$", run_async=True),
-                    CallbackQueryHandler(
-                        self.prompt_color_selection, pattern="^example_prompt_color$", run_async=True),
-                    CallbackQueryHandler(
-                        self.exit_example, pattern="^example_exit$", run_async=True),
-                ]
-            }
-        )
-        self.states = self.stage["states"]
-
-        self.SELECT_COLOR = self.bot.let_user_choose(
-            choice_label="example_color",
-            choice_text="Please select your color",
-            choices=[
-                {
-                    "text": "Red",
-                    "callback": lambda update, context: self.color_selected("Red", update, context)
-                },
-
-                {
-                    "text": "Blue",
-                    "callback": lambda update, context: self.color_selected("Blue", update, context)
-                },
-
-            ],
-            choices_per_row=2
-        )
-        self.QUESTION_STAGE = self.bot.get_input_from_user(
-            input_label="example_question",
-            input_text="What is 1 + 1?",
-            input_handler=self.check_answer
-        )
-        self.MENU = self.bot.unpack_states(self.states)[0]
+        return super().stage_exit(update, context)
 
     def load_menu(self, update: Update, context: CallbackContext) -> USERSTATE:
         user: User = context.user_data.get("user")
