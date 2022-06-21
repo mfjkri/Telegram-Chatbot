@@ -64,7 +64,12 @@ class Emulator:
         self.user_manager: UserManager = UserManager()
         self.user_manager.init(self.logger, False)
 
-        self.ctf: Ctf = Ctf(os.path.join("ctf"), self.bot)
+        self.ctf: Ctf = Ctf(
+            stage_id="ctf",
+            next_stage_id="",
+            bot=self.bot
+        )
+        self.ctf.setup()
         self.challenges = self.ctf.challenges
 
         self.fake_users = {}
