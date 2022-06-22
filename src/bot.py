@@ -63,17 +63,19 @@ class Bot(object):
 
         :return: Returns the stage as a dictionary.
         """
+        if stage.stage_id not in self.stages:
+            self.stages.update({stage.stage_id: stage})
 
-        self.stages.update({stage.stage_id: stage})
-
-        states = {}
-        for state_name, callback_handlers in stage._states.items():
-            states.update({state_name: self.add_state(
-                stage_id=stage.stage_id,
-                state_name=stage.stage_id + state_name,
-                callbacks=callback_handlers
-            )})
-        return states
+            states = {}
+            for state_name, callback_handlers in stage._states.items():
+                states.update({state_name: self.add_state(
+                    stage_id=stage.stage_id,
+                    state_name=stage.stage_id + state_name,
+                    callbacks=callback_handlers
+                )})
+            return states
+        else:
+            return {}
 
     def unpack_states(self,
                       states: Dict[str, Union[str, CallbackQueryHandler, MessageHandler]]) -> List:
