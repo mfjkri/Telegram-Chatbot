@@ -76,6 +76,8 @@ class Example(Stage):
         return super().__init__(stage_id, next_stage_id, bot)
 
     def setup(self) -> None:
+        self.init_users_data()
+
         self._states = {
             "MENU": [
                 CallbackQueryHandler(
