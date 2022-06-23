@@ -388,8 +388,8 @@ class EndConversation(Stage):
         if self.goodbye_message:
             self.bot.edit_or_reply_message(
                 update, context,
-                "You have exited the conversation. \n\nUse /start to begin a new one.",
-                self.reply_message)
+                text=self.goodbye_message,
+                reply_message=self.reply_message)
         return ConversationHandler.END
 
     def stage_exit(self, update: Update, context: CallbackContext) -> USERSTATE:

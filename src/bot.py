@@ -42,6 +42,17 @@ class Bot(object):
         self.states.append(new_state)
         return len(self.states) - 1
 
+    def get_stage_from_id(self, stage_id: str) -> Union[Stage, None]:
+        """
+        Helper function to retrieve a registered stage from its stage_id
+
+        :param: stage_id: Stage identifier, this is the unique name that the stage is registered with. (Required)
+
+        :return: Returns the stage as a Stage object if found, else returns None.
+        """
+
+        return self.stages.get(stage_id, None)
+
     def register_stage(self, stage: Stage) -> Dict[str, List[Union[CallbackQueryHandler, MessageHandler]]]:
         """
         Helper function to create a stage.
@@ -326,6 +337,46 @@ class Bot(object):
 
         return stage_id
 
+    def make_end_stage(self,
+                       stage_id: Optional[str] = "end",
+                       goodbye_message: str = "",
+                       reply_message: bool = True) -> str:
+        """
+        Creates and sets the end stage for the bot.
+
+        :param stage_id: Stage identifier string of the end stage. (Required)
+        :param goodbye_message: Message to display when user reaches end of conversation. (Optional, Defaults to empty string)
+        :param stage_id: Whether message should override last message sent or as a new message. (Optional, Defaults to True)
+
+        :return: Returns the stage_id of the stage created.
+        """
+
+        stage = EndConversation(
+            stage_id=stage_id,
+            next_stage_id=None,
+            bot=self
+        )
+        stage.setup(
+            goodbye_message=goodbye_message,
+            reply_message=reply_message
+        )
+
+        self.end_stage = stage
+
+        return stage_id
+
+    def set_first_stage(self, stage_id: str) -> None:
+        """
+        Sets the starting stage for the bot (stage to proceed right after User sends the /start command).
+
+        :param stage_id: Stage identifier string of the starting stage. (Required)
+        :return: None
+        """
+
+        first_stage: Stage = self.get_stage_from_id(stage_id)
+        assert first_stage, f"{stage_id} is not a valid/registered stage of bot"
+        self.first_stage: Stage = first_stage
+
     def conversation_entry(self, update: Update, context: CallbackContext) -> USERSTATE:
         if update.message:
             chatid = str(update.message.chat_id)
@@ -338,7 +389,7 @@ class Bot(object):
 
                 return self.proceed_next_stage(
                     current_stage_id="start",
-                    next_stage_id=self.first_stage,
+                    next_stage_id=self.first_stage.stage_id,
                     update=update, context=context
                 )
 
@@ -352,38 +403,14 @@ class Bot(object):
             self.logger.error("USER_MESSAGE_INVALID",
                               f"Unknown user has entered a message with no valid update")
 
-    def end_of_chatbot(self, update: Update, context: CallbackContext) -> None:
-        """
-        Default function that is called in bot.end_stage.stage_entry, when user reaches end of conversation.
-
-        :param update: (Required)
-        :param context: (Required)
-
-        :return: None
-        """
-
-        self.edit_or_reply_message(
-            update, context,
-            text="Find out more about what we do at www.csa.gov.sg!"
-            "\n\nUse /start to resume where you left off.",
-            reply_message=True
-        )
-
     def start(self, live_mode: bool = False) -> None:
         """
         Starts the bot
 
-        :param live_mode: Whether to drop_pending_updates when starting to poll. (Optional, defaults to False)
+        :param live_mode: Whether to drop_pending_updates when starting to poll. (Optional, Defaults to False)
 
         :return: None
         """
-
-        self.end_stage: EndConversation = EndConversation(
-            stage_id="end",
-            next_stage_id=None,
-            bot=self
-        )
-        self.end_stage.setup()
 
         conversation_states = {}
         for idx, state in enumerate(self.states):
@@ -411,25 +438,6 @@ class Bot(object):
         self.updater.start_polling(drop_pending_updates=live_mode)
         self.updater.idle()
 
-    def set_first_stage(self, stage_id: str) -> None:
-        """
-        Sets the starting stage for the bot (stage to proceed right after User sends the /start command).
-
-        :param stage_id: Stage identifier string of the starting stage. (Required)
-        :return: None
-        """
-
-        self.first_stage = stage_id
-
-    def set_end_of_chatbot(self, end_of_chatbot: Callable) -> None:
-        """
-        Overrides the default bot.end_of_chatbot with a custom one.
-
-        :param end_of_chatbot: Custom function to replace default end_of_chatbot (Required)
-        :return: None
-        """
-        self.end_of_chatbot = end_of_chatbot
-
     def init(self, token: str, logger: Log, config: Dict[str, Any]) -> None:
         """
         Initializes the Bot class.
@@ -448,7 +456,8 @@ class Bot(object):
         self.stages = {}
         self.states = []
 
-        self.first_stage = None
+        self.first_stage: Stage = None
+        self.end_stage: EndConversation = None
 
         self.updater = updater
         self.dispatcher = dispatcher
