@@ -458,6 +458,7 @@ class Bot(object):
         self.config = config
         self.bot_config = config["BOT"]
         self.admin_chatids = config.get("ADMIN_CHATIDS", [])
+        self.anonymous_user_passcodes = config.get("MAKE_ANONYMOUS", False)
         self.user_passcodes = config.get("USER_PASSCODES", [])
 
         self.behavior_remove_inline_markup = self.bot_config["REMOVE_INLINE_KEYBOARD_MARKUP"]

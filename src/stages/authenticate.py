@@ -129,10 +129,19 @@ class Authenticate(Stage):
             if user.data.get("name") == name:
                 return self.stage_exit(update, context)
             else:
-                return self.confirm_identify(
-                    name, group,
-                    update, context
-                )
+                if not self.bot.anonymous_user_passcodes:
+                    return self.confirm_identify(
+                        name, group,
+                        update, context
+                    )
+                else:
+                    context.user_data.update({"pending_name": name})
+                    context.user_data.update({"pending_group": group})
+
+                    return self.accept_identity(
+                        update, context
+                    )
+
         else:
             user.logger.info(f"USER_AUTHENTICATE_WRONG_PASSCODE",
                              f"User:{user.chatid} has tried an invalid passcode: @{sanitized_input}@")
@@ -173,7 +182,8 @@ class Authenticate(Stage):
 
     def accept_identity(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query
-        query.answer()
+        if query:
+            query.answer()
 
         pending_name = context.user_data.pop("pending_name")
 
@@ -184,10 +194,11 @@ class Authenticate(Stage):
         user.update_user_data(
             "name",
             pending_name
+            #pending_name if not self.bot.anonymous_user_passcodes else "anonymous"
         )
         user.update_user_data(
             "username",
-            pending_name
+            pending_name if not self.bot.anonymous_user_passcodes else ""
         )
         user.update_user_data(
             "group",
