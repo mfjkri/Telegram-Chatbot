@@ -56,6 +56,9 @@ class Stage(ABC):
         )
         """"""
 
+# ---------------------------------------------------------------------------- #
+# ------------------------------ In-built stages ----------------------------- #
+
 
 class LetUserChoose(Stage):
     def __init__(self, stage_id: str, next_stage_id: str, bot):
@@ -359,7 +362,11 @@ class EndConversation(Stage):
     def __init__(self, stage_id: str, next_stage_id: str, bot):
         return super().__init__(stage_id, next_stage_id, bot)
 
-    def setup(self) -> None:
+    def setup(self,
+              goodbye_message: Optional[str] = "",
+              reply_message: bool = True) -> None:
+        self.goodbye_message = goodbye_message
+        self.reply_message = reply_message
         return super().setup()
 
     def init_users_data(self) -> None:
@@ -378,7 +385,11 @@ class EndConversation(Stage):
             self.bot.logger.info("UNREGISTERED_USER_END_OF_CONVERSATION",
                                  f"Unregistered or banned user has reached the end of the conversation")
 
-        self.bot.end_of_chatbot(update, context)
+        if self.goodbye_message:
+            self.bot.edit_or_reply_message(
+                update, context,
+                "You have exited the conversation. \n\nUse /start to begin a new one.",
+                self.reply_message)
         return ConversationHandler.END
 
     def stage_exit(self, update: Update, context: CallbackContext) -> USERSTATE:
