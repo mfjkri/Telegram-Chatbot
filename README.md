@@ -102,6 +102,8 @@ If you are running any other OS such as **MacOS**, you will have to build the pr
      REMOVE_INLINE_KEYBOARD_MARKUP: True
 
    # ------------------------------ USER PASSCODES ------------------------------ #
+   MAKE_ANONYMOUS: false
+
    USER_PASSCODES:
      {}
      # START_OF_PASSCODES_MARKER
@@ -141,6 +143,8 @@ BOT:
   REMOVE_INLINE_KEYBOARD_MARKUP: True
 
 # ------------------------------ USER PASSCODES ------------------------------ #
+MAKE_ANONYMOUS: false
+
 USER_PASSCODES:
   # START_OF_PASSCODES_MARKER
   A1234: John Smith
@@ -170,6 +174,14 @@ LOG_USER_TO_APP_LOGS: false
 - **`BOT`**:
 
   If **REMOVE_INLINE_KEYBOARD_MARKUP** is set to `true` then the bot will remove InlineKeyboardMarkup for its previous message everytime an InlineKeyboardButton is pressed (handled through the query.answer callback that is called after the event is triggered). This is to prevent users from using old menu buttons however can cause visual confusion to user due to multiple updates to dislay messages (first Remove keyboard-markup then update message content to new text).
+
+- **`MAKE_ANONYMOUS`**:
+
+  **Note:** This field is only used with [`Stage:Authenticate`](src/stages/authenticate.py). If you are not using the stage, you can ignore this field.
+
+  If set to `true` then the passcodes is used only to allow users access to the bot and not for indentifcation. They will not be prompted of the type or name associated with the passcode.
+
+  If set to `false` then passcodes are also used to identify users. Users will be prompted to confirm that their identity matches the one registered for the passcode.
 
 - **`USER_PASSCODES`**:
 

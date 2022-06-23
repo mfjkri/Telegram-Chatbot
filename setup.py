@@ -94,9 +94,13 @@ if __name__ == "__main__":
                         "  REMOVE_INLINE_KEYBOARD_MARKUP: False\n\n",
 
                         "# ------------------------------ USER PASSCODES ------------------------------ #\n"
+                        "MAKE_ANONYMOUS: false\n\n",
+
                         "USER_PASSCODES:\n",
                         "  # START_OF_PASSCODES_MARKER\n\n"
+
                         "  A1234: John Smith\n\n"
+
                         "  # END_OF_PASSCODES_MARKER\n\n"
 
                         "# ------------------------------ ADMIN CHATIDS ------------------------------ #\n"
