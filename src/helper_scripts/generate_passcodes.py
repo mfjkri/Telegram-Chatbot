@@ -25,13 +25,9 @@ Samantha Lee, Group A
 # $ python src/helper_scripts/generate_passcodes.py -i path/to/userlist.txt
 
 # Now look in config.yaml.
-# You should find the newly generated passcodes for the names
-# in userlist.txt
+# You should find the newly generated passcodes
+# for each of the given name
 # ---------------------------------------------------------------------------- #
-
-
-def strip_string_constructors(s: str) -> str:
-    return ''.join([char for char in s if char not in '",'])
 
 
 def generate_passcodes(new_users: List[List[str]]) -> None:
