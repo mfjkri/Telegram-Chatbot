@@ -14,7 +14,7 @@ import shutil
 
 from typing import Union
 from bot import Bot
-from user import UserManager, User
+from user import UserManager
 from utils import utils
 from utils.log import Log
 
@@ -72,25 +72,30 @@ def main():
     STAGE_END = "end"
 
     # Stage admin
-    admin: AdminConsole = AdminConsole(bot)
-    admin.setup(
-        stage_id=STAGE_ADMIN,           # This stage id is admin
-        next_stage_id=STAGE_AUTHENTICATE
+    admin: AdminConsole = AdminConsole(
+        stage_id=STAGE_ADMIN,
+        next_stage_id=STAGE_AUTHENTICATE,
+        bot=bot
     )
+    admin.setup()
+    bot.set_first_stage(STAGE_ADMIN)
 
     # Stage authenticate
-    authenticate: Authenticate = Authenticate(bot)
-    authenticate.setup(
-        stage_id=STAGE_AUTHENTICATE,    # This stage is authenticate
-        next_stage_id=STAGE_COLLECT_USERNAME
+    authenticate: Authenticate = Authenticate(
+        stage_id=STAGE_AUTHENTICATE,
+        next_stage_id=STAGE_COLLECT_USERNAME,
+        bot=bot
     )
+    authenticate.setup()
 
     # Stage collect:username
     def format_name_input(input_str: Union[str, bool]):
-        if input_str is not True:
-            return utils.format_input_str(input_str, True, "' ")
-    bot.get_info_from_user(
-        data_label="username",          # This stage id is collect:username
+        if input_str is True:
+            return "Only alphanumeric characters"
+        else:
+            return utils.format_input_str(input_str, True)
+    bot.get_info_from_user(  # This stage id is collect:username
+        data_label="username",
         next_stage_id=STAGE_COLLECT_EMAIL,
         input_formatter=format_name_input,
         additional_text="This is the name displayed on the leaderboard.",
@@ -113,10 +118,18 @@ def main():
     )
 
     # Stage example
-    example: Example = Example(bot)
-    example.setup(
+    example: Example = Example(
         stage_id=STAGE_EXAMPLE,         # This stage id is example
-        next_stage_id=STAGE_END
+        next_stage_id=STAGE_END,
+        bot=bot
+    )
+    example.setup()
+
+    # Stage end
+    bot.make_end_stage(
+        stage_id=STAGE_END,
+        goodbye_message="You have exited the conversation. \n\nUse /start to begin a new one.",
+        reply_message=True
     )
 
     # Start Bot
@@ -124,11 +137,6 @@ def main():
     logger.info(False, "Initializing...")
     logger.info(False, "")
 
-    bot.set_first_stage(STAGE_ADMIN)
-    bot.set_end_of_chatbot(
-        lambda update, context: bot.edit_or_reply_message(
-            update, context, "You have exited the conversation. \n\nUse /start to begin a new one.")
-    )
     bot.start(live_mode=LIVE_MODE)
 
 
