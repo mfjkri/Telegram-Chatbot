@@ -5,14 +5,11 @@ from telegram import (CallbackQuery, ParseMode, ReplyMarkup, Update)
 from telegram.ext import (Updater, CommandHandler, ConversationHandler,
                           CallbackQueryHandler, MessageHandler, CallbackContext)
 
+from constants import USERSTATE
 from user import (UserManager, User)
 from utils.log import Log
 from stage import (Stage, LetUserChoose, GetInputFromUser,
                    GetInfoFromUser, EndConversation)
-
-# TODO Move this constants to another module
-USERSTATE = int
-MESSAGE_DIVIDER = "—————————————————————————\n"
 
 
 class Bot(object):

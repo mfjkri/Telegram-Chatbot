@@ -8,12 +8,9 @@ from telegram import (InlineKeyboardButton,
 from telegram.ext import (ConversationHandler, CallbackQueryHandler,
                           MessageHandler, CallbackContext, Filters)
 
+from constants import (USERSTATE, MESSAGE_DIVIDER)
 from utils import utils
 from user import (UserManager, User)
-
-# TODO Move this constants to another module
-USERSTATE = int
-MESSAGE_DIVIDER = "—————————————————————————\n"
 
 
 class Stage(ABC):

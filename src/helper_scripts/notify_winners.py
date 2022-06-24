@@ -4,7 +4,7 @@ sys.path.extend(["src", "."])
 import requests
 
 from main import BOT_TOKEN
-from bot import MESSAGE_DIVIDER
+from constants import MESSAGE_DIVIDER
 from helper_scripts.leaderboard import update_leaderboard
 
 

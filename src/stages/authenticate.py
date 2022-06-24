@@ -3,7 +3,7 @@ from typing import List
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
 from telegram.ext import (CallbackQueryHandler, CallbackContext)
 
-from bot import (MESSAGE_DIVIDER, USERSTATE)
+from constants import (USERSTATE, MESSAGE_DIVIDER)
 from user import User
 from utils import utils
 from stage import Stage

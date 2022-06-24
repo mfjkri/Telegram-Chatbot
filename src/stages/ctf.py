@@ -12,7 +12,7 @@ from telegram import (InlineKeyboardButton,
 from telegram.ext import (CallbackQueryHandler,
                           MessageHandler, CallbackContext, Filters)
 
-from bot import (USERSTATE, MESSAGE_DIVIDER)
+from constants import (USERSTATE, MESSAGE_DIVIDER)
 from user import User
 from utils import utils
 from stage import Stage

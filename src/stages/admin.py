@@ -2,7 +2,8 @@ from typing import Optional
 
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
 from telegram.ext import (CallbackQueryHandler, CallbackContext)
-from bot import USERSTATE
+
+from constants import USERSTATE
 from user import User
 from stage import Stage
 

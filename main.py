@@ -11,7 +11,8 @@ from typing import Union
 from telegram import Update
 from telegram.ext import CallbackContext
 
-from bot import (MESSAGE_DIVIDER, USERSTATE, Bot)
+from constants import (USERSTATE, MESSAGE_DIVIDER)
+from bot import Bot
 from user import (UserManager, User)
 from utils import utils
 from utils.log import Log

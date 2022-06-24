@@ -3,7 +3,7 @@ import time
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
 from telegram.ext import (CallbackQueryHandler, CallbackContext)
 
-from bot import (USERSTATE, MESSAGE_DIVIDER)
+from constants import (USERSTATE, MESSAGE_DIVIDER)
 from user import User
 from stage import Stage
 
