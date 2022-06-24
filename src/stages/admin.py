@@ -61,7 +61,7 @@ class AdminConsole(Stage):
     def setup(self) -> None:
         self.init_users_data()
 
-        self._states = {
+        self.states = {
             "MENU": [
                 CallbackQueryHandler(
                     self.prompt_delete_me, pattern="^admin_delete_me$", run_async=True),
@@ -79,7 +79,7 @@ class AdminConsole(Stage):
                     self.stage_exit, pattern="^admin_exit$", run_async=True),
             ]
         }
-        self.states = self.bot.register_stage(self)
+        self.bot.register_stage(self)
         self.MENU = self.bot.unpack_states(self.states)[0]
 
         self.DELETE_USER_NAME_STAGE = self.bot.get_input_from_user(

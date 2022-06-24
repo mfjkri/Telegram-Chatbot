@@ -56,12 +56,12 @@ class Bot(object):
     def register_stage(self, stage: Stage) -> Dict[str, List[Union[CallbackQueryHandler, MessageHandler]]]:
         """
         Helper function to create a stage.
-        Use this in your custom_stage.setup to create your stage and add it to the global stages.
+        Use this in your custom_stage.setup to register it as an active stage of the bot.
 
-        :param stage_id: Stage identifier, this is the unique name of your stage. (Required)
-        :param entry: The function called when the stage is being loaded (either from another stage or from /start) (Required)
-        :param exit: A function that is useful to have logic for, but it is not accessed outside of the stage logic. (Required)
-        :param states: States of the stage which also contains any handlers needed. (Required)
+        :param stage: Object of class/subclass of Stage (Required)
+            must have the follow fields initialized:
+            stage_id : str = "some_id"
+
             states = {
                 "STATE_ONE" = [
                     CallbackQueryHandler(...)
@@ -72,19 +72,20 @@ class Bot(object):
                 ]
             }
 
-        :return: Returns the stage as a dictionary.
+        :return: None
         """
         if stage.stage_id not in self.stages:
             self.stages.update({stage.stage_id: stage})
 
             states = {}
-            for state_name, callback_handlers in stage._states.items():
+            for state_name, callback_handlers in stage.states.items():
                 states.update({state_name: self.add_state(
                     stage_id=stage.stage_id,
                     state_name=stage.stage_id + state_name,
                     callbacks=callback_handlers
                 )})
-            return states
+
+            stage.states = states
         else:
             return {}
 

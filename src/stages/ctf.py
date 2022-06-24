@@ -78,7 +78,7 @@ class Ctf(Stage):
                         self.reveal_hint, pattern=f"^ctf_view_hint_{idx_h}:{idx_c}$", run_async=True)
                 )
 
-        self._states = {
+        self.states = {
             "MENU": menu_view_callbacks,
             "CHALLENGE_VIEW": challenge_view_callbacks,
             "LEADERBOARD_VIEW": [CallbackQueryHandler(self.load_menu, pattern="^ctf_return_to_menu$", run_async=True)],
@@ -86,7 +86,7 @@ class Ctf(Stage):
             "CHALLENGE_SUCCESS": [CallbackQueryHandler(self.load_menu, pattern="^ctf_return_to_menu$", run_async=True)],
             "CHALLENGE_WRONG": retry_challenge_callbacks
         }
-        self.states = self.bot.register_stage(self)
+        self.bot.register_stage(self)
         (
             self.MENU, self.CHALLENGE_VIEW, self.LEADERBOARD_VIEW,
             self.SUBMIT_CHALLENGE, self.CHALLENGE_SUCCESS, self.CHALLENGE_WRONG,

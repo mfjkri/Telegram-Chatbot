@@ -29,14 +29,13 @@ class Stage(ABC):
         self.next_stage_id = next_stage_id
 
         self.states = {}
-        self._states = {}
 
     @abstractmethod
     def setup(self) -> None:
         """"""
         self.init_users_data()
 
-        self._states = {
+        self.states = {
             # "STATE_NAME" : [
             #     CallbackQueryHandler(
             #         callback, pattern=f"^$",run_async=True),
@@ -49,7 +48,7 @@ class Stage(ABC):
             # ],
             # ...
         }
-        self.states = self.bot.register_stage(self)
+        self.bot.register_stage(self)
         # self.___, self.___ = self.bot.unpack_states(self.states)
 
     @abstractmethod
@@ -109,10 +108,10 @@ class LetUserChoose(Stage):
             self.keyboard[-1].append(InlineKeyboardButton(choice["text"],
                                                           callback_data=f"{choice_label}:choice:{idx}"))
 
-        self._states = {
+        self.states = {
             choice_label + "confirmation": callbacks
         }
-        self.states = self.bot.register_stage(self)
+        self.bot.register_stage(self)
         self.CHOICE_CONFIRMATION = self.bot.unpack_states(self.states)[0]
 
     def init_users_data(self) -> None:
@@ -152,11 +151,11 @@ class GetInputFromUser(Stage):
 
         self.debounce = True
 
-        self._states = {
+        self.states = {
             input_label + "message_handler": [
                 MessageHandler(Filters.all, self.message_handler, run_async=True)]
         }
-        self.states = self.bot.register_stage(self)
+        self.bot.register_stage(self)
         self.INPUT_MESSAGE_HANDLER = self.bot.unpack_states(self.states)[0]
 
     def init_users_data(self) -> None:
@@ -210,7 +209,7 @@ class GetInfoFromUser(Stage):
         self.confirm_input_pattern = f"collect:{data_label}:confirm"
         self.retry_input_pattern = f"collect:{data_label}:retry"
 
-        self._states = {
+        self.states = {
             data_label + "input_handler": [
                 MessageHandler(Filters.all, self.input_handler, run_async=True)
             ],
@@ -221,7 +220,7 @@ class GetInfoFromUser(Stage):
                     self.confirm_input, pattern=f"^{self.confirm_input_pattern}$", run_async=True),
             ]
         }
-        self.states = self.bot.register_stage(self)
+        self.bot.register_stage(self)
         self.INPUT_HANDLER, self.INPUT_CONFIRMATION = self.bot.unpack_states(
             self.states)
 

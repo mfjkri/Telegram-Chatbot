@@ -136,7 +136,7 @@ class Guardian(Stage):
                 choices_per_row=3
             )
 
-        self._states = {
+        self.states = {
             "INTRO_VIEW": [
                 CallbackQueryHandler(
                     self.load_guardian, pattern="^guardian_begin$", run_async=True),
@@ -148,7 +148,7 @@ class Guardian(Stage):
                     self.stage_exit, pattern="^guardian_finished$", run_async=True)
             ]
         }
-        self.states = self.bot.register_stage(self)
+        self.bot.register_stage(self)
         self.INTRO_VIEW, self.RESULTS_VIEW = self.bot.unpack_states(
             self.states)
 

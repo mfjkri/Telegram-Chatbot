@@ -61,7 +61,7 @@ class Authenticate(Stage):
     def setup(self) -> None:
         self.init_users_data()
 
-        self._states = {
+        self.states = {
             "IDENTITY_CONFIRMATION": [
                 CallbackQueryHandler(
                     self.confirm_choice, pattern=f"^auth_accept_identity$", run_async=True),
@@ -75,7 +75,7 @@ class Authenticate(Stage):
                     self.decline_identity, pattern=f"^auth_cancel_choice$", run_async=True)
             ]
         }
-        self.states = self.bot.register_stage(self)
+        self.bot.register_stage(self)
         self.IDENTITY_CONFIRMATION, self.CONFIRM_CHOICE = self.bot.unpack_states(
             self.states)
 
