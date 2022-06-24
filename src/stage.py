@@ -19,6 +19,7 @@ MESSAGE_DIVIDER = "————————————————————�
 class Stage(ABC):
     @abstractmethod
     def __init__(self, stage_id: str, next_stage_id: str, bot):
+        """"""
         from bot import Bot
 
         self.bot: Bot = bot
@@ -32,19 +33,39 @@ class Stage(ABC):
 
     @abstractmethod
     def setup(self) -> None:
+        """"""
         self.init_users_data()
+
+        self._states = {
+            # "STATE_NAME" : [
+            #     CallbackQueryHandler(
+            #         callback, pattern=f"^$",run_async=True),
+            #     CallbackQueryHandler(
+            #         callback, pattern=f"^$",run_async=True),
+            #     ...
+            # ],
+            # "STATE_NAME_2" : [
+            #     MessageHandler(Filters.all, callback, run_async=True)
+            # ],
+            # ...
+        }
         self.states = self.bot.register_stage(self)
+        # self.___, self.___ = self.bot.unpack_states(self.states)
 
     @abstractmethod
     def init_users_data(self) -> None:
         """"""
+        # self.user_manager.add_data_field("DATA_FIELD", "")
+        self.users_data_initialized = True
 
     @abstractmethod
     def stage_entry(self, update: Update, context: CallbackContext) -> USERSTATE:
         """"""
+        # return self.load_something(update, context)
 
     @abstractmethod
     def stage_exit(self, update: Update, context: CallbackContext) -> USERSTATE:
+        """"""
         query = update.callback_query
         if query:
             query.answer()
@@ -54,7 +75,6 @@ class Stage(ABC):
             next_stage_id=self.next_stage_id or self.bot.end_stage.stage_id,
             update=update, context=context
         )
-        """"""
 
 # ---------------------------------------------------------------------------- #
 # ------------------------------ In-built stages ----------------------------- #
@@ -207,6 +227,7 @@ class GetInfoFromUser(Stage):
 
     def init_users_data(self) -> None:
         self.user_manager.add_data_field(self.data_label, "")
+        return super().init_users_data()
 
     def stage_entry(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query

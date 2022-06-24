@@ -412,6 +412,14 @@ class Bot(object):
         :return: None
         """
 
+        for stage_id, registered_stage in self.stages.items():
+            assert hasattr(registered_stage,
+                           "users_data_initialized"), f"Stage:{stage_id} has not "\
+                "initialized its users_data.\n\n"\
+                "If this stage has no users_data to initialize, please set its init_users_data method to be:\n\n"\
+                "def init_users_data(self) -> None:\n"\
+                "\treturn super().init_users_data()"
+
         conversation_states = {}
         for idx, state in enumerate(self.states):
             conversation_states.update({idx: state["callbacks"]})
@@ -453,8 +461,8 @@ class Bot(object):
         updater = Updater(token)
         dispatcher = updater.dispatcher
 
-        self.stages = {}
-        self.states = []
+        self.stages: dict[str, Stage] = {}
+        self.states: List[dict] = []
 
         self.first_stage: Stage = None
         self.end_stage: EndConversation = None

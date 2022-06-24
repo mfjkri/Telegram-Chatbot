@@ -160,6 +160,7 @@ class Guardian(Stage):
         }
 
         self.user_manager.add_data_field("guardian_state", guardian_state)
+        return super().init_users_data()
 
     def stage_entry(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query

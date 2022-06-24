@@ -89,6 +89,7 @@ class Authenticate(Stage):
     def init_users_data(self) -> None:
         self.user_manager.add_data_field("name", "")
         self.user_manager.add_data_field("group", "")
+        return super().init_users_data()
 
     def stage_entry(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query
