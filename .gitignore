@@ -9,6 +9,8 @@ TODO.md
 
 config.yaml
 
+.VSCodeCounter/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
