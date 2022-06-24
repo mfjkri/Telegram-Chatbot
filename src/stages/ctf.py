@@ -164,6 +164,8 @@ class Ctf(Stage):
         return super().init_users_data()
 
     def stage_entry(self, update: Update, context: CallbackContext) -> USERSTATE:
+        if self.leaderboard_active and not self.leaderboard:
+            self.update_leaderboard()
         return self.load_menu(update, context)
 
     def stage_exit(self, update: Update, context: CallbackContext) -> USERSTATE:
