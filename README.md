@@ -831,8 +831,8 @@ Below is a more in-depth description however you might find it still insufficien
       ```python
         {
             "STATE_NAME" : [
-                CallbackQueryHandler(callback_function, pattern=state_pattern, run_async=True),
-                MessageHandler(Filters.all, callback_function, run_async=True)
+                CallbackQueryHandler(callback_function, pattern=state_pattern),
+                MessageHandler(Filters.all, callback_function)
             ],
             ...
         }

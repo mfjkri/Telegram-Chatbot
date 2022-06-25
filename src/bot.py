@@ -50,7 +50,7 @@ class Bot(object):
 
         return self.stages.get(stage_id, None)
 
-    def register_stage(self, stage: Stage) -> Dict[str, List[Union[CallbackQueryHandler, MessageHandler]]]:
+    def register_stage(self, stage: Stage) -> None:
         """
         Helper function to create a stage.
         Use this in your custom_stage.setup to register it as an active stage of the bot.
@@ -84,7 +84,8 @@ class Bot(object):
 
             stage.states = states
         else:
-            return {}
+            self.logger.warning("STAGE_ID_ALREADY_EXISTS",
+                                f"Stage ID: {stage.stage_id} already exists as a registered stage.")
 
     def unpack_states(self,
                       states: Dict[str, Union[str, CallbackQueryHandler, MessageHandler]]) -> List:
@@ -101,12 +102,7 @@ class Bot(object):
         :return: Returns a list of states which can be unpacked.
         """
 
-        states_list = []
-
-        for state_name, state in states.items():
-            states_list.append(state)
-
-        return states_list
+        return list(states.values())
 
     def exit_conversation(self,
                           current_stage_id: str,
@@ -383,6 +379,7 @@ class Bot(object):
             user: User = cached_user or self.user_manager.new(chatid)
 
             if user:
+                context.user_data.clear()
                 context.user_data.update({"user": user})
 
                 return self.proceed_next_stage(
@@ -423,7 +420,7 @@ class Bot(object):
             conversation_states.update({idx: state["callbacks"]})
 
         start_command = CommandHandler(
-            "start", self.conversation_entry, run_async=True)
+            "start", self.conversation_entry)
         self.dispatcher.add_handler(
             ConversationHandler(
                 entry_points=[start_command],
@@ -479,9 +476,6 @@ class Bot(object):
         self.behavior_remove_inline_markup = self.bot_config["REMOVE_INLINE_KEYBOARD_MARKUP"]
 
         answer_query = telegram.CallbackQuery.answer
-
-        # FIXME Find a better way to override this
-        # Maybe do away with overriding it entirely
 
         def override_answer(query: CallbackQuery,
                             keep_message: Union[bool, str] = False,

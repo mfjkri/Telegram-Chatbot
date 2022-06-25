@@ -81,11 +81,11 @@ class Example(Stage):
         self._states = {
             "MENU": [
                 CallbackQueryHandler(
-                    self.prompt_question, pattern="^example_prompt_question$", run_async=True),
+                    self.prompt_question, pattern="^example_prompt_question$"),
                 CallbackQueryHandler(
-                    self.prompt_color_selection, pattern="^example_prompt_color$", run_async=True),
+                    self.prompt_color_selection, pattern="^example_prompt_color$"),
                 CallbackQueryHandler(
-                    self.stage_exit, pattern="^example_exit$", run_async=True),
+                    self.stage_exit, pattern="^example_exit$"),
             ]
         }
         self.states = self.bot.register_stage(self)

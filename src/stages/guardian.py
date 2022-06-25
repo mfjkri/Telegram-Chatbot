@@ -139,13 +139,13 @@ class Guardian(Stage):
         self.states = {
             "INTRO_VIEW": [
                 CallbackQueryHandler(
-                    self.load_guardian, pattern="^guardian_begin$", run_async=True),
+                    self.load_guardian, pattern="^guardian_begin$"),
                 CallbackQueryHandler(
-                    self.skip_guardian, pattern="^guardian_skip$", run_async=True)
+                    self.skip_guardian, pattern="^guardian_skip$")
             ],
             "RESULTS_VIEW": [
                 CallbackQueryHandler(
-                    self.stage_exit, pattern="^guardian_finished$", run_async=True)
+                    self.stage_exit, pattern="^guardian_finished$")
             ]
         }
         self.bot.register_stage(self)

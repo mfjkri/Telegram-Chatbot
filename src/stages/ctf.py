@@ -38,52 +38,52 @@ class Ctf(Stage):
 
         menu_view_callbacks = [
             CallbackQueryHandler(
-                self.view_leaderboard, pattern="^ctf_view_leaderboard$", run_async=True),
+                self.view_leaderboard, pattern="^ctf_view_leaderboard$"),
             CallbackQueryHandler(
-                self.stage_exit, pattern="^ctf_exit$", run_async=True)
+                self.stage_exit, pattern="^ctf_exit$")
         ]
         challenge_view_callbacks = [CallbackQueryHandler(
-            self.load_menu, pattern="^ctf_return_to_menu$", run_async=True)]
+            self.load_menu, pattern="^ctf_return_to_menu$")]
         retry_challenge_callbacks = [CallbackQueryHandler(
-            self.load_menu, pattern="^ctf_return_to_menu$", run_async=True)]
+            self.load_menu, pattern="^ctf_return_to_menu$")]
 
         for idx_c, challenge in enumerate(self.challenges):
             menu_view_callbacks.append(
                 CallbackQueryHandler(
-                    self.view_challenge, pattern=f"^ctf_menu_view_challenge_{idx_c}$", run_async=True)
+                    self.view_challenge, pattern=f"^ctf_menu_view_challenge_{idx_c}$")
             )
             challenge_view_callbacks.extend([
                 CallbackQueryHandler(
-                    self.submit_answer, pattern=f"^ctf_submit_answer_{idx_c}$", run_async=True),
+                    self.submit_answer, pattern=f"^ctf_submit_answer_{idx_c}$"),
                 # CallbackQueryHandler(
-                #     self.view_challenge, pattern=f"^ctf_refresh_challenge_{idx_c}$", run_async=True)
+                #     self.view_challenge, pattern=f"^ctf_refresh_challenge_{idx_c}$")
             ])
             retry_challenge_callbacks.extend([
                 CallbackQueryHandler(
-                    self.submit_answer, pattern=f"^ctf_submit_answer_{idx_c}$", run_async=True),
+                    self.submit_answer, pattern=f"^ctf_submit_answer_{idx_c}$"),
                 CallbackQueryHandler(
-                    self.view_challenge, pattern=f"^ctf_return_to_challenge_{idx_c}$", run_async=True)
+                    self.view_challenge, pattern=f"^ctf_return_to_challenge_{idx_c}$")
             ])
 
             if challenge["multiple_choices"]:
                 for idx_a, _ in enumerate(challenge["multiple_choices"]):
                     challenge_view_callbacks.append(
                         CallbackQueryHandler(
-                            self.submit_choice_answer, pattern=f"^ctf_select_choice_{idx_a}:{idx_c}$", run_async=True)
+                            self.submit_choice_answer, pattern=f"^ctf_select_choice_{idx_a}:{idx_c}$")
                     )
 
             for idx_h, _ in enumerate(challenge["hints"]):
                 challenge_view_callbacks.append(
                     CallbackQueryHandler(
-                        self.reveal_hint, pattern=f"^ctf_view_hint_{idx_h}:{idx_c}$", run_async=True)
+                        self.reveal_hint, pattern=f"^ctf_view_hint_{idx_h}:{idx_c}$")
                 )
 
         self.states = {
             "MENU": menu_view_callbacks,
             "CHALLENGE_VIEW": challenge_view_callbacks,
-            "LEADERBOARD_VIEW": [CallbackQueryHandler(self.load_menu, pattern="^ctf_return_to_menu$", run_async=True)],
-            "SUBMIT_CHALLENGE": [MessageHandler(Filters.all, self.handle_answer, run_async=True)],
-            "CHALLENGE_SUCCESS": [CallbackQueryHandler(self.load_menu, pattern="^ctf_return_to_menu$", run_async=True)],
+            "LEADERBOARD_VIEW": [CallbackQueryHandler(self.load_menu, pattern="^ctf_return_to_menu$")],
+            "SUBMIT_CHALLENGE": [MessageHandler(Filters.all, self.handle_answer)],
+            "CHALLENGE_SUCCESS": [CallbackQueryHandler(self.load_menu, pattern="^ctf_return_to_menu$")],
             "CHALLENGE_WRONG": retry_challenge_callbacks
         }
         self.bot.register_stage(self)

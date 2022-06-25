@@ -64,15 +64,15 @@ class Authenticate(Stage):
         self.states = {
             "IDENTITY_CONFIRMATION": [
                 CallbackQueryHandler(
-                    self.confirm_choice, pattern=f"^auth_accept_identity$", run_async=True),
+                    self.confirm_choice, pattern=f"^auth_accept_identity$"),
                 CallbackQueryHandler(
-                    self.decline_identity, pattern=f"^auth_decline_identity$", run_async=True)
+                    self.decline_identity, pattern=f"^auth_decline_identity$")
             ],
             "CONFIRM_CHOICE": [
                 CallbackQueryHandler(
-                    self.accept_identity, pattern=f"^auth_confirm_choice$", run_async=True),
+                    self.accept_identity, pattern=f"^auth_confirm_choice$"),
                 CallbackQueryHandler(
-                    self.decline_identity, pattern=f"^auth_cancel_choice$", run_async=True)
+                    self.decline_identity, pattern=f"^auth_cancel_choice$")
             ]
         }
         self.bot.register_stage(self)

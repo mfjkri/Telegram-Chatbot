@@ -65,19 +65,19 @@ class AdminConsole(Stage):
         self.states = {
             "MENU": [
                 CallbackQueryHandler(
-                    self.prompt_delete_me, pattern="^admin_delete_me$", run_async=True),
+                    self.prompt_delete_me, pattern="^admin_delete_me$"),
                 CallbackQueryHandler(
-                    self.prompt_delete_user_name, pattern="^admin_delete_user_name$", run_async=True),
+                    self.prompt_delete_user_name, pattern="^admin_delete_user_name$"),
                 CallbackQueryHandler(
-                    self.prompt_delete_user, pattern="^admin_delete_user$", run_async=True),
+                    self.prompt_delete_user, pattern="^admin_delete_user$"),
                 CallbackQueryHandler(
-                    self.prompt_delete_all_users, pattern="^admin_delete_all_users$", run_async=True),
+                    self.prompt_delete_all_users, pattern="^admin_delete_all_users$"),
                 CallbackQueryHandler(
-                    self.prompt_ban_user, pattern="^admin_ban_user$", run_async=True),
+                    self.prompt_ban_user, pattern="^admin_ban_user$"),
                 CallbackQueryHandler(
-                    self.prompt_unban_user, pattern="^admin_unban_user$", run_async=True),
+                    self.prompt_unban_user, pattern="^admin_unban_user$"),
                 CallbackQueryHandler(
-                    self.stage_exit, pattern="^admin_exit$", run_async=True),
+                    self.stage_exit, pattern="^admin_exit$"),
             ]
         }
         self.bot.register_stage(self)

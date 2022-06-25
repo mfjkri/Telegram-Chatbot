@@ -35,13 +35,13 @@ class Stage(ABC):
         self.states = {
             # "STATE_NAME" : [
             #     CallbackQueryHandler(
-            #         callback, pattern=f"^$",run_async=True),
+            #         callback, pattern=f"^$"),
             #     CallbackQueryHandler(
-            #         callback, pattern=f"^$",run_async=True),
+            #         callback, pattern=f"^$"),
             #     ...
             # ],
             # "STATE_NAME_2" : [
-            #     MessageHandler(Filters.all, callback, run_async=True)
+            #     MessageHandler(Filters.all, callback)
             # ],
             # ...
         }
@@ -101,7 +101,7 @@ class LetUserChoose(Stage):
             if choices_per_row and idx % choices_per_row == 0:
                 self.keyboard.append([])
             callbacks.append(CallbackQueryHandler(
-                callback_wrapper, pattern=f"^{choice_label}:choice:{idx}$", run_async=True))
+                callback_wrapper, pattern=f"^{choice_label}:choice:{idx}$"))
             self.keyboard[-1].append(InlineKeyboardButton(choice["text"],
                                                           callback_data=f"{choice_label}:choice:{idx}"))
 
@@ -146,11 +146,9 @@ class GetInputFromUser(Stage):
         self.input_handler = input_handler
         self.exitable = exitable
 
-        self.debounce = True
-
         self.states = {
             input_label + "message_handler": [
-                MessageHandler(Filters.all, self.message_handler, run_async=True)]
+                MessageHandler(Filters.all, self.message_handler)]
         }
         self.bot.register_stage(self)
         self.INPUT_MESSAGE_HANDLER = self.bot.unpack_states(self.states)[0]
@@ -168,15 +166,15 @@ class GetInputFromUser(Stage):
             self.input_text
         )
 
-        self.debounce = False
+        context.user_data.update({"message_handler_listening": True})
         return self.INPUT_MESSAGE_HANDLER
 
     def stage_exit(self, update: Update, context: CallbackContext) -> USERSTATE:
         return super().stage_exit(update, context)
 
     def message_handler(self, update: Update, context: CallbackContext) -> USERSTATE:
-        if not self.debounce and update.message:
-            self.debounce = True
+        if "message_handler_listening" in context.user_data and update.message:
+            context.user_data.pop("message_handler_listening")
             if utils.format_input_str(update.message.text, False, "/cancel") == "/cancel" and self.exitable:
                 return self.bot.exit_conversation(update, context)
             else:
@@ -201,20 +199,18 @@ class GetInfoFromUser(Stage):
         self.use_last_saved = use_last_saved
         self.allow_update = allow_update
 
-        self.debounce = True
-
         self.confirm_input_pattern = f"collect:{data_label}:confirm"
         self.retry_input_pattern = f"collect:{data_label}:retry"
 
         self.states = {
             data_label + "input_handler": [
-                MessageHandler(Filters.all, self.input_handler, run_async=True)
+                MessageHandler(Filters.all, self.input_handler)
             ],
             data_label + "confirmation": [
                 CallbackQueryHandler(
-                    self.retry_input, pattern=f"^{self.retry_input_pattern}$", run_async=True),
+                    self.retry_input, pattern=f"^{self.retry_input_pattern}$"),
                 CallbackQueryHandler(
-                    self.confirm_input, pattern=f"^{self.confirm_input_pattern}$", run_async=True),
+                    self.confirm_input, pattern=f"^{self.confirm_input_pattern}$"),
             ]
         }
         self.bot.register_stage(self)
@@ -273,7 +269,7 @@ class GetInfoFromUser(Stage):
                 text=f"Please enter your <b>{self.data_label}</b>:" +
                 (f"\n\n<i>{self.additional_text}</i>" if self.additional_text else " ")
             )
-            self.debounce = False
+            context.user_data.update({"message_handler_listening": True})
             return self.INPUT_HANDLER
 
     def stage_exit(self, update: Update, context: CallbackContext) -> USERSTATE:
@@ -285,8 +281,8 @@ class GetInfoFromUser(Stage):
 
     def input_handler(self, update: Update, context: CallbackContext) -> USERSTATE:
 
-        if not self.debounce and update.message is not None:
-            self.debounce = True
+        if "message_handler_listening" in context.user_data and update.message is not None:
+            context.user_data.pop("message_handler_listening")
 
             user: User = context.user_data.get("user")
 
@@ -371,7 +367,7 @@ class GetInfoFromUser(Stage):
             update, context,
             f"Please enter your <b>{self.data_label}</b>:"
         )
-        self.debounce = False
+        context.user_data.update({"message_handler_listening": True})
         return self.INPUT_HANDLER
 
 
