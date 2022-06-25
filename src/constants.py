@@ -1,2 +1,2 @@
 USERSTATE = int
-MESSAGE_DIVIDER = "—————————————————————————\n"
+MESSAGE_DIVIDER = "——————————————————————\n"
