@@ -88,7 +88,7 @@ def main():
     STAGE_CTF = "ctf"
     STAGE_END = "end"
 
-    # Stage admin
+    # ------------------------------- Stage: admin ------------------------------- #
     admin: AdminConsole = AdminConsole(
         stage_id=STAGE_ADMIN,
         next_stage_id=STAGE_AUTHENTICATE,
@@ -96,16 +96,18 @@ def main():
     )
     admin.setup()
     bot.set_first_stage(STAGE_ADMIN)
+    # ---------------------------------------------------------------------------- #
 
-    # Stage authenticate
+    # ---------------------------- Stage: authenticate --------------------------- #
     authenticate: Authenticate = Authenticate(
         stage_id=STAGE_AUTHENTICATE,
         next_stage_id=STAGE_COLLECT_USERNAME,
         bot=bot
     )
     authenticate.setup()
+    # ---------------------------------------------------------------------------- #
 
-    # Stage collect:username
+    # -------------------------- Stage: collect:username ------------------------- #
     def format_name_input(input_str: Union[str, bool]):
         if input_str is not True:
             return utils.format_input_str(input_str, True)
@@ -118,8 +120,9 @@ def main():
         additional_text="This is the name displayed on the leaderboard.",
         allow_update=True
     )
+    # ---------------------------------------------------------------------------- #
 
-    # Stage choose:disclaimer
+    # ------------------------- Stage: choose:disclaimer ------------------------- #
     disclaimer_text = "<b><u>DISCLAIMER</u></b>\n\n"\
                       "- This Telegram Chatbot is just a medium for submission of answers.\n"\
                       "- Do not attack or DoS the Telegram Chatbot.\n"\
@@ -143,21 +146,24 @@ def main():
             },
         ]
     )
+    # ---------------------------------------------------------------------------- #
 
-    # Stage ctf
+    # -------------------------------- Stage: ctf -------------------------------- #
     ctf: Ctf = Ctf(
         stage_id=STAGE_CTF,
         next_stage_id=STAGE_END,
         bot=bot
     )
     ctf.setup()
+    # ---------------------------------------------------------------------------- #
 
-    # Stage end
+    # -------------------------------- Stage: end -------------------------------- #
     bot.make_end_stage(
         stage_id=STAGE_END,
         goodbye_message="You have exited the conversation. \n\nUse /start to begin a new one.",
         reply_message=True
     )
+    # ---------------------------------------------------------------------------- #
 
     # Start Bot
     logger.info(False, "")
