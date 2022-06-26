@@ -333,7 +333,7 @@ class GetInfoFromUser(Stage):
                     update, context,
                     text=text
                 )
-                return self.prompt_entry(update, context)
+                return self.stage_entry(update, context)
 
     def confirm_input(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query
