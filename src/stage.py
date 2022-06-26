@@ -109,7 +109,7 @@ class LetUserChoose(Stage):
             choice_label + "confirmation": callbacks
         }
         self.bot.register_stage(self)
-        self.CHOICE_CONFIRMATION = self.bot.unpack_states(self.states)[0]
+        self.CHOICE_CONFIRMATION = list(self.states.values())[0]
 
     def init_users_data(self) -> None:
         return super().init_users_data()
@@ -151,7 +151,7 @@ class GetInputFromUser(Stage):
                 MessageHandler(Filters.all, self.message_handler)]
         }
         self.bot.register_stage(self)
-        self.INPUT_MESSAGE_HANDLER = self.bot.unpack_states(self.states)[0]
+        self.INPUT_MESSAGE_HANDLER = list(self.states.values())[0]
 
     def init_users_data(self) -> None:
         return super().init_users_data()
@@ -214,8 +214,10 @@ class GetInfoFromUser(Stage):
             ]
         }
         self.bot.register_stage(self)
-        self.INPUT_HANDLER, self.INPUT_CONFIRMATION = self.bot.unpack_states(
-            self.states)
+        (
+            self.INPUT_HANDLER,
+            self.INPUT_CONFIRMATION
+        ) = list(self.states.values())
 
     def init_users_data(self) -> None:
         self.user_manager.add_data_field(self.data_label, "")

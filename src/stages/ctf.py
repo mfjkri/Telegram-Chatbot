@@ -86,9 +86,11 @@ class Ctf(Stage):
         }
         self.bot.register_stage(self)
         (
-            self.MENU, self.CHALLENGE_VIEW, self.LEADERBOARD_VIEW,
-            self.SUBMIT_CHALLENGE, self.CHALLENGE_SUCCESS, self.CHALLENGE_WRONG,
-        ) = self.bot.unpack_states(self.states)
+            self.MENU, self.CHALLENGE_VIEW,
+            self.LEADERBOARD_VIEW,
+            self.SUBMIT_CHALLENGE,
+            self.CHALLENGE_SUCCESS, self.CHALLENGE_WRONG,
+        ) = list(self.states.values())
 
     def init_users_data(self) -> None:
         """

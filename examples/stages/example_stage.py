@@ -89,7 +89,7 @@ class Example(Stage):
             ]
         }
         self.states = self.bot.register_stage(self)
-        self.MENU = self.bot.unpack_states(self.states)[0]
+        self.MENU = list(self.states.values())[0]
 
         self.SELECT_COLOR = self.bot.let_user_choose(
             choice_label="example_color",

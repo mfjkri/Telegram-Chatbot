@@ -76,8 +76,10 @@ class Authenticate(Stage):
             ]
         }
         self.bot.register_stage(self)
-        self.IDENTITY_CONFIRMATION, self.CONFIRM_CHOICE = self.bot.unpack_states(
-            self.states)
+        (
+            self.IDENTITY_CONFIRMATION,
+            self.CONFIRM_CHOICE
+        ) = list(self.states.values())
 
         self.PROMPT_AUTHENTICATION = self.bot.get_input_from_user(
             input_label="authenticate:passcode",
