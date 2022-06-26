@@ -166,7 +166,7 @@ class Ctf(Stage):
         query = update.callback_query
         if query:
             query.answer(
-                keep_message="..."
+                keep_message=""
             )
 
         return self.bot.proceed_next_stage(

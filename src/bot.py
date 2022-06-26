@@ -712,7 +712,10 @@ class Bot(object):
                                 else:
                                     query.message.edit_text(keep_message)
                             else:
-                                query.message.edit_text("💭 Loading...")
+                                if keep_message == "":
+                                    query.message.delete()
+                                else:
+                                    query.message.edit_text("💭 Loading...")
                     except Exception as e:
                         self.logger.error(False, e)
                 answer_query(query, *args)
