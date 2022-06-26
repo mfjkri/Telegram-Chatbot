@@ -93,12 +93,6 @@ class Ctf(Stage):
         ) = list(self.states.values())
 
     def init_users_data(self) -> None:
-        """
-        Internal function to set CTF data format in userdata.
-        Called during initialization of CTF handler.
-
-        :return: None
-        """
         ctf_state = {
             "total_score": 0,
             "last_score_update": datetime.datetime.now(),
@@ -182,12 +176,6 @@ class Ctf(Stage):
         )
 
     def load_challenges(self) -> None:
-        """
-        Internal function to load challenges from file.
-        Called during initialization of CTF handler.
-
-        :return: None
-        """
         self.challenges = []
 
         challenges_names = os.listdir(self.challenges_directory)
