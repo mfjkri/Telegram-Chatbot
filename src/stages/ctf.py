@@ -29,7 +29,7 @@ class Ctf(Stage):
 
         self.leaderboard_active = True
         self.leaderboard = []
-        # self.leaderboard_file = os.path.join(directory, "leaderboard.txt")
+
         return super().__init__(stage_id, next_stage_id, bot)
 
     def setup(self) -> None:
@@ -54,9 +54,7 @@ class Ctf(Stage):
             )
             challenge_view_callbacks.extend([
                 CallbackQueryHandler(
-                    self.submit_answer, pattern=f"^ctf_submit_answer_{idx_c}$"),
-                # CallbackQueryHandler(
-                #     self.view_challenge, pattern=f"^ctf_refresh_challenge_{idx_c}$")
+                    self.submit_answer, pattern=f"^ctf_submit_answer_{idx_c}$")
             ])
             retry_challenge_callbacks.extend([
                 CallbackQueryHandler(
@@ -284,12 +282,6 @@ class Ctf(Stage):
         ctf_menu_msg += MESSAGE_DIVIDER
         ctf_menu_msg += f"""Your {score_type_msg} score is: <u><b>{ctf_state["total_score"]} points</b></u>\n"""
         ctf_menu_msg += MESSAGE_DIVIDER + "\n\n"
-
-        # ctf_menu_msg += "✅ - You have completed this challenge\n\n"
-        # ctf_menu_msg += "❌ - You can no longer attempt this  challenge\n\n"
-        # ctf_menu_msg += "<b>Challenge Types:</b>\n\n"
-        # ctf_menu_msg += "⚠️ - Single-try challenge, you can only attempt once\n\n"
-        # ctf_menu_msg += "⌛️ - Time based challenge, timer will begin upon first viewing of the challenge.\n\n"
 
         reply_markup = InlineKeyboardMarkup(keyboard)
 
@@ -524,9 +516,6 @@ class Ctf(Stage):
         if not is_challenge_completed:
             text_body += f"<u>Up to {effective_score} points</u>\n\n"
 
-            if challenge["time_based"]:
-                pass
-                # keyboard.append([InlineKeyboardButton("Refresh points", callback_data=f"ctf_refresh_challenge_{challenge_number}")])
             if can_attempt:
                 if not is_multiple_choices:
                     keyboard.append([InlineKeyboardButton(
@@ -559,35 +548,10 @@ class Ctf(Stage):
                         )
         else:
             text_body += f"You earned <u>{effective_score} points</u>\n\n"
-            # if is_multiple_choices and total_points_deduction > 0:
-            #     text_body += f"(points / attempts) - hints = <u>{effective_score} points</u>\n\n"
-            # elif total_points_deduction > 0:
-            #     text_body += f"points - hints = <u>{effective_score} points</u>\n\n"
-            # else:
-            #     text_body += f"<u>{effective_score} points</u>\n\n"
 
         # Create the BackToMenu button
         keyboard.append([InlineKeyboardButton(
             "« Back", callback_data="ctf_return_to_menu")])
-
-        # if challenge["time_based"]:
-        #     max_time_seconds = int(challenge["time_based"]["limit"])
-        #     max_hint_deductions = int(challenge["max_hints_deduction"])
-        #     start_time : datetime = challenge["time_based"]["start_time"]
-        #     end_time = challenge["time_based"]["end_time"] or datetime.datetime.now()
-
-        #     diff = end_time - start_time
-        #     seconds_taken = max(0, min(diff.total_seconds() , max_time_seconds)) # Clamp the value for time taken to max allocated time
-
-        #     points_to_award = challenge_points - ((seconds_taken / max_time_seconds) * (challenge_points - max_hint_deductions))
-        #     challenge_points = int(points_to_award)
-
-        # challenge_points -= total_points_deduction
-        # challenge_points = challenge_points if challenge_points >= 0 else 0
-        # if challenge["time_based"] or hints_exist:
-        #     text_body += f"(<b><u>{challenge_points}</u></b> is what you'll receive)\n\n"
-        # else:
-        #     text_body += "\n\n"
 
         text_body += challenge["description"]
         if challenge["additional_info"]:
@@ -625,8 +589,7 @@ class Ctf(Stage):
         elif challenge["one_try"]:
             text_body += "\n⚠️ <b>ONLY ONE ATTEMPT ALLOWED!</b> ⚠️"
         elif challenge["time_based"]:
-            pass
-            # text_body += "\n⌛️ <b>THIS IS A TIME BASED CHALLENGE!</b> ⌛️"
+            text_body += "\n⌛️ <b>THIS IS A TIME BASED CHALLENGE!</b> ⌛️"
 
         self.bot.edit_or_reply_message(
             update, context,
@@ -685,7 +648,6 @@ class Ctf(Stage):
             text_body += MESSAGE_DIVIDER
             text_body += f"""Your current score is: <u><b>{ctf_state["total_score"]} points</b></u>\n"""
             text_body += MESSAGE_DIVIDER + "\n"
-            # text_body += "Press the button below to return to menu."
 
             self.bot.edit_or_reply_message(
                 update, context,
@@ -706,13 +668,6 @@ class Ctf(Stage):
                 text_body += "⚠️ Your answer was not of the right format.\n"
                 text_body += "Answer format: <b><u>flag@XXXXXX</u></b>.\n"
                 text_body += (MESSAGE_DIVIDER + "\n")
-
-            # if not challenge["one_try"]:
-            #     text_body += "Don't give up and keep trying! 💪\n\n"
-            #     text_body += "Use the buttons below to retry or head back to the menu to attempt other challenges."
-            # else:
-            #     text_body += "Aww its okay! 💪\n\n"
-            #     text_body += "Use the button below to head back to the menu and attempt other challenges."
 
             keyboard = []
             if not challenge["one_try"]:
