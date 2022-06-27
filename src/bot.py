@@ -507,6 +507,7 @@ class Bot(object):
 
     def make_end_stage(self,
                        stage_id: Optional[str] = "end",
+                       final_callback: Optional[Callable] = lambda *_: _,
                        goodbye_message: Optional[str] = "",
                        reply_message: Optional[bool] = True) -> str:
         """
@@ -514,6 +515,8 @@ class Bot(object):
 
         Parameters:
             stage_id (:obj:`str`): Optional. Stage identifier of the end stage. Defaults to "end".
+            final_callback (:class:`Callable`): Optional. A callback function called right before terminating \
+                conversation. Defaults to an empty callback.
             goodbye_message(:obj:`str`): Optional. Message to display when user reaches end of conversation. \
                 Defaults to empty string.
             reply_message(:obj:`bool`): Optional. Whether the goodbye_message (if any) should edit current message\
@@ -537,6 +540,7 @@ class Bot(object):
             bot=self
         )
         stage.setup(
+            final_callback=final_callback,
             goodbye_message=goodbye_message,
             reply_message=reply_message
         )

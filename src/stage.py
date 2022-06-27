@@ -378,8 +378,10 @@ class EndConversation(Stage):
         return super().__init__(stage_id, next_stage_id, bot)
 
     def setup(self,
+              final_callback: Optional[Callable] = lambda *_: _,
               goodbye_message: Optional[str] = "",
               reply_message: bool = True) -> None:
+        self.final_callback = final_callback
         self.goodbye_message = goodbye_message
         self.reply_message = reply_message
         return super().setup()
@@ -399,6 +401,8 @@ class EndConversation(Stage):
         else:
             self.bot.logger.info("UNREGISTERED_USER_END_OF_CONVERSATION",
                                  f"Unregistered or banned user has reached the end of the conversation")
+
+        self.final_callback(update, context)
 
         if self.goodbye_message:
             self.bot.edit_or_reply_message(
