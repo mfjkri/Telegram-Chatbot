@@ -852,57 +852,72 @@ For a more detailed explanation, please refer to the [Example Stage](examples/st
 
 Presents a variable number of choices to the user. The choices are in the form of buttons (ReplyMarkupButton).
 
+The code below shows a brief implementation example for the stage.
+
+You may also view more examples here:
+
+- [let_user_choose: Complete Basic Implementation](examples/let_user_choose.py)
+- [let_user_choose: Dynamic Implementation](examples/let_user_choose2.py)
+- [let_user_choose: Persistent Data Implementation](examples/let_user_choose3.py)
+- [Custom Stage + let_user_choose: With Persistent Data](examples/stages/stage_with_let_user_choose.py)
+
 ```python
-# TODO: Document this stuff better
-def callback(choice_selected : str, update : Update, context : CallbackContext) -> USERSTATE:
+bot: Bot = Bot()
+bot.init(token=BOT_TOKEN,
+         logger=logger,
+         config=CONFIG)
+
+STAGE_FAV_FRUIT = "choose:fruit"
+
+
+def see_user_choice(choice_selected: str, update: Update, context: CallbackContext) -> USERSTATE:
     print("Choice selected was:", choice_selected)
-    return Bot.proceed_next_stage(
-        current_stage_id="choose:example_choice",
+    return bot.proceed_next_stage(
+        current_stage_id=STAGE_FAV_FRUIT,
         next_stage_id=NEXT_STAGE_ID,
         update=update, context=context
     )
 
-example_choose = Bot.let_user_choose(
-    choice_label="example_choice",
-    choice_text="Please choose from the following:",
-    choices = [
-        {"text" : "Choice A", "callback" : lambda update, context : callback("A", update, context)},
-        {"text" : "Choice B", "callback" : lambda update, context : callback("B", update, context)},
-        {"text" : "Choice C", "callback" : lambda update, context : callback("C", update, context)}
+
+new_stage_id = bot.let_user_choose(
+    choice_label="fruit",
+    choice_text="Which is your favorite fruit?",
+    choices=[
+        {
+            "text": "🍎",
+            "callback": lambda update, context: see_user_choice("apple", update, context)
+        },
+        {
+            "text": "🍐",
+            "callback": lambda update, context: see_user_choice("pear", update, context)
+        },
+        {
+            "text": "🍊",
+            "callback": lambda update, context: see_user_choice("orange", update, context)
+        },
+        {
+            "text": "🍇",
+            "callback": lambda update, context: see_user_choice("grape", update, context)
+        },
     ],
     choices_per_row=2
 )
 
-# Proceeding to the stage:
-def some_state_or_stage(update : Update, context : CallbackContext) -> USERSTATE:
-    # TODO: Illustrate where this function originate from...
-    query = update.callback_query
-    query.answer()
+assert new_stage_id == STAGE_FAV_FRUIT
 
-    return Bot.proceed_next_stage(
-        current_stage_id=CURRENT_SOME_STATE_OR_STAGE_ID,
-        next_stage_id=example_choose or "choose:example_choice",
+
+# --
+# Proceeding to the stage:
+def some_state_in_a_stage(self: Stage, update: Update, context: CallbackContext) -> USERSTATE:
+    query = update.callback_query
+    if query:
+        query.answer()
+
+    return bot.proceed_next_stage(
+        current_stage_id=self.stage_id,
+        next_stage_id=STAGE_FAV_FRUIT,
         update=update, context=context
     )
-
-# -------------
-
-# A more dynamic choice stage
-
-fruit_choices = ["Apple", "Pear", "Oranges]
-
-choices = []
-for fruit in fruit_choices:
-    choices.append({
-        "text": fruit, "callback" : lambda update, context, fruit=fruit : callback(fruit, update, context)
-    })
-example_choose = Bot.let_user_choose(
-    choice_label="example_choice",
-    choice_text="Please choose from the following:",
-    choices = choices,
-    choices_per_row=2
-)
-
 ```
 
 &nbsp;
@@ -1021,7 +1036,7 @@ import logging
 import os
 
 from bot import Bot
-from user import UserManager, User
+from user import UserManager
 import utils.utils as utils
 from utils.log import Log
 
@@ -1030,6 +1045,9 @@ from stages.example_stage import Example
 LOG_FILE = os.path.join("logs", f"examplebot.log")
 
 CONFIG = utils.load_yaml_file(os.path.join("config.yaml"))
+assert CONFIG, "Failed to load config.yaml. Fatal error, please remedy."\
+    "\n\nLikely an invalid format."
+
 LIVE_MODE = CONFIG["RUNTIME"]["LIVE_MODE"]
 FRESH_START = CONFIG["RUNTIME"]["FRESH_START"] if not LIVE_MODE else False
 BOT_TOKEN = CONFIG["BOT_TOKENS"]["LIVE"] if LIVE_MODE else CONFIG["BOT_TOKENS"]["TEST"]
@@ -1053,31 +1071,38 @@ def main():
     )
 
     users = UserManager()
-    users.init(logger)
+    users.init(logger=logger)
 
     bot = Bot()
-    bot.init(BOT_TOKEN, logger)
+    bot.init(token=BOT_TOKEN,
+             logger=logger,
+             config=CONFIG)
 
     STAGE_EXAMPLE = "example"
     STAGE_END = "end"
 
-    # Stage example
-    example: Example = Example(bot)
-    example.setup(
-        stage_id=STAGE_EXAMPLE,         # This stage id is example
-        next_stage_id=STAGE_END
+    # ------------------------------ Stage: example ------------------------------ #
+    example: Example = Example(
+        stage_id=STAGE_EXAMPLE,
+        next_stage_id=STAGE_END,
+        bot=bot
     )
+    example.setup()
+    bot.set_first_stage(STAGE_EXAMPLE)
+    # ---------------------------------------------------------------------------- #
+
+    # -------------------------------- Stage: end -------------------------------- #
+    bot.make_end_stage(
+        stage_id=STAGE_END,
+        goodbye_message="You have exited the conversation. \n\nUse /start to begin a new one.",
+        reply_message=True
+    )
+    # ---------------------------------------------------------------------------- #
 
     # Start Bot
-    bot.set_first_stage(STAGE_EXAMPLE)
-    bot.set_end_of_chatbot(
-        lambda update, context: bot.edit_or_reply_message(
-            update, context, "You have exited the conversation. \n\nUse /start to begin a new one.")
-    )
     bot.start(live_mode=LIVE_MODE)
 
 
 if __name__ == "__main__":
     main()
-
 ```
