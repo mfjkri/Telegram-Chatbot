@@ -120,14 +120,13 @@ def main():
         bot.edit_or_reply_message(
             update, context,
             text=f"Your favorite fruit was: <b>{fav_fruit_chosen}</b>.\n"
-            f"Your favorite shape was: <b>{fav_shape_chosen}</b>."
+            f"Your favorite shape was: <b>{fav_shape_chosen}</b>.\n\n"
+            "You have exited the conversation.\nUse /start to begin a new one.",
         )
 
     bot.make_end_stage(
         stage_id=STAGE_END,
-        final_callback=display_favorites,
-        goodbye_message="You have exited the conversation. \n\nUse /start to begin a new one.",
-        reply_message=True
+        final_callback=display_favorites
     )
     # ---------------------------------------------------------------------------- #
 

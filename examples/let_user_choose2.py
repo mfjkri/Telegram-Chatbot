@@ -94,8 +94,7 @@ def main():
     # -------------------------------- Stage: end -------------------------------- #
     bot.make_end_stage(
         stage_id=STAGE_END,
-        goodbye_message="You have exited the conversation. \n\nUse /start to begin a new one.",
-        reply_message=True
+        goodbye_message="You have exited the conversation. \n\nUse /start to begin a new one."
     )
     # ---------------------------------------------------------------------------- #
 
