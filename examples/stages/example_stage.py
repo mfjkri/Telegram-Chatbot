@@ -44,16 +44,20 @@ from stage import Stage
 #   bot.init(BOT_TOKEN, logger)
 #
 #   STAGE_EXAMPLE = "example"
+#   ...
 #
-#   example: Example = Example(bot)
-#   example.setup(
+#   # ------------------------------ Stage: example ------------------------------ #
+#   example: Example = Example(
 #       stage_id=STAGE_EXAMPLE,
-#       next_stage_id=NEXT_STAGE
+#       next_stage_id=NEXT_STAGE,
+#       bot=bot
 #   )
+#   example.setup()
+#   bot.set_first_stage(STAGE_EXAMPLE)
+#   # ---------------------------------------------------------------------------- #
 #
 #   ...
 #
-#   bot.set_first_stage(STAGE_EXAMPLE)
 #   bot.start(live_mode=LIVE_MODE)
 # --
 
@@ -61,24 +65,13 @@ from stage import Stage
 
 
 class Example(Stage):
-    # Initializer function
     def __init__(self, stage_id: str, next_stage_id: str, bot):
-        # Store a reference to Bot and UserManager singletons
-        # self.bot: Bot = bot
-        # self.user_manager: UserManager = UserManager()
-
-        # Initializes
-        # self.stage_id = None
-        # self.next_stage_id = None
-        # self._states = {}
-        # self.states = {}
-
         return super().__init__(stage_id, next_stage_id, bot)
 
     def setup(self) -> None:
         self.init_users_data()
 
-        self._states = {
+        self.states = {
             "MENU": [
                 CallbackQueryHandler(
                     self.prompt_question, pattern="^example_prompt_question$"),
@@ -88,7 +81,7 @@ class Example(Stage):
                     self.stage_exit, pattern="^example_exit$"),
             ]
         }
-        self.states = self.bot.register_stage(self)
+        self.bot.register_stage(self)
         self.MENU = list(self.states.values())[0]
 
         self.SELECT_COLOR = self.bot.let_user_choose(
@@ -126,10 +119,12 @@ class Example(Stage):
 
         This is to prevent naming conflicts for the data label with other stages.
         """
+
         self.user_manager.add_data_field("example_state", {
             "score": 0,
             "color": None,
         })
+        return super().init_users_data()
 
     def stage_entry(self, update: Update, context: CallbackContext) -> USERSTATE:
         """
@@ -166,6 +161,7 @@ class Example(Stage):
 
             return self.load_menu(update, context)
         """
+
         query = update.callback_query
         if query:
             query.answer()
@@ -195,15 +191,6 @@ class Example(Stage):
 
                 return self.exit_example(update,context)
         """
-        # query = update.callback_query
-        # if query:
-        #     query.answer()
-
-        # return self.bot.proceed_next_stage(
-        #     current_stage_id=self.stage_id,
-        #     next_stage_id=self.next_stage_id,
-        #     update=update, context=context
-        # )
 
         return super().stage_exit(update, context)
 
