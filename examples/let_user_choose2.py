@@ -33,8 +33,8 @@ def main():
         log_level=logging.DEBUG
     )
 
-    users = UserManager()
-    users.init(logger)
+    user_manager = UserManager()
+    user_manager.init(logger=logger)
 
     bot = Bot()
     bot.init(token=BOT_TOKEN,

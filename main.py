@@ -71,7 +71,9 @@ def main():
 
     user_manager = UserManager()
     user_manager.init(
-        logger, "LOG_USER_TO_APP_LOGS" in CONFIG and CONFIG["LOG_USER_TO_APP_LOGS"])
+        logger=logger,
+        log_user_logs_to_app_logs=("LOG_USER_TO_APP_LOGS" in CONFIG
+                                   and CONFIG["LOG_USER_TO_APP_LOGS"]))
 
     bot = Bot()
     bot.init(token=BOT_TOKEN,

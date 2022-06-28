@@ -62,7 +62,9 @@ class Emulator:
         self.bot.init(self.logger)
 
         self.user_manager: UserManager = UserManager()
-        self.user_manager.init(self.logger, False)
+        self.user_manager.init(
+            logger=self.logger,
+            log_user_logs_to_app_logs=False)
 
         self.ctf: Ctf = Ctf(
             stage_id="ctf",
