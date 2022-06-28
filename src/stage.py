@@ -275,11 +275,7 @@ class GetInfoFromUser(Stage):
             return self.INPUT_HANDLER
 
     def stage_exit(self, update: Update, context: CallbackContext) -> USERSTATE:
-        return self.bot.proceed_next_stage(
-            current_stage_id=self.stage_id,
-            next_stage_id=self.next_stage_id,
-            update=update, context=context
-        )
+        return super().stage_exit(update, context)
 
     def input_handler(self, update: Update, context: CallbackContext) -> USERSTATE:
 
@@ -395,20 +391,39 @@ class EndConversation(Stage):
             query.answer()
 
         user: User = context.user_data.get("user")
-        if user:
-            user.logger.info("USER_REACHED_END_OF_CONVERSATION",
-                             f"User:{user.chatid} has reached the end of the conversation")
-        else:
-            self.bot.logger.info("UNREGISTERED_USER_END_OF_CONVERSATION",
-                                 f"Unregistered or banned user has reached the end of the conversation")
 
         self.final_callback(update, context)
-
         if self.goodbye_message:
             self.bot.edit_or_reply_message(
                 update, context,
                 text=self.goodbye_message,
                 reply_message=self.reply_message)
+
+        if user and not user.is_banned:
+            user.logger.info("USER_REACHED_END_OF_CONVERSATION",
+                             f"User:{user.chatid} has reached the end of the conversation")
+
+        elif user and user.is_banned:
+            user.logger.error("USER_BANNED",
+                              f"User:{user.chatid} is a banned user.")
+            self.bot.edit_or_reply_message(
+                update, context,
+                text="Unfortunately, it appears you have been <b>banned</b>.\n\n"
+                "If you believe this to be a mistake, please contact the System Administrator.",
+                reply_message=True
+            )
+
+        else:  # not user
+            chatid, _ = context._user_id_and_data
+            self.bot.logger.error("USER_NOT_REGISTERED",
+                                  f"User:{chatid} not found in users.")
+
+            self.bot.edit_or_reply_message(
+                update, context,
+                text="<b>ERROR</b>: Unknown user.\n\n"
+                "If you are seeing this, please contact your System Administrator."
+            )
+
         return ConversationHandler.END
 
     def stage_exit(self, update: Update, context: CallbackContext) -> USERSTATE:

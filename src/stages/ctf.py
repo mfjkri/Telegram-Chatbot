@@ -163,17 +163,7 @@ class Ctf(Stage):
         return self.load_menu(update, context)
 
     def stage_exit(self, update: Update, context: CallbackContext) -> USERSTATE:
-        query = update.callback_query
-        if query:
-            query.answer(
-                keep_message=""
-            )
-
-        return self.bot.proceed_next_stage(
-            current_stage_id=self.stage_id,
-            next_stage_id=self.next_stage_id or self.bot.end_stage.stage_id,
-            update=update, context=context
-        )
+        return super().stage_exit(update, context)
 
     def load_challenges(self) -> None:
         self.challenges = []

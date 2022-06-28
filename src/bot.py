@@ -223,23 +223,9 @@ class Bot(object):
             return next_stage.stage_entry(update, context)
         else:
             if not user:
-                chatid, _ = context._user_id_and_data
-                self.logger.error("USER_NOT_REGISTERED",
-                                  f"User:{chatid} not found in users. Current stage: {current_stage_id}")
-                self.edit_or_reply_message(
-                    update, context,
-                    text="<b>ERROR</b>: Unknown user.\n\n"
-                    "If you are seeing this, please contact your System Administrator."
-                )
+                pass
             elif user.is_banned:
-                user.logger.error("USER_BANNED",
-                                  f"User:{user.chatid} is a banned user. Current stage: {current_stage_id}")
-
-                self.edit_or_reply_message(
-                    update, context,
-                    text="Unfortunately, it appears you have been <b>banned</b>.\n\n"
-                    "If you believe this to be a mistake, please contact the System Administrator."
-                )
+                pass
             elif not next_stage:
                 user.logger.error("NEXT_STAGE_MISSING",
                                   f"User:{user.chatid} is proceeding to unknown next stage: {next_stage_id}. Current stage: {current_stage_id}")
@@ -509,7 +495,7 @@ class Bot(object):
                        stage_id: Optional[str] = "end",
                        final_callback: Optional[Callable] = lambda *_: _,
                        goodbye_message: Optional[str] = "",
-                       reply_message: Optional[bool] = True) -> str:
+                       reply_message: Optional[bool] = False) -> str:
         """
         Creates and sets the end stage for the bot.
 
