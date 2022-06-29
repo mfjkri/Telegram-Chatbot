@@ -289,16 +289,16 @@ Each challenge is a subdirectory with the following name format:
 
     {NUMBER}-CHALLENGE_NAME
 
-![challenge_format](docs/img/2022-05-15%2018-08.png)
+![challenge_format](docs/img/ctf-challenges-directory-view.png)
 
 The number preceeding the challenge name determines the **order** of display of challenges to the user on Telegram.
 
-![challenge_order](docs/img/2022-05-16%2009-38-22.png)
+![challenge_order](docs/img/ctf-menu-view.png)
 
 &nbsp;\
 **Each** challenge directory is expected to contain a `challenge.yaml` file of the following format:
 
-![challenge_yaml](docs/img/2022-05-15%2019-23.png)
+![challenge_yaml](docs/img/challenge-yaml.png)
 
 ```yaml
 # ../${rootDir}/ctf/challenges/1-challenge/challenge.yaml
@@ -307,6 +307,7 @@ additional_info: null
 answer: "flag@answer"
 
 points: 40
+difficulty: 1
 time_based: null
 one_try: false
 multiple_choices: null
@@ -351,7 +352,7 @@ files: []
   ```yaml
   # If answer is preceeded by "flag@..." then a warning will be given
   # to user when their answer does not begin with flag@.
-  answer: "flag@answer"t
+  answer: "flag@answer"
   ```
 
 - **`points`** : Required [integer]
@@ -361,6 +362,26 @@ files: []
   ```yaml
   points: 40
   ```
+
+- **`difficulty`** : Required [integer]
+
+  The difficulty rating for the challenge. This will be represented by a star icon "⭐️" per difficulty.
+
+  To display difficulty rating of `X`:
+
+  ```yaml
+  difficulty: X
+  ```
+
+  ![some_img](docs/img/ctf-menu-view-stars.png)
+
+  If you wish to hide the difficulty rating of the challenge:
+
+  ```yaml
+  difficulty: 0
+  ```
+
+  ![some_img](docs/img/ctf-menu-view-without-stars.png)
 
 - **`time_based`** : Optional [integer, null]
 

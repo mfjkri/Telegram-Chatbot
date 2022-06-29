@@ -28,6 +28,7 @@ DEFAULT_CHALLENGE_DATA = {
     "answer": "",
 
     "points": 50,
+    "difficulty": 1,  # 1 - easy, 2 - medium, 3 - hard, ...
     "time_based": False,
     "one_try": False,
     "multiple_choices": None,
@@ -86,6 +87,7 @@ def main(challenge_yaml_file: Union[bool, str], no_of_challenges: int = 4) -> No
             "description": f"This is Challenge {challenge_name}. {template_challenge_data['description']}",
             "answer": challenge_answer,
             "points": template_challenge_data["points"] + (challenge_number * 10),
+            "difficulty": min(int(challenge_number / (no_of_challenges / 3)) + 1, 3),
 
             "hints": [
                 {

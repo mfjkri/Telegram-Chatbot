@@ -142,8 +142,12 @@ class Ctf(Stage):
             # Challenge format for users (each challenge in challenges : [])
             {
                 "description": "Lorem ipsum?",
+                "additional_info": "",
                 "answer": "",
+
                 "points": 0,
+                "difficulty": 1,
+
                 "attempts": 0,
                 "completed": False,
                 "total_hints_deduction": 0,
@@ -228,6 +232,7 @@ class Ctf(Stage):
             if is_challenge_completed:
                 button_text += "  ✅"
             else:
+                button_text += f""" {challenge["difficulty"] * '⭐️'}"""
                 if challenge["time_based"]:
                     pass
                     # button_text += "  ⌛️"
