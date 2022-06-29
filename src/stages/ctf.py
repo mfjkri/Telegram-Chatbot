@@ -84,6 +84,14 @@ class Ctf(Stage):
             "CHALLENGE_SUCCESS": [CallbackQueryHandler(self.load_menu, pattern="^ctf_return_to_menu$")],
             "CHALLENGE_WRONG": retry_challenge_callbacks
         }
+
+        self.MENU: USERSTATE
+        self.CHALLENGE_VIEW: USERSTATE
+        self.LEADERBOARD_VIEW: USERSTATE
+        self.SUBMIT_CHALLENGE: USERSTATE
+        self.CHALLENGE_SUCCESS: USERSTATE
+        self.CHALLENGE_WRONG: USERSTATE
+
         self.bot.register_stage(self)
         (
             self.MENU, self.CHALLENGE_VIEW,

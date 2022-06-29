@@ -148,6 +148,10 @@ class Guardian(Stage):
                     self.stage_exit, pattern="^guardian_finished$")
             ]
         }
+
+        self.INTRO_VIEW: USERSTATE
+        self.RESULTS_VIEW: USERSTATE
+
         self.bot.register_stage(self)
         (
             self.INTRO_VIEW,

@@ -75,6 +75,10 @@ class Authenticate(Stage):
                     self.decline_identity, pattern=f"^auth_cancel_choice$")
             ]
         }
+
+        self.IDENTITY_CONFIRMATION: USERSTATE
+        self.CONFIRM_CHOICE: USERSTATE
+
         self.bot.register_stage(self)
         (
             self.IDENTITY_CONFIRMATION,

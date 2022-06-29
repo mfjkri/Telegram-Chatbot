@@ -81,7 +81,7 @@ class AdminConsole(Stage):
             ]
         }
         self.bot.register_stage(self)
-        self.MENU = list(self.states.values())[0]
+        self.MENU: USERSTATE = list(self.states.values())[0]
 
         self.DELETE_USER_NAME_STAGE = self.bot.get_input_from_user(
             input_label="admin_delete_user_name",
