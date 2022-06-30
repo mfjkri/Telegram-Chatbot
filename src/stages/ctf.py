@@ -398,7 +398,7 @@ class Ctf(Stage):
     def handle_answer(self, update: Update, context: CallbackContext) -> USERSTATE:
         challenge_number = context.user_data.get(
             "ctf_message_handler_debounce")
-        if challenge_number is not None and update.message is not None and update.message.text is not None:
+        if challenge_number is not None and update.message and update.message.text:
             context.user_data.pop("ctf_message_handler_debounce")
 
             return self.check_answer(

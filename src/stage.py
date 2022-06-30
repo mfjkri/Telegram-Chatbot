@@ -173,7 +173,7 @@ class GetInputFromUser(Stage):
         return super().stage_exit(update, context)
 
     def message_handler(self, update: Update, context: CallbackContext) -> USERSTATE:
-        if "message_handler_listening" in context.user_data and update.message:
+        if "message_handler_listening" in context.user_data and update.message and update.message.text:
             context.user_data.pop("message_handler_listening")
             if utils.format_input_str(update.message.text, False, "/cancel") == "/cancel" and self.exitable:
                 return self.bot.exit_conversation(update, context)
@@ -283,7 +283,7 @@ class GetInfoFromUser(Stage):
 
     def input_handler(self, update: Update, context: CallbackContext) -> USERSTATE:
 
-        if "message_handler_listening" in context.user_data and update.message is not None:
+        if "message_handler_listening" in context.user_data and update.message and update.message.text:
             context.user_data.pop("message_handler_listening")
 
             user: User = context.user_data.get("user")

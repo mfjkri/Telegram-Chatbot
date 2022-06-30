@@ -556,7 +556,7 @@ class Bot(object):
         self.first_stage: Stage = first_stage
 
     def conversation_entry(self, update: Update, context: CallbackContext) -> USERSTATE:
-        if update.message:
+        if update.message and update.message.text:
             chatid = str(update.message.chat_id)
 
             cached_user: User = context.user_data.get("user")
