@@ -406,8 +406,6 @@ class Ctf(Stage):
                 challenge_number,
                 utils.format_input_str(update.message.text.lower(), True, "@_")
             )
-        else:
-            return self.SUBMIT_CHALLENGE
 
     def view_leaderboard(self, update: Update, context: CallbackContext,
                          overflow_checker: bool = False) -> USERSTATE:
