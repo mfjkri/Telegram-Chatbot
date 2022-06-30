@@ -176,7 +176,10 @@ class GetInputFromUser(Stage):
         if "message_handler_listening" in context.user_data and update.message and update.message.text:
             context.user_data.pop("message_handler_listening")
             if utils.format_input_str(update.message.text, False, "/cancel") == "/cancel" and self.exitable:
-                return self.bot.exit_conversation(update, context)
+                return self.bot.exit_conversation(
+                    current_stage_id=self.stage_id,
+                    update=update, context=context
+                )
             else:
                 return self.input_handler(update.message.text, update, context)
 
