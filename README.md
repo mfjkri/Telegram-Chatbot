@@ -1049,7 +1049,7 @@ In our application, `USERSTATE` is a created data-type with an integral value to
 [main.py](main.py)
 
 ```python
-# shebang
+#!/usr/bin/env python3
 import sys
 sys.path.append("src")
 
