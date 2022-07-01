@@ -30,7 +30,7 @@ class Ctf(Stage):
         self.leaderboard_active = True
         self.leaderboard = []
 
-        return super().__init__(stage_id, next_stage_id, bot)
+        super().__init__(stage_id, next_stage_id, bot)
 
     def setup(self) -> None:
         self.load_challenges()
@@ -207,7 +207,7 @@ class Ctf(Stage):
                 |           └── ...
                 ├── src
                 └── ...
-                
+
             For more info, see README.md -> 1.2 Adding CTF Challenges"
             """
 

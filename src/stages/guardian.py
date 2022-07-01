@@ -104,7 +104,7 @@ assert NUMER_OF_OPTIONS_PER_QUESTION <= MAX_OPTIONS_COUNT, "Number of options ex
 
 class Guardian(Stage):
     def __init__(self, stage_id: str, next_stage_id: str, bot):
-        return super().__init__(stage_id, next_stage_id, bot)
+        super().__init__(stage_id, next_stage_id, bot)
 
     def setup(self) -> None:
         self.init_users_data()

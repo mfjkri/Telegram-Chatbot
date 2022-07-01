@@ -78,7 +78,7 @@ class Stage(ABC):
 
 class LetUserChoose(Stage):
     def __init__(self, stage_id: str, next_stage_id: str, bot):
-        return super().__init__(stage_id, next_stage_id, bot)
+        super().__init__(stage_id, next_stage_id, bot)
 
     def setup(self, choice_label: str,
               choice_text: str,
@@ -132,7 +132,7 @@ class LetUserChoose(Stage):
 
 class GetInputFromUser(Stage):
     def __init__(self, stage_id: str, next_stage_id: str, bot):
-        return super().__init__(stage_id, next_stage_id, bot)
+        super().__init__(stage_id, next_stage_id, bot)
 
     def setup(self,
               input_label: str,
@@ -186,7 +186,7 @@ class GetInputFromUser(Stage):
 
 class GetInfoFromUser(Stage):
     def __init__(self, stage_id: str, next_stage_id: str, bot):
-        return super().__init__(stage_id, next_stage_id, bot)
+        super().__init__(stage_id, next_stage_id, bot)
 
     def setup(self, data_label: str,
               input_formatter: Callable,
@@ -378,7 +378,7 @@ class GetInfoFromUser(Stage):
 
 class EndConversation(Stage):
     def __init__(self, stage_id: str, next_stage_id: str, bot):
-        return super().__init__(stage_id, next_stage_id, bot)
+        super().__init__(stage_id, next_stage_id, bot)
 
     def setup(self,
               final_callback: Optional[Callable] = lambda *_: _,
