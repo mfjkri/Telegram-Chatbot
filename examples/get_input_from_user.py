@@ -60,7 +60,7 @@ def main():
             update=update, context=context
         )
 
-    bot.get_input_from_user(
+    bot.get_user_input(
         input_label="favorite_fruit",
         input_text="Enter your favorite fruit!\n\n"
         "Enter /cancel to exit.",

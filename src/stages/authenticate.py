@@ -85,7 +85,7 @@ class Authenticate(Stage):
             self.CONFIRM_CHOICE
         ) = list(self.states.values())
 
-        self.PROMPT_AUTHENTICATION = self.bot.get_input_from_user(
+        self.PROMPT_AUTHENTICATION = self.bot.get_user_input(
             input_label="authenticate:passcode",
             input_text="Please enter your passcode:",
             input_handler=self.check_passcode,

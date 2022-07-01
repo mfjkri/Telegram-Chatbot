@@ -11,8 +11,8 @@
 2. [States & Stages](#2-states--stages)
    - [2.1 Inbuilt stages](#21-inbuilt-stages):
      - [let_user_choose](#211-letuserchoose)
-     - [get_input_from_user](#212-getinputfromuser)
-     - [get_info_from_user](#213-getinfofromuser)
+     - [get_user_input](#212-getuserinput)
+     - [get_user_info](#213-getuserinfo)
    - [2.2 Custom stages](#22-creating-a-custom-stage)
 
 &nbsp;
@@ -943,7 +943,7 @@ def some_state_in_a_stage(self: Stage, update: Update, context: CallbackContext)
 
 &nbsp;
 
-### 2.1.2) **get_input_from_user**
+### 2.1.2) **get_user_input**
 
 Presents an input field to the user. Input is capture through the next valid message sent from input prompt.
 
@@ -956,7 +956,7 @@ def callback(input_given : str, update : Update, context : CallbackContext) -> U
         update=update, context=context
     )
 
-example_input = Bot.get_input_from_user(
+example_input = Bot.get_user_input(
     input_label="example_input",
     input_text="Please input your \_\_\_\_:",
     input_handler=callback
@@ -977,9 +977,9 @@ def some_state_or_stage(update : Update, context : CallbackContext) -> USERSTATE
 
 &nbsp;
 
-### 2.1.3) **get_info_from_user**
+### 2.1.3) **get_user_info**
 
-Similar to `get_input_from_user` except that the input is a user information (string) and is stored globally in the userdata. No additional logic implementation is required.
+Similar to `get_user_input` except that the input is a user information (string) and is stored globally in the userdata. No additional logic implementation is required.
 
 ```python
 def format_number_input(input_str : Union[str, bool]):
@@ -993,7 +993,7 @@ def format_number_input(input_str : Union[str, bool]):
                 len(input_str) == 8 and "689".find(input_str[0]) >= 0
             ) else False
 
-example_info = bot.get_info_from_user( # This stage id is collect:phone number
+example_info = bot.get_user_info( # This stage id is collect:phone number
     data_label="phonenumber",
     next_stage_id=NEXT_STAGE_ID,
     input_formatter=format_number_input,
@@ -1001,7 +1001,7 @@ example_info = bot.get_info_from_user( # This stage id is collect:phone number
     allow_update=True
 )
 
-# Proceeding to the stage: (for get_info_from_user this is usually done at the start of the chatbot flow path)
+# Proceeding to the stage: (for get_user_info this is usually done at the start of the chatbot flow path)
 
 def some_state_or_stage(update : Update, context : CallbackContext) -> USERSTATE:
     query = update.callback_query

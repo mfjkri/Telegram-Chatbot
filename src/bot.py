@@ -363,11 +363,11 @@ class Bot(object):
 
         return stage_id
 
-    def get_input_from_user(self,
-                            input_label: str,
-                            input_text: str,
-                            input_handler: Callable,
-                            exitable: Optional[bool] = False) -> str:
+    def get_user_input(self,
+                       input_label: str,
+                       input_text: str,
+                       input_handler: Callable,
+                       exitable: Optional[bool] = False) -> str:
         """
         In-built function to create a stage that collects a user input.
 
@@ -387,7 +387,7 @@ class Bot(object):
                     print(f"Your favorite fruit is: {input_text}")
                     ...
 
-            >>> stage_id: str = bot.get_input_from_user(
+            >>> stage_id: str = bot.get_user_input(
                     input_label="favorite_fruit",
                     input_text="What is your favorite fruit?",
                     input_handler=print_fav_fruit,
@@ -411,12 +411,12 @@ class Bot(object):
 
         return stage_id
 
-    def get_info_from_user(self,
-                           data_label: str,
-                           next_stage_id: str,
-                           input_formatter: Optional[Callable] = lambda _: _,
-                           additional_text: Optional[str] = "",
-                           use_last_saved: Optional[bool] = True, allow_update: Optional[bool] = True) -> str:
+    def get_user_info(self,
+                      data_label: str,
+                      next_stage_id: str,
+                      input_formatter: Optional[Callable] = lambda _: _,
+                      additional_text: Optional[str] = "",
+                      use_last_saved: Optional[bool] = True, allow_update: Optional[bool] = True) -> str:
         """
         In-built function to create a stage that collects a user info (`str`).
 
@@ -464,7 +464,7 @@ class Bot(object):
                         input_str = utils.format_input_str(input_str, True, "@.")
                         return utils.check_if_valid_email_format(input_str)
 
-            >>> stage_id: str = bot.get_info_from_user(
+            >>> stage_id: str = bot.get_user_info(
                     data_label="email",
                     next_stage_id="...",
                     input_formatter=format_email_input,

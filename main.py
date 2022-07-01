@@ -115,7 +115,7 @@ def main():
             return utils.format_input_str(input_str, True)
         elif input_str is True:
             return "Only alphanumeric characters"
-    bot.get_info_from_user(  # This stage id is collect:username
+    bot.get_user_info(  # This stage id is collect:username
         data_label="username",
         next_stage_id=STAGE_DISCLAIMER,
         input_formatter=format_name_input,

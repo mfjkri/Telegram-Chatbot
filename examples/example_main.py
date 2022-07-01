@@ -96,7 +96,7 @@ def main():
             return "Only alphanumeric characters"
         else:
             return utils.format_input_str(input_str, True)
-    bot.get_info_from_user(  # This stage id is collect:username
+    bot.get_user_info(  # This stage id is collect:username
         data_label="username",
         next_stage_id=STAGE_COLLECT_EMAIL,
         input_formatter=format_name_input,
@@ -112,7 +112,7 @@ def main():
         else:
             input_str = utils.format_input_str(input_str, True, "@.")
             return utils.check_if_valid_email_format(input_str)
-    bot.get_info_from_user(
+    bot.get_user_info(
         data_label="email",             # This stage id is collect:email
         next_stage_id=STAGE_EXAMPLE,
         input_formatter=format_email_input,

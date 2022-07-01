@@ -83,13 +83,13 @@ class AdminConsole(Stage):
         self.bot.register_stage(self)
         self.MENU: USERSTATE = list(self.states.values())[0]
 
-        self.DELETE_USER_NAME_STAGE = self.bot.get_input_from_user(
+        self.DELETE_USER_NAME_STAGE = self.bot.get_user_input(
             input_label="admin_delete_user_name",
             input_text="Enter the User ID to delete username from:",
             input_handler=self.delete_user_name
         )
 
-        self.DELETE_USER_STAGE = self.bot.get_input_from_user(
+        self.DELETE_USER_STAGE = self.bot.get_user_input(
             input_label="admin_reset_user",
             input_text="Enter the User ID to delete:",
             input_handler=self.reset_user
@@ -111,13 +111,13 @@ class AdminConsole(Stage):
             ]
         )
 
-        self.BAN_USER_STAGE = self.bot.get_input_from_user(
+        self.BAN_USER_STAGE = self.bot.get_user_input(
             input_label="admin_ban_user",
             input_text="Enter the User ID to ban:",
             input_handler=self.ban_user
         )
 
-        self.UNBAN_USER_STAGE = self.bot.get_input_from_user(
+        self.UNBAN_USER_STAGE = self.bot.get_user_input(
             input_label="admin_unban_user",
             input_text="Enter the User ID to unban:",
             input_handler=self.unban_user
