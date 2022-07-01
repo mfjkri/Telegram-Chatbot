@@ -598,11 +598,37 @@ class Bot(object):
 
         for stage_id, registered_stage in self.stages.items():
             assert hasattr(registered_stage,
-                           "users_data_initialized"), f"Stage:{stage_id} has not "\
+                           "_users_data_initialized"), f"Stage:{stage_id} has not "\
                 "initialized its users_data.\n\n"\
-                "If this stage has no users_data to initialize, please set its init_users_data method to be:\n\n"\
-                "def init_users_data(self) -> None:\n"\
-                "\treturn super().init_users_data()"
+                """
+                1) Remember to call @init_users_data() in @setup method:
+                
+                    def setup(self, ...) -> None:
+              >         self.init_users_data()
+                        ...
+                
+                2) Ensure you set the '_users_data_initialized' attribute of the stage in your @init_users_data method.
+                   You can call the abstract method to do this for you:
+                    
+                    def init_users_data(self) -> None:
+                        ...
+              >         return super().init_users_data()
+                """
+
+        assert self.first_stage, "First stage has not been set.\n\n"\
+            """
+            Please set a first stage before starting the bot.
+            
+            SOME_STAGE_ID : str = ...
+            
+            ...
+            
+          > bot.set_first_stage(SOME_STAGE_ID)
+            
+            ...
+            
+            bot.start(live_mode = ...)
+            """
 
         conversation_states = {}
         for idx, state in enumerate(self.states):

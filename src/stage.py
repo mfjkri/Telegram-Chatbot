@@ -52,7 +52,7 @@ class Stage(ABC):
     def init_users_data(self) -> None:
         """"""
         # self.user_manager.add_data_field("DATA_FIELD", "")
-        self.users_data_initialized = True
+        self._users_data_initialized = True
 
     @abstractmethod
     def stage_entry(self, update: Update, context: CallbackContext) -> USERSTATE:

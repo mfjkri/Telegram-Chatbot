@@ -185,8 +185,31 @@ class Ctf(Stage):
             operator.and_,
             [re.search(r"[0-9]+", cn) is not None for cn in challenges_names]
         ), "Please ensure that the directory names of the challenges in ctf/challenges/"\
-            " are of the format:\n\tNUMBER-ChallengeName\n\te.g. 13-Decryption"\
-            "\n\nFor more info, refer to README.md -> 1.2 Adding CTF Challenges"
+            " are of the format:\n"\
+            """
+                project_dir
+                └── ctf
+                    └── challenges
+                        ├── N-ChallengeName/
+                        └── N+1-ChallengeName2/
+                
+                e.g.
+                
+                project_dir
+                ├── ctf
+                |   └── challenges
+                |       ├── 1-MetadataForensic
+                |       |   ├── challenge.yaml
+                |       |   └── ...
+                |       |
+                |       └── 2-OSINTLeak
+                |           ├── challenge.yaml
+                |           └── ...
+                ├── src
+                └── ...
+                
+            For more info, see README.md -> 1.2 Adding CTF Challenges"
+            """
 
         challenges_names.sort(
             key=lambda a: int(re.search(r"[0-9]+", a).group(0))
