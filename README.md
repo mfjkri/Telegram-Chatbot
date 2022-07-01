@@ -1063,7 +1063,7 @@ from utils.log import Log
 
 from stages.example_stage import Example
 
-LOG_FILE = os.path.join("logs", f"examplebot.log")
+LOG_FILE = os.path.join("logs", f"example_bot.log")
 
 CONFIG = utils.load_yaml_file(os.path.join("config.yaml"))
 assert CONFIG, "Failed to load config.yaml. Fatal error, please remedy."\

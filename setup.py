@@ -26,8 +26,7 @@ if __name__ == "__main__":
     terminal_output.setFormatter(formatter)
     log.addHandler(terminal_output)
 
-    log_filename = f"project_setup.log"
-    log_file = logging.FileHandler(log_filename)
+    log_file = logging.FileHandler(f"project_setup.log")
     log_file.setFormatter(formatter)
     log.addHandler(log_file)
 

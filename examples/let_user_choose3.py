@@ -15,7 +15,7 @@ from user import UserManager, User
 from utils import utils
 from utils.log import Log
 
-LOG_FILE = os.path.join("logs", f"example:base_main.log")
+LOG_FILE = os.path.join("logs", f"example:let_user_choose3.log")
 
 CONFIG = utils.load_yaml_file(os.path.join("config.yaml"))
 assert CONFIG, "Failed to load config.yaml. Fatal error, please remedy."\

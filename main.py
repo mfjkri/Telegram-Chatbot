@@ -20,7 +20,7 @@ from stages.admin import AdminConsole
 from stages.authenticate import Authenticate
 from stages.ctf import Ctf
 
-LOG_FILE = os.path.join("logs", f"testbot.log")
+LOG_FILE = os.path.join("logs", f"main.log")
 
 CONFIG = utils.load_yaml_file(os.path.join("config.yaml"))
 assert CONFIG, "Failed to load config.yaml. Fatal error, please remedy."\
