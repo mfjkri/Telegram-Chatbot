@@ -148,15 +148,9 @@ class Guardian(Stage):
                     self.stage_exit, pattern="^guardian_finished$")
             ]
         }
-
-        self.INTRO_VIEW: USERSTATE
-        self.RESULTS_VIEW: USERSTATE
-
         self.bot.register_stage(self)
-        (
-            self.INTRO_VIEW,
-            self.RESULTS_VIEW
-        ) = list(self.states.values())
+        # USERSTATES
+        (self.INTRO_VIEW, self.RESULTS_VIEW,) = self.unpacked_states
 
     def init_users_data(self) -> None:
         guardian_state = {

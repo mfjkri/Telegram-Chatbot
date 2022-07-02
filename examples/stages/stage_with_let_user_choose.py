@@ -33,7 +33,8 @@ class FavoriteFruits(Stage):
         }
 
         self.bot.register_stage(self)
-        self.MENU: USERSTATE = list(self.states.values())[0]
+        # USERSTATES
+        (self.MENU,) = self.unpacked_states
 
         choices: List[Dict[str, Union[Callable, str]]] = [
             {

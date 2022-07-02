@@ -1,6 +1,6 @@
 import time
 from abc import (ABC, abstractmethod)
-from typing import (Callable, Dict, List, Union, Optional)
+from typing import (Callable, Dict, List, Union, Tuple, Optional)
 
 
 from telegram import (InlineKeyboardButton,
@@ -46,7 +46,8 @@ class Stage(ABC):
             # ...
         }
         self.bot.register_stage(self)
-        # self.___, self.___ = self.bot.unpack_states(self.states)
+        # USERSTATES
+        # (self.STATE_NAME, self.STATE_NAME_2,) = self.unpacked_states
 
     @abstractmethod
     def init_users_data(self) -> None:
@@ -71,6 +72,30 @@ class Stage(ABC):
             next_stage_id=self.next_stage_id or self.bot.end_stage.stage_id,
             update=update, context=context
         )
+
+    @property
+    def unpacked_states(self) -> Tuple[USERSTATE, ...]:
+        assert self.stage_id in self.bot.stages, "Unable to unpack states. "\
+            """
+            Stage has not yet been registered in bot.
+            
+            Please call bot.register_stage(stage : Stage) before accessing this property.
+            
+            Example:
+                def setup(...) -> None:
+                    self.init_users_data()
+                    
+                    self.states = {
+                        "MENU": [...],
+                        ...
+                    }
+                    
+                 >  self.bot.register_stage(self)
+                    
+                    (self.MENU,) = self.unpacked_states
+            """
+
+        return tuple(list(self.states.values()))
 
 # ---------------------------------------------------------------------------- #
 # ------------------------------ In-built stages ----------------------------- #
@@ -109,7 +134,8 @@ class LetUserChoose(Stage):
             choice_label + "confirmation": callbacks
         }
         self.bot.register_stage(self)
-        self.CHOICE_CONFIRMATION: USERSTATE = list(self.states.values())[0]
+        # USERSTATES
+        (self.CHOICE_CONFIRMATION,) = self.unpacked_states
 
     def init_users_data(self) -> None:
         return super().init_users_data()
@@ -151,7 +177,8 @@ class GetInputFromUser(Stage):
                 MessageHandler(Filters.all, self.message_handler)]
         }
         self.bot.register_stage(self)
-        self.INPUT_MESSAGE_HANDLER: USERSTATE = list(self.states.values())[0]
+        # USERSTATES
+        (self.INPUT_MESSAGE_HANDLER,) = self.unpacked_states
 
     def init_users_data(self) -> None:
         return super().init_users_data()
@@ -217,14 +244,9 @@ class GetInfoFromUser(Stage):
             ]
         }
 
-        self.INPUT_HANDLER: USERSTATE
-        self.INPUT_CONFIRMATION: USERSTATE
-
         self.bot.register_stage(self)
-        (
-            self.INPUT_HANDLER,
-            self.INPUT_CONFIRMATION
-        ) = list(self.states.values())
+        # USERSTATES
+        (self.INPUT_HANDLER, self.INPUT_CONFIRMATION,) = self.unpacked_states
 
     def init_users_data(self) -> None:
         self.user_manager.add_data_field(self.data_label, "")

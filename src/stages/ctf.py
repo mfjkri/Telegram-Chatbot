@@ -85,20 +85,14 @@ class Ctf(Stage):
             "CHALLENGE_WRONG": retry_challenge_callbacks
         }
 
-        self.MENU: USERSTATE
-        self.CHALLENGE_VIEW: USERSTATE
-        self.LEADERBOARD_VIEW: USERSTATE
-        self.SUBMIT_CHALLENGE: USERSTATE
-        self.CHALLENGE_SUCCESS: USERSTATE
-        self.CHALLENGE_WRONG: USERSTATE
-
         self.bot.register_stage(self)
+        # USERSTATES
         (
             self.MENU, self.CHALLENGE_VIEW,
             self.LEADERBOARD_VIEW,
             self.SUBMIT_CHALLENGE,
             self.CHALLENGE_SUCCESS, self.CHALLENGE_WRONG,
-        ) = list(self.states.values())
+        ) = self.unpacked_states
 
     def init_users_data(self) -> None:
         ctf_state = {
