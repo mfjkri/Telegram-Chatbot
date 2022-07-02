@@ -140,21 +140,20 @@ class Bot(object):
                     ...
         """
 
-        if stage.stage_id not in self.stages:
-            self.stages.update({stage.stage_id: stage})
+        assert stage.stage_id not in self.stages, "COULD NOT REGISTER STAGE: "\
+            f"{stage.stage_id}. | Stage already exists as registered stage."
 
-            states = {}
-            for state_name, callback_handlers in stage.states.items():
-                states.update({state_name: self.add_state(
-                    stage_id=stage.stage_id,
-                    state_name=stage.stage_id + state_name,
-                    callbacks=callback_handlers
-                )})
+        self.stages.update({stage.stage_id: stage})
 
-            stage.states = states
-        else:
-            self.logger.warning("STAGE_ID_ALREADY_EXISTS",
-                                f"Stage ID: {stage.stage_id} already exists as a registered stage.")
+        states = {}
+        for state_name, callback_handlers in stage.states.items():
+            states.update({state_name: self.add_state(
+                stage_id=stage.stage_id,
+                state_name=stage.stage_id + state_name,
+                callbacks=callback_handlers
+            )})
+
+        stage.states = states
 
     def exit_conversation(self,
                           current_stage_id: str,
@@ -449,11 +448,11 @@ class Bot(object):
 
             Expected callback format for `input_formatter`:
 
-                >>> def input_formatter(input : Union[str, bool]):
-                        if str is True:
+                >>> def input_formatter(user_input : Union[str, bool]):
+                        if user_input is True:
                             return "EXPECTED INPUT FORMAT"
                         else:
-                            return check_input_format(inputs)
+                            return check_input_format(user_input)
 
 
         Example:
