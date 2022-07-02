@@ -78,24 +78,24 @@ def update_leaderboard(max_leaderboard_view: int) -> List[List[Union[int, List[D
         scoring_list.append([int(total_score), users])
     scoring_list.sort(reverse=True, key=lambda a: a[0])
 
-    row, col, count, stopped = 0, 0, 0, False
+    # row, col, count, stopped = 0, 0, 0, False
 
-    for p in scoring_list:
-        col = 0
-        for u in p[1]:
-            count += 1
-            if count > min(MAX_LEADERBOARD_VIEW, max_leaderboard_view):
-                stopped = True
-                break
-            col += 1
+    # for p in scoring_list:
+    #     col = 0
+    #     for u in p[1]:
+    #         count += 1
+    #         if count > min(MAX_LEADERBOARD_VIEW, max_leaderboard_view):
+    #             stopped = True
+    #             break
+    #         col += 1
 
-        if stopped:
-            break
-        else:
-            row += 1
+    #     if stopped:
+    #         break
+    #     else:
+    #         row += 1
 
-    scoring_list[row][1] = scoring_list[row][1][:col]
-    scoring_list = scoring_list[:row + 1]
+    # scoring_list[row][1] = scoring_list[row][1][:col]
+    # scoring_list = scoring_list[:row + 1]
 
     return scoring_list
 
