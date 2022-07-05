@@ -587,15 +587,13 @@ Below is a brief description of what each script does and how to use them.
 
 - [`ban_all_users`](src/helper_scripts/ban_all_users.py):
 
-  This script will get all the existing users found in the [users directory](users/) and add their chatids to the [banned_users.yaml](users/banned_users.yaml) file. It will NOT DELETE their files, if you wish to do that, you will have to it manually.
+  This script will get all the existing users found in the [users directory](users/) and add their chatids to the [banned_users.yaml](users/banned_users.yaml) file. It will NOT DELETE their files. If you wish to do that, you will have to do it manually or use the [`reset_project`](src/helper_scripts/reset_project.py) helper script.
 
   It is useful for preventing users from an earlier session from joining in on a later session.
 
   Usage:
 
   ```bash
-  # Replace python with your system python keyword
-  # Replace the forward slash with backslash for Windows
   $ python src/helper_scripts/ban_all_users.py
   ```
 
@@ -606,6 +604,8 @@ Below is a brief description of what each script does and how to use them.
   It is useful for populating the leaderboard during testing and also for creating test export log files (more on that below).
 
   Currently the fake users are only configured to attempt CTF Challenges and not any other stages such as [Guardian](src/stages/guardian.py).
+
+  **Warning**: This script **WILL DELETE ALL** current user files found in the [${rootDir}/users/](users/).
 
   Arguments:
 
@@ -622,9 +622,13 @@ Below is a brief description of what each script does and how to use them.
   Usage:
 
   ```bash
-  # Replace python with your system python keyword
-  # Replace the forward slash with backslash for Windows
+  # Create 20 fake users each attempting MIN 4 challenges
   $ python src/helper_scripts/create_fake_users.py -n 20 -c 4
+  ```
+
+  ```bash
+  # Create MAX (24) fake users
+  $ python src/helper_scripts/create_fake_users.py -n 0
   ```
 
   `-n` argument is for the number of fake users to create. It is capped at 26.
@@ -637,7 +641,7 @@ Below is a brief description of what each script does and how to use them.
 
   It is useful for testing purposes and removing the need to update challenges manually everytime when testing a new feature.
 
-  **Warning**: This script **WILL DELETE ALL** current challenges found in the [challenges directory](ctf//challenges/).
+  **Warning**: This script **WILL DELETE ALL** current challenges found in the [${rootDir}/ctf/challenges](ctf/challenges/).
 
   Arguments:
 
@@ -654,9 +658,13 @@ Below is a brief description of what each script does and how to use them.
   Usage:
 
   ```bash
-  # Replace python with your system python keyword
-  # Replace the forward slash with backslash for Windows
+  # Create 10 placeholder challenges
   $ python src/helper_scripts/create_placeholder_challenges.py -n 10
+  ```
+
+  ```bash
+  # Create 10 placeholder challenges from custom template file
+  $ python src/helper_scripts/create_placeholder_challenges.py -n 10 -i path/to/challenge.yaml
   ```
 
   `-i` argument is for providing a custom challenge.yaml to use as template when creating the placeholder challenges.
@@ -689,8 +697,6 @@ Below is a brief description of what each script does and how to use them.
   Usage:
 
   ```bash
-  # Replace python with your system python keyword
-  # Replace the forward slash with backslash for Windows
   $ python src/helper_scripts/export_logs.py -o "example_export"
   ```
 
@@ -945,7 +951,9 @@ def some_state_in_a_stage(self: Stage, update: Update, context: CallbackContext)
 
 ### 2.1.2) **get_user_input**
 
-Presents an input field to the user. Input is capture through the next valid message sent from input prompt.
+Presents an input field to the user. Input is captured through the next valid message sent from input prompt.
+
+Invalid input types such stickers, GIFs and file uploads are ignored. Incorrect input forms such as editing previously sent messages is also disregarded.
 
 ```python
 def callback(input_given : str, update : Update, context : CallbackContext) -> USERSTATE:
@@ -1023,6 +1031,15 @@ def some_state_or_stage(update : Update, context : CallbackContext) -> USERSTATE
 &nbsp;
 
 ### Prequisites:
+
+---
+
+**⚠️ NOTE:** Unfortunately at the time of writing this documentation, the [`python-telegram-bot`](https://github.com/python-telegram-bot/python-telegram-bot) had just released their lastest version `V20.X`. The new changes are not compatible with the current state of this project. Manual updating is required if you wish to upgrade to V20.X.\
+You can refer to the transition guides listed on their wiki [here](https://github.com/python-telegram-bot/python-telegram-bot/wiki/Transition-guide-to-Version-20.0).
+
+**⚠️ NOTE:** The example guides listed below have been updated for V20.X of `python-telegram-bot`. To view its older version, please use [`githistory.xyz`](https://githistory.xyz/).
+
+---
 
 Creating custom stages will require you to have knowledge about working with [`python-telegram-bot`](https://github.com/python-telegram-bot/python-telegram-bot/)
 
