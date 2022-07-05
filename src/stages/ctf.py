@@ -249,7 +249,7 @@ class Ctf(Stage):
             if is_challenge_completed:
                 button_text += "  ✅"
             else:
-                button_text += f""" {challenge["difficulty"] * '⭐️'}"""
+                button_text += f""" {challenge["difficulty"] * '✯'}"""
                 if challenge["time_based"]:
                     pass
                     # button_text += "  ⌛️"
@@ -475,7 +475,7 @@ class Ctf(Stage):
                 text_body += placing_text
                 text_body += f"  |  <u>{total_score} points</u>\n\n"
         else:
-            text_body += "🦗 It appears no one has gotten any points yet...\n\n"
+            text_body += "🦗 No one has gotten any points yet...\n\n"
 
         text_body += "\n"
 
