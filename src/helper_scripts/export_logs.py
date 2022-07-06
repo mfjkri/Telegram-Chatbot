@@ -1,4 +1,27 @@
 """
+
+Log lines will be in the format:
+
+TIME,  ${RELEVANT_DATA_FIELDS}  ,ACTION,CHALLENGE NUMBER,SCORE
+
+Enter in what data fields to include below:
+
+    for example:
+
+        RELEVANT_DATA_FIELDS = {
+            "name": [str, "anonymous"],
+            "group": [str, "no-group"]
+        }
+"""
+
+RELEVANT_DATA_FIELDS = {
+    # "data-field-label" : [constructor, default_value]
+    "name": [str, "anonymous"],
+    "guardian_team": [str, ""],
+    "group": [str, "no-group"]
+}
+
+"""
 We will be using this helper runtime script: export_logs.py
 This script will compile and export your individual users' logs as a csv file which can then be imported into Excel for visualisation purposes.
 
@@ -16,9 +39,9 @@ Exporting Process:
     
     1) Activating venv in your CLI env
         For windows:
-            venv/Scripts/activate
+            $ venv/Scripts/activate
         For Linux:
-            source venv/bin/activate
+            $ source venv/bin/activate
     
     2) Running the script
         python src/helper_scripts/export_logs.py -o "example_export"
@@ -143,7 +166,17 @@ def get_users(chatid_specificer: str, group_specifier: str) -> Dict:
                 user_data = load_yaml_file(user_data_yaml)
 
                 if user_data:
-                    name, group = user_data.get("name"), user_data.get("group")
+                    extracted_data_fields = {}
+                    for data_field_label, default_data_field in RELEVANT_DATA_FIELDS.items():
+                        default_constructor, default_value = default_data_field
+
+                        data_field_value = user_data.get(
+                            data_field_label, default_constructor(default_value))
+
+                        extracted_data_fields.update(
+                            {data_field_label: data_field_value})
+
+                    group = user_data.get("group")
 
                     if group_specifier and group.lower() != group_specifier.lower():
                         continue
@@ -154,8 +187,9 @@ def get_users(chatid_specificer: str, group_specifier: str) -> Dict:
 
                     users.update({
                         chatid: {
-                            "name": name,
                             "group": group,
+
+                            "relevant_data": extracted_data_fields,
 
                             "logs": user_logs,
                             "data": user_data,
@@ -182,7 +216,6 @@ def export_log_files(export_file_name: str, chatid_specificer: str, group_specif
     compiled_logs = []
 
     for chatid, user in users.items():
-        name, group = user["name"], user["group"]
         cached_scores.update({chatid: 0})
 
         for line in user["logs"]:
@@ -216,8 +249,11 @@ def export_log_files(export_file_name: str, chatid_specificer: str, group_specif
                         logs_by_time.update({log_time: []})
                         scores_by_time.update({log_time: {}})
 
+                    relevant_data_str = ','.join(
+                        user["relevant_data"].values())
+
                     logs_by_time[log_time].append(
-                        f"{name},{group},{action_keyword},{challenge_number},{max(score, cached_scores[chatid])}"
+                        f"{relevant_data_str},{action_keyword},{challenge_number},{max(score, cached_scores[chatid])}"
                     )
 
                     chatids_by_time[log_time].append(chatid)
@@ -230,8 +266,12 @@ def export_log_files(export_file_name: str, chatid_specificer: str, group_specif
         for chatid, user in users.items():
             if chatid not in chatids:
                 cached_scores[chatid] = cached_scores[chatid] if chatid in cached_scores else 0
+
+                relevant_data_str = ','.join(
+                    user["relevant_data"].values())
+
                 logs_by_time[time].append(
-                    f"""{user["name"]},{user["group"]},FILL_DATA,,{cached_scores[chatid]}"""
+                    f"""{relevant_data_str},FILL_DATA,,{cached_scores[chatid]}"""
                 )
             elif chatid in scores_by_time[time] and scores_by_time[time][chatid] > 0:
                 cached_scores[chatid] = scores_by_time[time][chatid]
@@ -242,8 +282,9 @@ def export_log_files(export_file_name: str, chatid_specificer: str, group_specif
     compiled_logs.sort(key=lambda x: x.split(',')[0])
 
     with open(os.path.join(EXPORTS_DIRECTORY, f"{export_file_name}.csv"), "w") as export_file:
+        relevant_data_str = ','.join(RELEVANT_DATA_FIELDS.keys()).upper()
         compiled_logs.insert(
-            0, "TIME,NAME,GROUP,ACTION,CHALLENGE NUMBER,SCORE\n")
+            0, f"TIME,{relevant_data_str},ACTION,CHALLENGE NUMBER,SCORE\n")
         export_file.writelines(compiled_logs)
 
 

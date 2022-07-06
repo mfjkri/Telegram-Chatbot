@@ -365,7 +365,7 @@ files: []
 
 - **`difficulty`** : Required [integer]
 
-  The difficulty rating for the challenge. This will be represented by a star icon "⭐️" per difficulty.
+  The difficulty rating for the challenge. This will be represented by a star icon '✯' per difficulty.
 
   To display difficulty rating of `X`:
 
@@ -560,7 +560,7 @@ files: []
 `Warning: Please refer and read through what each script does before using it.`\
 `Some scripts can cause irrevisble changes to your project.`
 
-Helper scripts are scripts that are designed to be used either before, during or after a session of [running](main.py) the Telegram Bot.
+Helper scripts are scripts that are designed to be used either before, during or after a session of [running](#14-running-the-chatbot) the Telegram Bot.
 
 They help to make your life easier by executing common tasks or tasks that are repetitive and can be automated or even help you out in testing and debugging of the bot.
 
@@ -680,6 +680,19 @@ Below is a brief description of what each script does and how to use them.
   - Viewing of hints
   - Attempting the challenge
   - Completing the challenge
+
+  To include custom data fields such as username etc, modify the `RELEVANT_DATA_FIELDS` found in the script:
+
+  ```python
+  RELEVANT_DATA_FIELDS = {
+    # "data-field-label" : [constructor, default_value]
+    "name": [str, "anonymous"],
+    "username": [str, ""],
+    "group": [str, "no-group"]
+  }
+  ```
+
+  It will try and get the data_field from `userdata` (user.yaml) and if not found will use the default value provided.
 
   Arguments:
 
