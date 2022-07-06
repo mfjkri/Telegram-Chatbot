@@ -131,7 +131,7 @@ class LetUserChoose(Stage):
                                                           callback_data=f"{self.stage_id}:choice:{idx}"))
 
         self.states = {
-            self.stage_id + "confirmation": callbacks
+            self.stage_id + ":confirmation": callbacks
         }
         self.bot.register_stage(self)
         # USERSTATES
@@ -161,7 +161,6 @@ class GetInputFromUser(Stage):
         super().__init__(stage_id, next_stage_id, bot)
 
     def setup(self,
-              input_label: str,
               input_text: str,
               input_handler: Callable,
               exitable: bool = False) -> None:
@@ -173,7 +172,7 @@ class GetInputFromUser(Stage):
         self.exitable = exitable
 
         self.states = {
-            input_label + "message_handler": [
+            self.stage_id + ":message_handler": [
                 MessageHandler(Filters.all, self.message_handler)]
         }
         self.bot.register_stage(self)

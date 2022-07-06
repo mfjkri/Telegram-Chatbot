@@ -41,7 +41,7 @@ def main():
              logger=logger,
              config=CONFIG)
 
-    STAGE_FAV_FRUIT = "input:favorite_fruit"
+    STAGE_FAV_FRUIT = "input_favorite_fruit"
     STAGE_END = "end"
 
     # ------------------------ Stage: input:favorite_fruit ----------------------- #
@@ -61,7 +61,7 @@ def main():
         )
 
     bot.get_user_input(
-        input_label="favorite_fruit",
+        stage_id=STAGE_FAV_FRUIT,
         input_text="Enter your favorite fruit!\n\n"
         "Enter /cancel to exit.",
         input_handler=print_user_choice,

@@ -102,8 +102,8 @@ class Example(Stage):
             ],
             choices_per_row=2
         )
-        self.QUESTION_STAGE = self.bot.get_user_input(
-            input_label="example_question",
+        self.INPUT_QUESTION_STAGE: Stage = self.bot.get_user_input(
+            stage_id="input_example_question",
             input_text="What is 1 + 1?",
             input_handler=self.check_answer
         )
@@ -231,7 +231,7 @@ class Example(Stage):
 
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
-            next_stage_id=self.QUESTION_STAGE,
+            next_stage_id=self.INPUT_QUESTION_STAGE.stage_id,
             update=update, context=context
         )
 

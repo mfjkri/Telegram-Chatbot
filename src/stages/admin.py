@@ -84,14 +84,14 @@ class AdminConsole(Stage):
         # USERSTATES
         (self.MENU,) = self.unpacked_states
 
-        self.DELETE_USER_NAME_STAGE = self.bot.get_user_input(
-            input_label="admin_delete_user_name",
+        self.INPUT_DELETE_USER_NAME_STAGE: Stage = self.bot.get_user_input(
+            stage_id="input_admin_delete_user_name",
             input_text="Enter the User ID to delete username from:",
             input_handler=self.delete_user_name
         )
 
-        self.DELETE_USER_STAGE = self.bot.get_user_input(
-            input_label="admin_reset_user",
+        self.INPUT_DELETE_USER_STAGE: Stage = self.bot.get_user_input(
+            stage_id="input_admin_reset_user",
             input_text="Enter the User ID to delete:",
             input_handler=self.reset_user
         )
@@ -112,14 +112,14 @@ class AdminConsole(Stage):
             ]
         )
 
-        self.BAN_USER_STAGE = self.bot.get_user_input(
-            input_label="admin_ban_user",
+        self.INPUT_BAN_USER_STAGE: Stage = self.bot.get_user_input(
+            stage_id="input_admin_ban_user",
             input_text="Enter the User ID to ban:",
             input_handler=self.ban_user
         )
 
-        self.UNBAN_USER_STAGE = self.bot.get_user_input(
-            input_label="admin_unban_user",
+        self.INPUT_UNBAN_USER_STAGE: Stage = self.bot.get_user_input(
+            stage_id="input_admin_unban_user",
             input_text="Enter the User ID to unban:",
             input_handler=self.unban_user
         )
@@ -189,7 +189,7 @@ class AdminConsole(Stage):
 
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
-            next_stage_id=self.DELETE_USER_NAME_STAGE,
+            next_stage_id=self.INPUT_DELETE_USER_NAME_STAGE.stage_id,
             update=update, context=context
         )
 
@@ -199,7 +199,7 @@ class AdminConsole(Stage):
 
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
-            next_stage_id=self.DELETE_USER_STAGE,
+            next_stage_id=self.INPUT_DELETE_USER_STAGE.stage_id,
             update=update, context=context
         )
 
@@ -219,7 +219,7 @@ class AdminConsole(Stage):
 
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
-            next_stage_id=self.BAN_USER_STAGE,
+            next_stage_id=self.INPUT_BAN_USER_STAGE.stage_id,
             update=update, context=context
         )
 
@@ -229,7 +229,7 @@ class AdminConsole(Stage):
 
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
-            next_stage_id=self.UNBAN_USER_STAGE,
+            next_stage_id=self.INPUT_UNBAN_USER_STAGE.stage_id,
             update=update, context=context
         )
 

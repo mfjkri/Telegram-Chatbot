@@ -969,29 +969,41 @@ Presents an input field to the user. Input is captured through the next valid me
 Invalid input types such stickers, GIFs and file uploads are ignored. Incorrect input forms such as editing previously sent messages are also disregarded.
 
 ```python
-def callback(input_given : str, update : Update, context : CallbackContext) -> USERSTATE:
+bot: Bot = Bot()
+bot.init(token=BOT_TOKEN,
+         logger=logger,
+         config=CONFIG)
+
+STAGE_EXAMPLE_ANY_INPUT = "input_example_any"
+
+
+def callback(input_given: str, update: Update, context: CallbackContext) -> USERSTATE:
     print("Input given was:", input_given)
     return Bot.proceed_next_stage(
-        current_stage_id="input:example_input",
+        current_stage_id=STAGE_EXAMPLE_ANY_INPUT,
         next_stage_id=NEXT_STAGE_ID,
         update=update, context=context
     )
 
-example_input = Bot.get_user_input(
-    input_label="example_input",
+
+input_example_any_stage: Stage = bot.get_user_input(
+    stage_id=STAGE_EXAMPLE_ANY_INPUT,
     input_text="Please input your \_\_\_\_:",
-    input_handler=callback
+    input_handler=callback,
+    exitable=True
 )
 
+assert input_example_any_stage.stage_id == STAGE_EXAMPLE_ANY_INPUT
+
 # Proceeding to the stage:
-
-def some_state_or_stage(update : Update, context : CallbackContext) -> USERSTATE:
+def some_state_in_a_stage(self: Stage, update: Update, context: CallbackContext) -> USERSTATE:
     query = update.callback_query
-    query.answer()
+    if query:
+        query.answer()
 
-    return Bot.proceed_next_stage(
-        current_stage_id=CURRENT_SOME_STATE_OR_STAGE_ID,
-        next_stage_id=example_input or "input:example_input",
+    return bot.proceed_next_stage(
+        current_stage_id=self.stage_id,
+        next_stage_id=STAGE_EXAMPLE_ANY_INPUT,
         update=update, context=context
     )
 ```

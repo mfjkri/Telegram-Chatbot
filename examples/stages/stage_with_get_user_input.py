@@ -15,8 +15,8 @@ class EchoTen(Stage):
 
         self.states = {}
 
-        self.INPUT_HANDLER_STAGE = self.bot.get_user_input(
-            input_label="echo_msg",
+        self.INPUT_ECHO_HANDLER_STAGE: Stage = self.bot.get_user_input(
+            stage_id="input_echoten_echo_msg",
             input_text="Please send a message... any message will do:\n\n"
             "Use /cancel to exit.",
             input_handler=self.echo_message,
@@ -32,7 +32,7 @@ class EchoTen(Stage):
     def stage_entry(self, update: Update, context: CallbackContext) -> USERSTATE:
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
-            next_stage_id=self.INPUT_HANDLER_STAGE,
+            next_stage_id=self.INPUT_ECHO_HANDLER_STAGE.stage_id,
             update=update, context=context
         )
 

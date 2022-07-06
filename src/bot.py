@@ -359,52 +359,50 @@ class Bot(object):
         return stage
 
     def get_user_input(self,
-                       input_label: str,
+                       stage_id: str,
                        input_text: str,
                        input_handler: Callable,
-                       exitable: Optional[bool] = False) -> str:
+                       exitable: Optional[bool] = False) -> Stage:
         """
         In-built function to create a stage that collects a user input.
 
         stage_id of the stage created is of the format {`input:INPUT_LABEL`}
 
         Parameters:
-            input_label (:obj:`str`): Label of the input sent by user (for example: answer).
+            stage_id (:obj:`str`): Unique identifier for the stage to be created.
             input_text (:obj:`str`): The text displayed before prompting user to enter their input.
             input_handler (:class:`Callable`): The callback function called with the user input.
             exitable (:obj:`bool`): Optional. Whether to allow users to abort input by sending "/cancel". Defaults to False.
 
         Returns:
-            (:obj:`str`): Returns the unique identifier of the stage created.
+            (:class:`Stage`): Returns the stage object created.
 
         Example:
             >>> def print_fav_fruit(input_text: str, update: Update, context: CallbackContext) -> USERSTATE:
                     print(f"Your favorite fruit is: {input_text}")
                     ...
 
-            >>> stage_id: str = bot.get_user_input(
-                    input_label="favorite_fruit",
+            >>> input_fav_fruit_stage: Stage = bot.get_user_input(
+                    stage_id="input_favorite_fruit",
                     input_text="What is your favorite fruit?",
                     input_handler=print_fav_fruit,
                     exitable=True
                 )
-                print(stage_id)  # --> "input:favorite_fruit"
+                print(input_fav_fruit_stage.stage_id)  # --> "input_favorite_fruit"
         """
 
-        stage_id = f"input:{input_label}"
         stage = GetInputFromUser(
             stage_id=stage_id,
             next_stage_id="",
             bot=self)
 
         stage.setup(
-            input_label=input_label,
             input_text=input_text,
             input_handler=input_handler,
             exitable=exitable
         )
 
-        return stage_id
+        return stage
 
     def get_user_info(self,
                       data_label: str,
