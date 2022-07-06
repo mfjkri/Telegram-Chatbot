@@ -907,10 +907,10 @@ bot.init(token=BOT_TOKEN,
          logger=logger,
          config=CONFIG)
 
-STAGE_FAV_FRUIT = "choose:fruit"
+STAGE_FAV_FRUIT = "choose_favorite_fruit"
 
 
-def see_user_choice(choice_selected: str, update: Update, context: CallbackContext) -> USERSTATE:
+def handle_user_choice(choice_selected: str, update: Update, context: CallbackContext) -> USERSTATE:
     print("Choice selected was:", choice_selected)
     return bot.proceed_next_stage(
         current_stage_id=STAGE_FAV_FRUIT,
@@ -919,31 +919,31 @@ def see_user_choice(choice_selected: str, update: Update, context: CallbackConte
     )
 
 
-new_stage_id = bot.let_user_choose(
-    choice_label="fruit",
+choose_fav_fruit_stage : Stage = bot.let_user_choose(
+    stage_id=STAGE_FAV_FRUIT,
     choice_text="Which is your favorite fruit?",
     choices=[
         {
             "text": "🍎",
-            "callback": lambda update, context: see_user_choice("apple", update, context)
+            "callback": lambda update, context: handle_user_choice("apple", update, context)
         },
         {
             "text": "🍐",
-            "callback": lambda update, context: see_user_choice("pear", update, context)
+            "callback": lambda update, context: handle_user_choice("pear", update, context)
         },
         {
             "text": "🍊",
-            "callback": lambda update, context: see_user_choice("orange", update, context)
+            "callback": lambda update, context: handle_user_choice("orange", update, context)
         },
         {
             "text": "🍇",
-            "callback": lambda update, context: see_user_choice("grape", update, context)
+            "callback": lambda update, context: handle_user_choice("grape", update, context)
         },
     ],
     choices_per_row=2
 )
 
-assert new_stage_id == STAGE_FAV_FRUIT
+assert choose_fav_fruit_stage.stage_id == STAGE_FAV_FRUIT
 
 
 # --
@@ -966,7 +966,7 @@ def some_state_in_a_stage(self: Stage, update: Update, context: CallbackContext)
 
 Presents an input field to the user. Input is captured through the next valid message sent from input prompt.
 
-Invalid input types such stickers, GIFs and file uploads are ignored. Incorrect input forms such as editing previously sent messages is also disregarded.
+Invalid input types such stickers, GIFs and file uploads are ignored. Incorrect input forms such as editing previously sent messages are also disregarded.
 
 ```python
 def callback(input_given : str, update : Update, context : CallbackContext) -> USERSTATE:

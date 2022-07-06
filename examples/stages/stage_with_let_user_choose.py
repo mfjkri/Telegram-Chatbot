@@ -48,8 +48,8 @@ class FavoriteFruits(Stage):
                     "text": icon,
                     "callback": lambda update, context, name=fruit: self.handle_user_choice(name, update, context)
                 })
-        self.LET_USER_CHOOSE_FRUIT = self.bot.let_user_choose(
-            choice_label="favorite_fruit",
+        self.CHOOSE_FAV_FRUIT_STAGE: Stage = self.bot.let_user_choose(
+            stage_id="choose_favorite_fruit",
             choice_text="Which is your favorite fruit?",
             choices=choices,
             choices_per_row=2
@@ -108,7 +108,7 @@ class FavoriteFruits(Stage):
         else:
             return self.bot.proceed_next_stage(
                 current_stage_id=self.stage_id,
-                next_stage_id=self.LET_USER_CHOOSE_FRUIT,
+                next_stage_id=self.CHOOSE_FAV_FRUIT_STAGE.stage_id,
                 update=update, context=context
             )
 
@@ -118,7 +118,7 @@ class FavoriteFruits(Stage):
 
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
-            next_stage_id=self.LET_USER_CHOOSE_FRUIT,
+            next_stage_id=self.CHOOSE_FAV_FRUIT_STAGE.stage_id,
             update=update, context=context
         )
 

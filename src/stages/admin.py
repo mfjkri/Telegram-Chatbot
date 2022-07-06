@@ -96,8 +96,8 @@ class AdminConsole(Stage):
             input_handler=self.reset_user
         )
 
-        self.DELETE_ALL_USERS_STAGE = self.bot.let_user_choose(
-            "admin:delete_all_users",
+        self.CHOOSE_CONFIRM_DELETE_ALL_USERS_STAGE: Stage = self.bot.let_user_choose(
+            stage_id="choose_admin_delete_users",
             choice_text="Are you sure you want to delete <b>ALL</b>"
                         " users data?",
             choices=[
@@ -209,7 +209,7 @@ class AdminConsole(Stage):
 
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
-            next_stage_id=self.DELETE_ALL_USERS_STAGE,
+            next_stage_id=self.CHOOSE_CONFIRM_DELETE_ALL_USERS_STAGE.stage_id,
             update=update, context=context
         )
 

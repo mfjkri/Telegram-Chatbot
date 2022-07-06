@@ -18,6 +18,7 @@ from utils import utils
 from utils.log import Log
 from stages.admin import AdminConsole
 from stages.authenticate import Authenticate
+from stages.guardian import Guardian
 from stages.ctf import Ctf
 
 LOG_FILE = os.path.join("logs", f"main.log")
@@ -86,7 +87,8 @@ def main():
     STAGE_ADMIN = "admin"
     STAGE_AUTHENTICATE = "authenticate"
     STAGE_COLLECT_USERNAME = "collect:username"
-    STAGE_DISCLAIMER = "choose:disclaimer"
+    STAGE_DISCLAIMER = "choose_disclaimer"
+    STAGE_GUARDIAN = "guardian"
     STAGE_CTF = "ctf"
     STAGE_END = "end"
 
@@ -136,9 +138,9 @@ def main():
         user: User = context.user_data.get("user")
         user.logger.info("ACCEPTED_DISCLAIMER",
                          f"User:{user.chatid} has accepted the disclaimer.")
-        return bot.proceed_next_stage(STAGE_DISCLAIMER, STAGE_CTF, update, context)
+        return bot.proceed_next_stage(STAGE_DISCLAIMER, STAGE_GUARDIAN, update, context)
     bot.let_user_choose(    # This stage id is choose:disclaimer
-        choice_label="disclaimer",
+        stage_id=STAGE_DISCLAIMER,
         choice_text=disclaimer_text,
         choices=[
             {
@@ -148,6 +150,15 @@ def main():
             },
         ]
     )
+    # ---------------------------------------------------------------------------- #
+
+    # ------------------------------ Stage: guardian ----------------------------- #
+    guardian: Guardian = Guardian(
+        stage_id=STAGE_GUARDIAN,
+        next_stage_id=STAGE_CTF,
+        bot=bot
+    )
+    guardian.setup()
     # ---------------------------------------------------------------------------- #
 
     # -------------------------------- Stage: ctf -------------------------------- #

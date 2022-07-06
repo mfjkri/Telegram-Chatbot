@@ -41,7 +41,7 @@ def main():
              logger=logger,
              config=CONFIG)
 
-    STAGE_FAV_FRUIT = "choose:fruit"
+    STAGE_FAV_FRUIT = "choose_favorite_fruit"
     STAGE_END = "end"
 
     # --------------------------- Stage: choose:fruit --------------------------- #
@@ -83,7 +83,7 @@ def main():
             })
 
     bot.let_user_choose(
-        choice_label="fruit",
+        stage_id=STAGE_FAV_FRUIT,
         choice_text="Which is your favorite fruit?",
         choices=choices,
         choices_per_row=3

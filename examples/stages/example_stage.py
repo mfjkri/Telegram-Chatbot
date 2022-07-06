@@ -85,8 +85,8 @@ class Example(Stage):
         # USERSTATES
         (self.MENU,) = self.unpacked_states
 
-        self.SELECT_COLOR = self.bot.let_user_choose(
-            choice_label="example_color",
+        self.CHOOSE_COLOR_STAGE: Stage = self.bot.let_user_choose(
+            stage_id="choose_example_color",
             choice_text="Please select your color",
             choices=[
                 {
@@ -241,7 +241,7 @@ class Example(Stage):
 
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
-            next_stage_id=self.SELECT_COLOR,
+            next_stage_id=self.CHOOSE_COLOR_STAGE.stage_id,
             update=update, context=context
         )
 

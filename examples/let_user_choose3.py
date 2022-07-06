@@ -41,8 +41,8 @@ def main():
              logger=logger,
              config=CONFIG)
 
-    STAGE_FAV_FRUIT = "choose:fruit"
-    STAGE_FAV_SHAPE = "choose:shape"
+    STAGE_FAV_FRUIT = "choose_favorite_fruit"
+    STAGE_FAV_SHAPE = "choose_favorite_shape"
     STAGE_END = "end"
 
     # --------------------------- Stage: choose:fruit --------------------------- #
@@ -59,7 +59,7 @@ def main():
         )
 
     bot.let_user_choose(
-        choice_label="fruit",
+        stage_id=STAGE_FAV_FRUIT,
         choice_text="Which is your favorite fruit?",
         choices=[
             {
@@ -93,7 +93,7 @@ def main():
         )
 
     bot.let_user_choose(
-        choice_label="shape",
+        stage_id=STAGE_FAV_SHAPE,
         choice_text="Which is your favorite shape?",
         choices=[
             {

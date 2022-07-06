@@ -105,7 +105,7 @@ class LetUserChoose(Stage):
     def __init__(self, stage_id: str, next_stage_id: str, bot):
         super().__init__(stage_id, next_stage_id, bot)
 
-    def setup(self, choice_label: str,
+    def setup(self,
               choice_text: str,
               choices: List[Dict[str, str]],
               choices_per_row: Optional[int]) -> None:
@@ -126,12 +126,12 @@ class LetUserChoose(Stage):
             if choices_per_row and idx % choices_per_row == 0:
                 self.keyboard.append([])
             callbacks.append(CallbackQueryHandler(
-                callback_wrapper, pattern=f"^{choice_label}:choice:{idx}$"))
+                callback_wrapper, pattern=f"^{self.stage_id}:choice:{idx}$"))
             self.keyboard[-1].append(InlineKeyboardButton(choice["text"],
-                                                          callback_data=f"{choice_label}:choice:{idx}"))
+                                                          callback_data=f"{self.stage_id}:choice:{idx}"))
 
         self.states = {
-            choice_label + "confirmation": callbacks
+            self.stage_id + "confirmation": callbacks
         }
         self.bot.register_stage(self)
         # USERSTATES

@@ -109,9 +109,9 @@ class Guardian(Stage):
     def setup(self) -> None:
         self.init_users_data()
 
-        for i in range(0, TOTAL_QUESTIONS):
-            current_question_id = f"guardian:qn:{i}"
+        self.question_stage_pattern = "choose_guardian__question_"
 
+        for i in range(0, TOTAL_QUESTIONS):
             choices = []
             question_text = f"<b>Q{i + 1}) {QUESTIONS_TEXT[i%4]}</b>\n"
             question_text += MESSAGE_DIVIDER + "\n"
@@ -130,7 +130,7 @@ class Guardian(Stage):
                 option_idx += 1
 
             self.bot.let_user_choose(
-                choice_label=current_question_id,
+                stage_id=f"{self.question_stage_pattern}{i}",
                 choice_text=question_text,
                 choices=choices,
                 choices_per_row=3
@@ -189,8 +189,8 @@ class Guardian(Stage):
                 )
                 time.sleep(0.25)
             return self.bot.proceed_next_stage(
-                current_stage_id=f"choose:guardian:qn:{question_number}",
-                next_stage_id=f"choose:guardian:qn:{question_number + 1}",
+                current_stage_id=f"{self.question_stage_pattern}{question_number}",
+                next_stage_id=f"{self.question_stage_pattern}{question_number + 1}",
                 update=update, context=context
             )
         else:
@@ -247,7 +247,7 @@ class Guardian(Stage):
 
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
-            next_stage_id="choose:guardian:qn:0",
+            next_stage_id=f"{self.question_stage_pattern}0",
             update=update, context=context
         )
 

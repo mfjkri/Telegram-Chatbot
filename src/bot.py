@@ -304,23 +304,21 @@ class Bot(object):
                                   "Unknown user to reply message to.")
 
     def let_user_choose(self,
-                        choice_label: str,
+                        stage_id: str,
                         choice_text: str,
                         choices: List[Dict[str, str]],
-                        choices_per_row: Optional[int] = None) -> str:
+                        choices_per_row: Optional[int] = None) -> Stage:
         """
         In-built function to create a stage that presents the user with a series of choices.
 
-        stage_id of the stage created is of the format {`choose:CHOICE_LABEL`}.
-
         Parameters:
-            choice_label (:obj:`str`): The choice label of the decision to be made by user (for example: participate_in_something).
+            stage_id (:obj:`str`): Unique identifier for the stage to be created.
             choice_text (:obj:`str`): The text displayed when prompting user to choose.
             choices (:class:`List[Dict[str, str]`): The list of the choices to choose from.
             choices_per_row (:obj:`int`): Optional. How many choices to have in a row. Defaults to None.
 
         Returns:
-            (:obj:`str`): Returns the unique identifier of the stage created.
+            (:class:`Stage`): Returns the stage object created.
 
         Notes:
             If `choices_per_row` is `None`, then all choices will be displayed in a single row.
@@ -330,8 +328,8 @@ class Bot(object):
                     print(f"Your favorite fruit is: {fruit}")
                     ...
 
-            >>> stage_id: str = bot.let_user_choose(
-                    choice_label="favorite_fruit",
+            >>> choose_fav_fruit_stage: Stage = bot.let_user_choose(
+                    stage_id="choose_favorite_fruit",
                     choice_text="Choose your favorite fruit",
                     choices=[
                         {
@@ -345,22 +343,20 @@ class Bot(object):
                     ],
                     choices_per_row=1
                 )
-                print(stage_id)  # --> "choose:favorite_fruit"
+                print(choose_fav_fruit_stage.stage_id)  # --> "choose_favorite_fruit"
         """
 
-        stage_id = f"choose:{choice_label}"
         stage = LetUserChoose(
             stage_id=stage_id,
             next_stage_id="",
             bot=self)
 
         stage.setup(
-            choice_label=choice_label,
             choice_text=choice_text,
             choices=choices,
             choices_per_row=choices_per_row)
 
-        return stage_id
+        return stage
 
     def get_user_input(self,
                        input_label: str,
