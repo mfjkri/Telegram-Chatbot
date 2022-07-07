@@ -907,6 +907,7 @@ bot.init(token=BOT_TOKEN,
          logger=logger,
          config=CONFIG)
 
+
 STAGE_FAV_FRUIT = "choose_favorite_fruit"
 
 
@@ -974,6 +975,7 @@ bot.init(token=BOT_TOKEN,
          logger=logger,
          config=CONFIG)
 
+
 STAGE_EXAMPLE_ANY_INPUT = "input_example_any"
 
 
@@ -995,7 +997,8 @@ input_example_any_stage: Stage = bot.get_user_input(
 
 assert input_example_any_stage.stage_id == STAGE_EXAMPLE_ANY_INPUT
 
-# Proceeding to the stage:
+
+# --
 def some_state_in_a_stage(self: Stage, update: Update, context: CallbackContext) -> USERSTATE:
     query = update.callback_query
     if query:
@@ -1015,7 +1018,15 @@ def some_state_in_a_stage(self: Stage, update: Update, context: CallbackContext)
 Similar to `get_user_input` except that the input is a user information (string) and is stored globally in the userdata. No additional logic implementation is required.
 
 ```python
-def format_number_input(input_str : Union[str, bool]):
+bot: Bot = Bot()
+bot.init(token=BOT_TOKEN,
+         logger=logger,
+         config=CONFIG)
+
+STAGE_COLLECT_PHONE_NUMBER = "info_collect_phone_number"
+
+
+def format_number_input(input_str: Union[str, bool]):
     if input_str is True:
         return "91234567"
     else:
@@ -1026,25 +1037,32 @@ def format_number_input(input_str : Union[str, bool]):
                 len(input_str) == 8 and "689".find(input_str[0]) >= 0
             ) else False
 
-example_info = bot.get_user_info( # This stage id is collect:phone number
-    data_label="phonenumber",
+
+info_collect_phone_number_stage = bot.get_user_info(
+    stage_id=STAGE_COLLECT_PHONE_NUMBER,
     next_stage_id=NEXT_STAGE_ID,
+    data_label="phone number",
     input_formatter=format_number_input,
     additional_text="We will not use this to contact you.",
+    use_last_saved=True,
     allow_update=True
 )
 
+assert info_collect_phone_number_stage.stage_id == STAGE_COLLECT_PHONE_NUMBER
+
+
+# --
 # Proceeding to the stage: (for get_user_info this is usually done at the start of the chatbot flow path)
-
-def some_state_or_stage(update : Update, context : CallbackContext) -> USERSTATE:
+def some_state_in_a_stage(self: Stage, update: Update, context: CallbackContext) -> USERSTATE:
     query = update.callback_query
-    query.answer()
+    if query:
+        query.answer()
 
-    return Bot.proceed_next_stage(
-        current_stage_id=CURRENT_SOME_STATE_OR_STAGE_ID,
-        next_stage_id=example_info or "collect:phonenumber",
+    return bot.proceed_next_stage(
+        current_stage_id=self.stage_id,
+        next_stage_id=STAGE_COLLECT_PHONE_NUMBER,
         update=update, context=context
-)
+    )
 ```
 
 ---

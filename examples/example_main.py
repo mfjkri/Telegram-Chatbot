@@ -66,8 +66,8 @@ def main():
 
     STAGE_ADMIN = "admin"
     STAGE_AUTHENTICATE = "authenticate"
-    STAGE_COLLECT_USERNAME = "collect:username"
-    STAGE_COLLECT_EMAIL = "collect:email"
+    STAGE_COLLECT_USERNAME = "info_collect_username"
+    STAGE_COLLECT_EMAIL = "info_collect_email"
     STAGE_EXAMPLE = "example"
     STAGE_END = "end"
 
@@ -90,31 +90,35 @@ def main():
     authenticate.setup()
     # ---------------------------------------------------------------------------- #
 
-    # -------------------------- Stage: collect:username ------------------------- #
+    # ----------------------- Stage: info_collect_username ----------------------- #
     def format_name_input(input_str: Union[str, bool]):
         if input_str is True:
             return "Only alphanumeric characters"
         else:
             return utils.format_input_str(input_str, True)
-    bot.get_user_info(  # This stage id is collect:username
-        data_label="username",
+
+    bot.get_user_info(
+        stage_id=STAGE_COLLECT_USERNAME,
         next_stage_id=STAGE_COLLECT_EMAIL,
+        data_label="username",
         input_formatter=format_name_input,
         additional_text="This is the name displayed on the leaderboard.",
         allow_update=True
     )
     # ---------------------------------------------------------------------------- #
 
-    # --------------------------- Stage: collect:email --------------------------- #
+    # ------------------------- Stage: info_collect_email ------------------------ #
     def format_email_input(input_str: Union[str, bool]):
         if input_str is True:
             return "example@domain.com"
         else:
             input_str = utils.format_input_str(input_str, True, "@.")
             return utils.check_if_valid_email_format(input_str)
+
     bot.get_user_info(
-        data_label="email",             # This stage id is collect:email
+        stage_id=STAGE_COLLECT_EMAIL,
         next_stage_id=STAGE_EXAMPLE,
+        data_label="email",
         input_formatter=format_email_input,
         additional_text=None,
         allow_update=True
@@ -123,7 +127,7 @@ def main():
 
     # ------------------------------ Stage: example ------------------------------ #
     example: Example = Example(
-        stage_id=STAGE_EXAMPLE,         # This stage id is example
+        stage_id=STAGE_EXAMPLE,
         next_stage_id=STAGE_END,
         bot=bot
     )

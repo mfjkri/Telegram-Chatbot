@@ -38,10 +38,10 @@ def main():
              logger=logger,
              config=CONFIG)
 
-    STAGE_FAV_FRUIT = "collect:favorite_fruit"
+    STAGE_COLLECT_FAV_FRUIT = "info_collect_favorite_fruit"
     STAGE_END = "end"
 
-    # ------------------------ Stage: collect:favorite_fruit ----------------------- #
+    # -------------------- Stage: info_collect_favorite_fruit -------------------- #
     valid_fruits = ["apple", "orange", "pear", "banana", "peach", "grape"]
 
     def fruit_input_formatter(input_str: Union[str, bool]):
@@ -52,13 +52,14 @@ def main():
             return input_str if input_str.lower() in valid_fruits else False
 
     bot.get_user_info(
-        data_label="favorite_fruit",
+        stage_id=STAGE_COLLECT_FAV_FRUIT,
         next_stage_id=STAGE_END,
+        data_label="favorite fruit",
         input_formatter=fruit_input_formatter,
         additional_text="This info will not be used to identify you.",
         use_last_saved=True, allow_update=True
     )
-    bot.set_first_stage(stage_id=STAGE_FAV_FRUIT)
+    bot.set_first_stage(stage_id=STAGE_COLLECT_FAV_FRUIT)
     # ---------------------------------------------------------------------------- #
 
     # -------------------------------- Stage: end -------------------------------- #

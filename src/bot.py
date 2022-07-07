@@ -366,8 +366,6 @@ class Bot(object):
         """
         In-built function to create a stage that collects a user input.
 
-        stage_id of the stage created is of the format {`input:INPUT_LABEL`}
-
         Parameters:
             stage_id (:obj:`str`): Unique identifier for the stage to be created.
             input_text (:obj:`str`): The text displayed before prompting user to enter their input.
@@ -405,19 +403,19 @@ class Bot(object):
         return stage
 
     def get_user_info(self,
-                      data_label: str,
+                      stage_id: str,
                       next_stage_id: str,
+                      data_label: str,
                       input_formatter: Optional[Callable] = lambda _: _,
                       additional_text: Optional[str] = "",
-                      use_last_saved: Optional[bool] = True, allow_update: Optional[bool] = True) -> str:
+                      use_last_saved: Optional[bool] = True, allow_update: Optional[bool] = True) -> Stage:
         """
         In-built function to create a stage that collects a user info (`str`).
 
-        stage_id of the stage created is of the format {`collect:DATA_LABEL`}
-
         Parameters:
-            data_label (:obj:`str`): The info label of the data collected from user (from example: name).
+            stage_id (:obj:`str`): Unique identifier for the stage to be created.
             next_stage_id (:obj:`str`): Unique identifier of the stage to proceed to after successfully completing this stage.
+            data_label (:obj:`str`): The info label of the data collected from user (from example: name).
             input_formatter (:class:`Callable`): Optional. A callback function used to format the input given.\
                 Defaults to an empty callback.
             additional_text (:obj:`str`): Optional. Additional text to display when prompting user for info. \
@@ -428,7 +426,7 @@ class Bot(object):
                 Defaults to True.
 
         Returns:
-            (:obj:`str`): Returns the unique identifier of the stage created.
+            (:class:`Stage`): Returns the stage object created.
 
         Notes:
             If `use_last_saved` is `True`, then users are given the choice whether to use their previously saved input\
@@ -457,32 +455,32 @@ class Bot(object):
                         input_str = utils.format_input_str(input_str, True, "@.")
                         return utils.check_if_valid_email_format(input_str)
 
-            >>> stage_id: str = bot.get_user_info(
+            >>> info_collect_email_stage: Stage = bot.get_user_info(
+                    stage_id="info_collect_email",
+                    next_stage_id=NEXT_STAGE_ID,
                     data_label="email",
-                    next_stage_id="...",
                     input_formatter=format_email_input,
                     additional_text="We will not share your name with any external parties.",
                     use_last_saved=True,
                     allow_update=True
                 )
-                print(stage_id)  # --> "collect:email"
+                print(info_collect_email_stage.stage_id)  # --> "info_collect_email"
         """
 
-        stage_id = f"collect:{data_label}"
         stage = GetInfoFromUser(
             stage_id=stage_id,
             next_stage_id=next_stage_id,
             bot=self)
 
         stage.setup(
-            data_label,
+            data_label=data_label,
             input_formatter=input_formatter,
             additional_text=additional_text,
             use_last_saved=use_last_saved,
             allow_update=allow_update
         )
 
-        return stage_id
+        return stage
 
     def make_end_stage(self,
                        stage_id: Optional[str] = "end",

@@ -86,7 +86,7 @@ def main():
     #   admin stage is automatically skipped if user is not admin
     STAGE_ADMIN = "admin"
     STAGE_AUTHENTICATE = "authenticate"
-    STAGE_COLLECT_USERNAME = "collect:username"
+    STAGE_COLLECT_USERNAME = "info_collect_username"
     STAGE_DISCLAIMER = "choose_disclaimer"
     STAGE_GUARDIAN = "guardian"
     STAGE_CTF = "ctf"
@@ -111,22 +111,24 @@ def main():
     authenticate.setup()
     # ---------------------------------------------------------------------------- #
 
-    # -------------------------- Stage: collect:username ------------------------- #
+    # ----------------------- Stage: info_collect_username ----------------------- #
     def format_name_input(input_str: Union[str, bool]):
         if input_str is not True:
             return utils.format_input_str(input_str, True)
         elif input_str is True:
             return "Only alphanumeric characters"
-    bot.get_user_info(  # This stage id is collect:username
-        data_label="username",
+
+    bot.get_user_info(
+        stage_id=STAGE_COLLECT_USERNAME,
         next_stage_id=STAGE_DISCLAIMER,
+        data_label="username",
         input_formatter=format_name_input,
         additional_text="This is the name displayed on the leaderboard.",
         allow_update=True
     )
     # ---------------------------------------------------------------------------- #
 
-    # ------------------------- Stage: choose:disclaimer ------------------------- #
+    # ------------------------- Stage: choose_disclaimer ------------------------- #
     disclaimer_text = "<b><u>DISCLAIMER</u></b>\n\n"\
                       "- This Telegram Chatbot is just a medium for submission of answers.\n"\
                       "- Do not attack or DoS the Telegram Chatbot.\n"\
@@ -139,7 +141,8 @@ def main():
         user.logger.info("ACCEPTED_DISCLAIMER",
                          f"User:{user.chatid} has accepted the disclaimer.")
         return bot.proceed_next_stage(STAGE_DISCLAIMER, STAGE_GUARDIAN, update, context)
-    bot.let_user_choose(    # This stage id is choose:disclaimer
+
+    bot.let_user_choose(
         stage_id=STAGE_DISCLAIMER,
         choice_text=disclaimer_text,
         choices=[
