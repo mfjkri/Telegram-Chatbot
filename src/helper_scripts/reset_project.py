@@ -5,8 +5,8 @@ import shutil
 
 import main
 
-shutil.rmtree("logs")
 
 if __name__ == "__main__":
+    shutil.rmtree("logs")
     main.FRESH_START = True
     main.setup()
