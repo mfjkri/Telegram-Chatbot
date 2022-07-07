@@ -33,33 +33,7 @@ BOT_TOKEN = CONFIG["BOT_TOKENS"]["LIVE"] if LIVE_MODE else CONFIG["BOT_TOKENS"][
 
 
 def main():
-    """
-    Entry point for the project.
 
-    These classes must always be initialized regardless of stages used:
-        Log, Bot, UserManager
-
-
-    The chatbot flow is determined by flow of stages below.
-
-        StageA -> StageB -> StageC -> StageEND
-
-    To set the flow from one stage to another:
-
-        in constructor or initializer of stages (
-            stage_id      = stageA
-            next_stage_id = stageB
-        )
-
-    To set terminating stage: 
-
-        in constructor or initializer (
-            stage_id      = stageC
-            next_stage_id = stageEND
-        )
-
-    :return: None
-    """
     setup()
 
     # Main application logger
@@ -82,7 +56,7 @@ def main():
              config=CONFIG)
 
     # Bot flow:
-    #   admin -> authenticate -> collect:username -> choose:disclaimer -> CTF -> end
+    #   admin -> authenticate -> info_collect_username -> choose_disclaimer -> guardian -> ctf -> end
     #   admin stage is automatically skipped if user is not admin
     STAGE_ADMIN = "admin"
     STAGE_AUTHENTICATE = "authenticate"
