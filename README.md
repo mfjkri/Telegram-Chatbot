@@ -126,6 +126,10 @@ If you are running any other OS such as **MacOS**, you will have to build the pr
 
 For this program to run correctly, the `config.yaml` file has to be first configured.
 
+`config.yaml` is similar to an `env` file if you are familiar with that.\
+I decided to bundle my the project's secrets, environment variables as well as config values into one file.\
+I have done my best to document each value and its signifance below.
+
 ```yaml
 # ../${rootDir}/config.yaml
 
@@ -170,6 +174,9 @@ LOG_USER_TO_APP_LOGS: false
 
   **BOT_TOKENS:LIVE** is the token to connect to the Telegram Bot used for release day.\
   **BOT_TOKENS:TEST** is the token to connect to the Telegram Bot used during development.
+
+  We have two bot tokens to allow for testing of the bot on a test Telegram bot and only use the actual Telegram bot on the desired day. This prevents misuse or unexpected outcomes of previous users using the bot at a time of testing.\
+  You may choose to ignore this feature by leaving `LIVE_MODE` to either `true` or `false` permanently (Note: `FRESH_START` does not work when `LIVE_MODE` is `true` as a safety procedure).
 
 - **`BOT`**:
 
@@ -308,9 +315,10 @@ answer: "flag@answer"
 
 points: 40
 difficulty: 1
-time_based: null
-one_try: false
+
 multiple_choices: null
+one_try: false
+time_based: null
 
 hints: []
 
@@ -383,41 +391,6 @@ files: []
 
   ![some_img](docs/img/ctf-menu-view-without-stars.png)
 
-- **`time_based`** : Optional [integer, null]
-
-  Whether to calculate the score based on time taken to complete challenge.
-
-  If you wish to set the time limit to 300 `seconds`:
-
-  ```yaml
-  # Points is calculated by:
-  #     (max(time_taken, time_based) / time_based) * challenge_points_after_hints_deduction
-  # If time taken to complete challenge exceeds time_based, then a score of 0 is awarded.
-  time_based: 300
-  ```
-
-  If you don't wish to enable this:
-
-  ```yaml
-  time_based: null
-  ```
-
-- **`one_try`** : Required [bool]
-
-  Whether to only allow one attempt for the challenge.
-
-  If you wish to only allow the user to attempt the challenge once:
-
-  ```yaml
-  one_try: true
-  ```
-
-  Else:
-
-  ```yaml
-  one_try: false
-  ```
-
 - **`multiple_choices`** : Optional [list, null]
 
   Whether your challenge is a mutliple choice challenge.
@@ -441,6 +414,41 @@ files: []
 
   ```yaml
   multiple_choices: null
+  ```
+
+- **`one_try`** : Required [bool]
+
+  Whether to only allow one attempt for the challenge.
+
+  If you wish to only allow the user to attempt the challenge once:
+
+  ```yaml
+  one_try: true
+  ```
+
+  Else:
+
+  ```yaml
+  one_try: false
+  ```
+
+- **`time_based`** : Optional [integer, null]
+
+  Whether to calculate the score based on time taken to complete challenge.
+
+  If you wish to set the time limit to 300 `seconds`:
+
+  ```yaml
+  # Points is calculated by:
+  #     (max(time_taken, time_based) / time_based) * challenge_points_after_hints_deduction
+  # If time taken to complete challenge exceeds time_based, then a score of 0 is awarded.
+  time_based: 300
+  ```
+
+  If you don't wish to enable this:
+
+  ```yaml
+  time_based: null
   ```
 
 - **`hints`** : Required [list]
@@ -858,27 +866,178 @@ Below is a more in-depth description however you might find it still insufficien
 
   Each stage has:
 
-  1.  An `entry` function.
-      This is the function called when loading the stage from another stage in `bot.proceed_next_stage`
+  1. An `__init__` dunder method.
 
-  2.  An `exit` function.
-      This is an optional callback but good to have if the stage has multiple exit points that leads to the same outcome.
+     You can initialize any additional attributes your stage needs here.\
+     Remember to still call the abstract class `Stage`:`__init__` as it handles initializing core attributes:
 
-  3.  States
-      This is an dictionary of states that the stage can be in.\
-       Each state has callback handlers to handle any action done in that state.\
+     - bot : Bot
+     - user_manager : UserManager
 
-      ```python
-        {
-            "STATE_NAME" : [
-                CallbackQueryHandler(callback_function, pattern=state_pattern),
-                MessageHandler(Filters.all, callback_function)
+     - stage_id : str
+     - next_stage_id : str
+
+     - states = {}
+
+     ```python
+     def __init__(self, stage_id: str, next_stage_id: str, bot):
+        self.some_attribute = []
+        self.other_attribute = {}
+        super().__init__(stage_id, next_stage_id, bot)
+     ```
+
+  2. A `setup` method.
+
+     ```python
+     def setup(self) -> None:
+        self.init_users_data()
+
+        self.states = {
+            "SOME_STATE": [
+                CallbackQueryHandler(callback0, pattern=f"^some_state_0S"),
+                CallbackQueryHandler(callback1, pattern=f"^some_state_1$")
             ],
-            ...
+            "SOME_OTHER_STATE": [
+                MessageHandler(Filters.all, callback2)
+            ]
         }
-      ```
 
-For a more detailed explanation, please refer to the [Example Stage](examples/stages/example_stage.py) for an in-depth look on implementationd.
+        self.bot.register_stage(self)
+
+        # USERSTATES
+        self.SOME_STATE, self.SOME_OTHER_STATE = self.unpacked_states
+
+        self.INPUT_FOO_STAGE = self.bot.get_user_input(
+            stage_id="input_foo",
+            input_text="Please enter something:",
+            input_handler=callback3,
+            exitable=True
+        )
+     ```
+
+     `self.states` is a dictionary of states that the stage can be in.\
+      Each state has callback handlers to handle any action done in that state.
+
+     ```python
+     self.states = {
+         "STATE_NAME" : [
+              CallbackQueryHandler(callback_function, pattern=state_pattern),
+              MessageHandler(Filters.all, callback_function)
+         ],
+         ...
+     }
+     ```
+
+     After the stage has been registered,
+
+     ```python
+     self.bot.register_stage(self)
+     ```
+
+     You can retrieve the registered `USERSTATES` by using:
+
+     ```python
+     self.SOME_STATE, self.SOME_OTHER_STATE = self.unpack_states
+     ```
+
+     Note that order of states unpacked is the same as the order when initializing `self.states`.
+
+     The type of each of the state is `USERSTATE`:
+
+     ```python
+     self.SOME_STATE : USERSTATE
+     self.SOME_OTHER_STATE : USERSTATE
+     ```
+
+     You can then set the state of the bot by returning the respective `USERSTATE` in your callback handlers:
+
+     ```python
+
+     def callback(self, update: Update, context: CallbackContext):
+        query = update.callback_query
+        if query:
+            query.answer()
+
+        # do something here
+        # maybe:
+        #
+        # self.bot.edit_or_reply_message(
+        #   update, context,
+        #   text="You are in some state now..",
+        #   reply_markup=...)
+
+        return self.SOME_STATE
+
+     ```
+
+  3. An `init_users_data` method.
+
+     You are required to call the `super-class init_users_data` method as well.\
+     This is so as the super-class will set a hidden property `_users_data_initialized` to indicate that the stage has its user_data initialized.
+
+     ```python
+     def init_users_data(self) -> None:
+       self.user_manager.add_data_field("some-data", "")
+       return super().init_users_data()
+     ```
+
+  4. A `stage_entry` method.
+
+     This is the function called when loading the stage from another stage in `bot.proceed_next_stage`.\
+     You may include any logic to decide what happens on entry here.
+
+     Make sure to check and answer the `callback_query` if applicable.
+
+     ```python
+     def stage_entry(self, update: Update, context: CallbackContext) -> USERSTATE:
+        query = update.callback_query
+        if query:
+            query.answer()
+
+        return self.load_menu(update, context)
+     ```
+
+  5. A `stage_exit` function.
+
+     This is where you can have wrap-up logic for your stage before proceeding to the next stage.\
+     If you stage_exit has `default behavior`, then you may just call the super-class stage_exit method instead.
+
+     ```python
+     def stage_exit(self, update: Update, context: CallbackContext) -> USERSTATE:
+        query = update.callback_query
+        if query:
+            query.answer()
+
+        return self.bot.proceed_next_stage(
+            current_stage_id=self.stage_id,
+            next_stage_id=self.next_stage_id,
+            update=update, context=context
+        )
+     ```
+
+     Equivalent to:
+
+     ```python
+     def stage_exit(self, update: Update, context: CallbackContext) -> USERSTATE:
+        return super().stage_exit(update, context)
+     ```
+
+     Exiting the stage from within itself,
+
+     ```python
+     def some_state_handler(self, update: Update, context: CallbackContext) -> USERSTATE:
+         query = update.callback_query
+         if query:
+             query.answer()
+
+         return self.stage_exit(update, context)
+     ```
+
+  See more practical examples [here](examples/stages/):
+
+  - [Basic Example Stage](examples/stages/example_stage.py)
+  - [Stage with nested stage](examples/stages/stage_with_let_user_choose.py): Contains a [`LetUserChoose`](#211-letuserchoose) stage
+  - [Stage with nested stage2](examples/stages//stage_with_get_user_input.py): Contains a [`GetUserInput`](#212-getuserinput) stage
 
 ---
 
@@ -888,7 +1047,7 @@ For a more detailed explanation, please refer to the [Example Stage](examples/st
 
 &nbsp;
 
-### 2.1.1) **let_user_choose**
+### 2.1.1) **LetUserChoose**
 
 Presents a variable number of choices to the user. The choices are in the form of buttons (ReplyMarkupButton).
 
@@ -963,7 +1122,7 @@ def some_state_in_a_stage(self: Stage, update: Update, context: CallbackContext)
 
 &nbsp;
 
-### 2.1.2) **get_user_input**
+### 2.1.2) **GetUserInput**
 
 Presents an input field to the user. Input is captured through the next valid message sent from input prompt.
 
@@ -999,6 +1158,7 @@ assert input_example_any_stage.stage_id == STAGE_EXAMPLE_ANY_INPUT
 
 
 # --
+# Proceeding to the stage:
 def some_state_in_a_stage(self: Stage, update: Update, context: CallbackContext) -> USERSTATE:
     query = update.callback_query
     if query:
@@ -1013,9 +1173,9 @@ def some_state_in_a_stage(self: Stage, update: Update, context: CallbackContext)
 
 &nbsp;
 
-### 2.1.3) **get_user_info**
+### 2.1.3) **GetUserInfo**
 
-Similar to `get_user_input` except that the input is a user information (string) and is stored globally in the userdata. No additional logic implementation is required.
+Similar to `GetUserInput` except that the input is a user information (string) and is stored globally in the userdata. No additional logic implementation is required.
 
 ```python
 bot: Bot = Bot()
@@ -1123,7 +1283,7 @@ from utils.log import Log
 
 from stages.example_stage import Example
 
-LOG_FILE = os.path.join("logs", f"example_bot.log")
+LOG_FILE = os.path.join("logs", f"main.log")
 
 CONFIG = utils.load_yaml_file(os.path.join("config.yaml"))
 assert CONFIG, "Failed to load config.yaml. Fatal error, please remedy."\
@@ -1134,11 +1294,6 @@ FRESH_START = CONFIG["RUNTIME"]["FRESH_START"] if not LIVE_MODE else False
 BOT_TOKEN = CONFIG["BOT_TOKENS"]["LIVE"] if LIVE_MODE else CONFIG["BOT_TOKENS"]["TEST"]
 
 
-def setup():
-    utils.get_dir_or_create(os.path.join("logs"))
-    if FRESH_START:
-        # Remove runtime files (logs, users, etc)
-        pass
 
 
 def main():
@@ -1151,13 +1306,17 @@ def main():
         log_level=logging.DEBUG
     )
 
-    users = UserManager()
-    users.init(logger=logger)
+    user_manager = UserManager()
+    user_manager.init(
+        logger=logger,
+        log_user_logs_to_app_logs=("LOG_USER_TO_APP_LOGS" in CONFIG
+                                   and CONFIG["LOG_USER_TO_APP_LOGS"]))
 
     bot = Bot()
     bot.init(token=BOT_TOKEN,
              logger=logger,
              config=CONFIG)
+
 
     STAGE_EXAMPLE = "example"
     STAGE_END = "end"
@@ -1182,6 +1341,13 @@ def main():
 
     # Start Bot
     bot.start(live_mode=LIVE_MODE)
+
+
+def setup():
+    utils.get_dir_or_create(os.path.join("logs"))
+    if FRESH_START:
+        # Remove runtime files (logs, users, etc)
+        pass
 
 
 if __name__ == "__main__":
