@@ -80,7 +80,7 @@ class Authenticate(Stage):
         # USERSTATES
         (self.IDENTITY_CONFIRMATION, self.CONFIRM_CHOICE,) = self.unpacked_states
 
-        self.INPUT_PROMPT_AUTHENTICATION = self.bot.get_user_input(
+        self.INPUT_PROMPT_AUTHENTICATION_STAGE = self.bot.get_user_input(
             stage_id="input_authenticate_passcode",
             input_text="Please enter your passcode:",
             input_handler=self.check_passcode,
@@ -104,7 +104,7 @@ class Authenticate(Stage):
         else:
             return self.bot.proceed_next_stage(
                 current_stage_id=self.stage_id,
-                next_stage_id=self.INPUT_PROMPT_AUTHENTICATION.stage_id,
+                next_stage_id=self.INPUT_PROMPT_AUTHENTICATION_STAGE.stage_id,
                 update=update, context=context
             )
 
@@ -154,7 +154,7 @@ class Authenticate(Stage):
             )
             return self.bot.proceed_next_stage(
                 current_stage_id=self.stage_id,
-                next_stage_id=self.INPUT_PROMPT_AUTHENTICATION.stage_id,
+                next_stage_id=self.INPUT_PROMPT_AUTHENTICATION_STAGE.stage_id,
                 update=update, context=context
             )
 
@@ -196,7 +196,7 @@ class Authenticate(Stage):
         user.update_user_data(
             "name",
             pending_name
-            #pending_name if not self.bot.anonymous_user_passcodes else "anonymous"
+            # pending_name if not self.bot.anonymous_user_passcodes else "anonymous"
         )
         user.update_user_data(
             "username",
@@ -222,7 +222,7 @@ class Authenticate(Stage):
 
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
-            next_stage_id=self.INPUT_PROMPT_AUTHENTICATION.stage_id,
+            next_stage_id=self.INPUT_PROMPT_AUTHENTICATION_STAGE.stage_id,
             update=update, context=context
         )
 
