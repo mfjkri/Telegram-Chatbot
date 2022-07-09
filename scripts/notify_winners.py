@@ -1,11 +1,11 @@
 import sys
-sys.path.extend(["src", "."])
+sys.path.append(".")
 
 import requests
 
 from main import BOT_TOKEN
 from constants import MESSAGE_DIVIDER
-from helper_scripts.leaderboard import update_leaderboard
+from scripts.leaderboard import update_leaderboard
 
 
 def send_message(chatid: str, name: str, title: str, message: str) -> None:

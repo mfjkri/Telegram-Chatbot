@@ -7,7 +7,7 @@
    - [1.2 Configuring **config.yaml**](#12-configuring-configyaml)
    - [1.3 Adding CTF Challenges](#13-adding-ctf-challenges)
    - [1.4 Running Chatbot](#14-running-the-chatbot)
-   - [1.5 Using runtime helper_scripts](#15-using-helper-scripts)
+   - [1.5 Using helper scripts](#15-using-helper-scripts)
 2. [States & Stages](#2-states--stages)
    - [2.1 Inbuilt stages](#21-inbuilt-stages):
      - [let_user_choose](#211-letuserchoose)
@@ -217,7 +217,7 @@ LOG_USER_TO_APP_LOGS: false
 
     #------
     # Generated at 16/05/2022 13:09:13
-    # Refer to src/helper_scripts/generate_passcodes.py for more details.
+    # Refer to scripts/generate_passcodes.py for more details.
 
     T3026: Sonya Anhak # Here we can omit User Group entirely
                     # It will be defaulted to none
@@ -574,38 +574,38 @@ They help to make your life easier by executing common tasks or tasks that are r
 
 Scripts that are ran before a session include:
 
-- [`create_fake_users`](src/helper_scripts/create_fake_users.py)
-- [`create_placeholder_challenges`](src/helper_scripts/create_placeholder_challenges.py)
-- [`generate_passcodes`](src/helper_scripts/generate_passcodes.py)
-- [`reset_project`](src/helper_scripts/reset_project.py)
+- [`create_fake_users`](scripts/create_fake_users.py)
+- [`create_placeholder_challenges`](scripts/create_placeholder_challenges.py)
+- [`generate_passcodes`](scripts/generate_passcodes.py)
+- [`reset_project`](scripts/reset_project.py)
 
 Scripts that are ran during a session include:
 
-- [`leaderboard`](src/helper_scripts/leaderboard.py)
+- [`leaderboard`](scripts/leaderboard.py)
 
 Scripts that are ran after a session include:
 
-- [`ban_all_users`](src/helper_scripts/ban_all_users.py)
-- [`notify_winners`](src/helper_scripts/notify_winners.py)
-- [`export_logs`](src/helper_scripts/export_logs.py)
+- [`ban_all_users`](scripts/ban_all_users.py)
+- [`notify_winners`](scripts/notify_winners.py)
+- [`export_logs`](scripts/export_logs.py)
 
 &nbsp;
 
 Below is a brief description of what each script does and how to use them.
 
-- [`ban_all_users`](src/helper_scripts/ban_all_users.py):
+- [`ban_all_users`](scripts/ban_all_users.py):
 
-  This script will get all the existing users found in the [users directory](users/) and add their chatids to the [banned_users.yaml](users/banned_users.yaml) file. It will NOT DELETE their files. If you wish to do that, you will have to do it manually or use the [`reset_project`](src/helper_scripts/reset_project.py) helper script.
+  This script will get all the existing users found in the [users directory](users/) and add their chatids to the [banned_users.yaml](users/banned_users.yaml) file. It will NOT DELETE their files. If you wish to do that, you will have to do it manually or use the [`reset_project`](scripts/reset_project.py) helper script.
 
   It is useful for preventing users from an earlier session from joining in on a later session.
 
   Usage:
 
   ```bash
-  $ python src/helper_scripts/ban_all_users.py
+  $ python scripts/ban_all_users.py
   ```
 
-- [`create_fake_users`](src/helper_scripts/create_fake_users.py):
+- [`create_fake_users`](scripts/create_fake_users.py):
 
   This script will generate fake users that will "attempt" and "complete" some of the existing CTF challenges.
 
@@ -618,7 +618,7 @@ Below is a brief description of what each script does and how to use them.
   Arguments:
 
   ```
-  $ python src/helper_scripts/create_fake_users.py -h
+  $ python scripts/create_fake_users.py -h
   usage: create_fake_users.py [-h] [-n N] [-c C]
 
   optional arguments:
@@ -631,19 +631,19 @@ Below is a brief description of what each script does and how to use them.
 
   ```bash
   # Create 20 fake users each attempting MIN 4 challenges
-  $ python src/helper_scripts/create_fake_users.py -n 20 -c 4
+  $ python scripts/create_fake_users.py -n 20 -c 4
   ```
 
   ```bash
   # Create MAX (24) fake users
-  $ python src/helper_scripts/create_fake_users.py -n 0
+  $ python scripts/create_fake_users.py -n 0
   ```
 
   `-n` argument is for the number of fake users to create. It is capped at 26.
 
   `-c` argument is for the number of challenges to attempt per user. It will be capped at the number of current existing CTF challenges.
 
-- [`create_placeholder_challenges`](src/helper_scripts/create_placeholder_challenges.py):
+- [`create_placeholder_challenges`](scripts/create_placeholder_challenges.py):
 
   This script will create placeholder challenges either based on the in-built challenge.yaml template or using a provided file.
 
@@ -654,7 +654,7 @@ Below is a brief description of what each script does and how to use them.
   Arguments:
 
   ```
-  $ python src/helper_scripts/create_placeholder_challenges.py -h
+  $ python scripts/create_placeholder_challenges.py -h
   usage: create_placeholder_challenges.py [-h] [-i I] [-n N]
 
   optional arguments:
@@ -667,19 +667,19 @@ Below is a brief description of what each script does and how to use them.
 
   ```bash
   # Create 10 placeholder challenges
-  $ python src/helper_scripts/create_placeholder_challenges.py -n 10
+  $ python scripts/create_placeholder_challenges.py -n 10
   ```
 
   ```bash
   # Create 10 placeholder challenges from custom template file
-  $ python src/helper_scripts/create_placeholder_challenges.py -n 10 -i path/to/challenge.yaml
+  $ python scripts/create_placeholder_challenges.py -n 10 -i path/to/challenge.yaml
   ```
 
   `-i` argument is for providing a custom challenge.yaml to use as template when creating the placeholder challenges.
 
   `-n` argument is for the number of placeholder challenges to create.
 
-- [`export_logs`](src/helper_scripts/export_logs.py):
+- [`export_logs`](scripts/export_logs.py):
 
   This script will generate a [CSV](https://en.wikipedia.org/wiki/Comma-separated_values) file that can be imported into Excel for visualization of users data.
 
@@ -705,7 +705,7 @@ Below is a brief description of what each script does and how to use them.
   Arguments:
 
   ```
-  $ python src/helper_scripts/export_logs.py -h
+  $ python scripts/export_logs.py -h
   usage: export_logs.py [-h] [-o O] [-u U] [-g G]
 
   optional arguments:
@@ -718,7 +718,7 @@ Below is a brief description of what each script does and how to use them.
   Usage:
 
   ```bash
-  $ python src/helper_scripts/export_logs.py -o "example_export"
+  $ python scripts/export_logs.py -o "example_export"
   ```
 
   `-o` argument is for the exported csv filename. The ".csv" file extension should not be included in the argument
@@ -727,7 +727,7 @@ Below is a brief description of what each script does and how to use them.
 
   `-g` argument is for if you want to export logs from only one user group (provide group name here).
 
-- [`generate_passcodes`](src/helper_scripts/generate_passcodes.py):
+- [`generate_passcodes`](scripts/generate_passcodes.py):
 
   This script will generate a list of passcodes from a list of user (names) and append the passcodes into [config.yaml](config.yaml).
 
@@ -738,7 +738,7 @@ Below is a brief description of what each script does and how to use them.
   Arguments:
 
   ```
-  $ python src/helper_scripts/generate_passcodes.py -h
+  $ python scripts/generate_passcodes.py -h
   usage: generate_passcodes.py [-h] -i I
 
   optional arguments:
@@ -749,12 +749,12 @@ Below is a brief description of what each script does and how to use them.
   Usage:
 
   ```bash
-  $ python src/helper_scripts/generate_passcodes.py -i path/to/userlist.txt
+  $ python scripts/generate_passcodes.py -i path/to/userlist.txt
   ```
 
   `-i` argument is the input file with the names and groups of users to be added.
 
-- [`leaderboard`](src/helper_scripts/leaderboard.py):
+- [`leaderboard`](scripts/leaderboard.py):
 
   This script will read [user files](users) and generate a leaderboard rankings from their scores. It will output the rankings to two files:
 
@@ -773,7 +773,7 @@ Below is a brief description of what each script does and how to use them.
   Arguments:
 
   ```
-  $ python src/helper_scripts/leaderboard.py -h
+  $ python scripts/leaderboard.py -h
   usage: leaderboard.py [-h] [-n N] [-o O] [--disable_webpage_leaderboard_file DISABLE_WEBPAGE_LEADERBOARD_FILE]
 
   options:
@@ -787,17 +787,17 @@ Below is a brief description of what each script does and how to use them.
   Usage:
 
   ```bash
-  $ python src/helper_scripts/leaderboard.py -o ../../Chatbot-Leaderboard/
+  $ python scripts/leaderboard.py -o ../../Chatbot-Leaderboard/
   ```
 
   ```
   # Limit number of displayed top users to X
-  $ $ python src/helper_scripts/leaderboard.py -o ../../Chatbot-Leaderboard/ -n X
+  $ $ python scripts/leaderboard.py -o ../../Chatbot-Leaderboard/ -n X
   ```
 
   ```bash
   # Without webpage enabled:
-  $ python src/helper_scripts/leaderboard.py --disable_webpage_leaderboard_file true
+  $ python scripts/leaderboard.py --disable_webpage_leaderboard_file true
   ```
 
   `-n` argument is the number of top users to display. If not set, it will display all users.
@@ -806,8 +806,7 @@ Below is a brief description of what each script does and how to use them.
 
   `--disable_webpage_leaderboard_file` argument is whether to enable the webpage. If set, then `leaderboard.json` will not be created.
 
-- [`notify_winners`](src/helper_scripts/notify_winners.py):
-
+- [`notify_winners`](scripts/notify_winners.py).
   This script will notify the top 3 users (considers users and not placings meaning that users who are tied may not be considered, first to attain score basis) via a message sent through the bot. The message will not be successfully delivered if the user has stopped and blocked the bot after use.
 
   This script is useful if you do not have any means of contact to the users such as their phone numbers or email addresses as it allows you to contact them via the bot using only their chatid.
@@ -815,10 +814,10 @@ Below is a brief description of what each script does and how to use them.
   Usage:
 
   ```bash
-  $ python src/helper_scripts/notify_winners.py
+  $ python scripts/notify_winners.py
   ```
 
-- [`reset_project`](src/helper_scripts/reset_project.py):
+- [`reset_project`](scripts/reset_project.py):
 
   This script will delete any existing log and user files.
 
@@ -829,7 +828,7 @@ Below is a brief description of what each script does and how to use them.
   Usage:
 
   ```bash
-  $ python src/helper_scripts/reset_project.py
+  $ python scripts/reset_project.py
   ```
 
 ---
