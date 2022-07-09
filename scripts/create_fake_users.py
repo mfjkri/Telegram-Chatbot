@@ -16,6 +16,8 @@ from stages.ctf import Ctf
 from utils.log import Log
 from utils import utils
 
+import reset_project
+
 MAX_ATTEMPTS = 3
 
 MAX_NUMBER_OF_USERS = len(string.ascii_uppercase)
@@ -233,7 +235,7 @@ class Emulator:
 
 
 def main(number_of_users: int = 26, min_challenges_attempted: int = 5) -> None:
-    setup()
+    reset_project.reset_project(log_file=TEMP_LOG_FILE)
 
     print(
         f"Creating {number_of_users} users with a minimum of {min_challenges_attempted} challenge attempts")
@@ -241,19 +243,6 @@ def main(number_of_users: int = 26, min_challenges_attempted: int = 5) -> None:
         number_of_users, MAX_NUMBER_OF_USERS)]]
     emulator: Emulator = Emulator(fake_names)
     emulator.run(min_challenges_attempted)
-
-
-def setup() -> None:
-    utils.get_dir_or_create(os.path.join("logs"))
-    users_directory = os.path.join("users")
-
-    for chatid in os.listdir(users_directory):
-        user_directory = os.path.join(users_directory, chatid)
-        if os.path.isdir(user_directory):
-            shutil.rmtree(user_directory)
-
-    if os.path.isfile(TEMP_LOG_FILE):
-        os.remove(TEMP_LOG_FILE)
 
 
 if __name__ == "__main__":
