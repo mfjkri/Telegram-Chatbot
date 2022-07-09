@@ -361,7 +361,7 @@ class Bot(object):
     def get_user_input(self,
                        stage_id: str,
                        input_text: str,
-                       input_handler: Callable,
+                       input_handler: Callable[[str, Update, CallbackContext], USERSTATE],
                        exitable: Optional[bool] = False) -> Stage:
         """
         In-built function to create a stage that collects a user input.
@@ -370,6 +370,9 @@ class Bot(object):
             stage_id (:obj:`str`): Unique identifier for the stage to be created.
             input_text (:obj:`str`): The text displayed before prompting user to enter their input.
             input_handler (:class:`Callable`): The callback function called with the user input.
+                Callback signature:
+                    ``def input_handler(user_input: str, update: Update, context: CallbackContext) -> USERSTATE``
+
             exitable (:obj:`bool`): Optional. Whether to allow users to abort input by sending "/cancel". Defaults to False.
 
         Returns:
@@ -406,7 +409,8 @@ class Bot(object):
                       stage_id: str,
                       next_stage_id: str,
                       data_label: str,
-                      input_formatter: Optional[Callable] = lambda _: _,
+                      input_formatter: Optional[Callable[[
+                          Union[str, bool]], Union[str, bool]]] = lambda _: _,
                       additional_text: Optional[str] = "",
                       use_last_saved: Optional[bool] = True, allow_update: Optional[bool] = True) -> Stage:
         """
@@ -418,6 +422,9 @@ class Bot(object):
             data_label (:obj:`str`): The info label of the data collected from user (from example: name).
             input_formatter (:class:`Callable`): Optional. A callback function used to format the input given.\
                 Defaults to an empty callback.
+                Callback signature:
+                    ``def input_formatter(user_input: Union[str, bool]) -> Union[str, bool]:``
+
             additional_text (:obj:`str`): Optional. Additional text to display when prompting user for info. \
                 Defaults to empty string.
             use_last_saved (:obj:`bool`): Optional. Whether to consider previously set value for the info. \
@@ -440,7 +447,7 @@ class Bot(object):
 
             Expected callback format for `input_formatter`:
 
-                >>> def input_formatter(user_input : Union[str, bool]):
+                >>> def input_formatter(user_input: Union[str, bool]) -> Union[str, bool]:
                         if user_input is True:
                             return "EXPECTED INPUT FORMAT"
                         else:
@@ -451,6 +458,8 @@ class Bot(object):
             >>> def format_email_input(input_str: Union[str, bool]):
                     if input_str is True:
                         return "example@domain.com"
+                        # if you don't want to have expected format:
+                        # return True
                     else:
                         input_str = utils.format_input_str(input_str, True, "@.")
                         return utils.check_if_valid_email_format(input_str)
@@ -484,7 +493,8 @@ class Bot(object):
 
     def make_end_stage(self,
                        stage_id: Optional[str] = "end",
-                       final_callback: Optional[Callable] = lambda *_: _,
+                       final_callback: Optional[Callable[[
+                           Update, CallbackContext], None]] = lambda *_: _,
                        goodbye_message: Optional[str] = "",
                        reply_message: Optional[bool] = False) -> str:
         """
@@ -494,6 +504,9 @@ class Bot(object):
             stage_id (:obj:`str`): Optional. Stage identifier of the end stage. Defaults to "end".
             final_callback (:class:`Callable`): Optional. A callback function called right before terminating \
                 conversation. Defaults to an empty callback.
+                Callback signature:
+                    ``def final_callback(update: Update, context: CallbackContext) -> None:``
+
             goodbye_message(:obj:`str`): Optional. Message to display when user reaches end of conversation. \
                 Defaults to empty string.
             reply_message(:obj:`bool`): Optional. Whether the goodbye_message (if any) should edit current message\

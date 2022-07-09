@@ -36,7 +36,7 @@ class FavoriteFruits(Stage):
         # USERSTATES
         (self.MENU,) = self.unpacked_states
 
-        choices: List[Dict[str, Union[Callable, str]]] = [
+        choices: List[Dict[str, Union[Callable[[Update, CallbackContext], USERSTATE], str]]] = [
             {
                 "text": "None of the above.",
                 "callback": lambda update, context: self.handle_user_choice("none", update, context)

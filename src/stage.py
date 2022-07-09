@@ -118,7 +118,7 @@ class LetUserChoose(Stage):
 
         for idx, choice in enumerate(choices):
             def callback_wrapper(update: Update, context: CallbackContext,
-                                 choice: Dict[str, Union[str, Callable]] = choice) -> USERSTATE:
+                                 choice: Dict[str, Union[str, Callable[[Update, CallbackContext], USERSTATE]]] = choice) -> USERSTATE:
                 query = update.callback_query
                 query.answer()
                 return choice["callback"](update, context)
@@ -162,7 +162,7 @@ class GetInputFromUser(Stage):
 
     def setup(self,
               input_text: str,
-              input_handler: Callable,
+              input_handler: Callable[[str, Update, CallbackContext], USERSTATE],
               exitable: bool = False) -> None:
 
         self.init_users_data()
@@ -215,7 +215,8 @@ class GetInfoFromUser(Stage):
         super().__init__(stage_id, next_stage_id, bot)
 
     def setup(self, data_label: str,
-              input_formatter: Callable,
+              input_formatter: Callable[[
+                  Union[str, bool]], Union[str, bool]],
               additional_text: str,
               use_last_saved: bool,
               allow_update: bool) -> None:
@@ -402,7 +403,8 @@ class EndConversation(Stage):
         super().__init__(stage_id, next_stage_id, bot)
 
     def setup(self,
-              final_callback: Optional[Callable] = lambda *_: _,
+              final_callback: Optional[Callable[[
+                  Update, CallbackContext], None]] = lambda *_: _,
               goodbye_message: Optional[str] = "",
               reply_message: bool = True) -> None:
         self.final_callback = final_callback
