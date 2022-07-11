@@ -494,7 +494,7 @@ class Bot(object):
     def make_end_stage(self,
                        stage_id: Optional[str] = "end",
                        final_callback: Optional[Callable[[
-                           Update, CallbackContext], None]] = lambda *_: _,
+                           Update, CallbackContext], None]] = lambda *_: None,
                        goodbye_message: Optional[str] = "",
                        reply_message: Optional[bool] = False) -> str:
         """
@@ -689,6 +689,35 @@ class Bot(object):
             ...
             
             bot.start(live_mode = ...)
+            """
+
+        assert self.end_stage, "End stage has not been created.\n\n"\
+            """
+            Please make the end stage before starting the bot.
+            
+            ---
+            
+            To create a default end stage:
+                
+                # default stage_id of EndStage: "end" 
+          >     bot.make_end_stage()
+                
+                ...
+                
+                bot.start(live_mode = ...)
+                
+            --- 
+            
+            You can also provide arguments to customize the end stage:
+            
+                STAGE_END = "end"
+                
+                bot.make_end_stage(
+                    stage_id=STAGE_END,
+                    final_callback=lambda *_: None,
+                    goodbye_message="You have exited the conversation. Use /start to begin a new one.",
+                    reply_message=True
+                )
             """
 
         conversation_states = {}
