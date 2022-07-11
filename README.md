@@ -837,7 +837,7 @@ Below is a brief description of what each script does and how to use them.
 
 # 2) STATES & STAGES
 
-Throughout this project, you will see a lot of references to stages and states.\
+Throughout this project, you will see a lot of references to stages and states.
 
 Simply said, a `state` is the smallest unit of "building block" while a `stage` is a group of states (or nested stages even) with its inner functionality abstracted away for either reduced code duplication or means of organization.
 
@@ -1034,9 +1034,9 @@ Below is a more in-depth description however you might find it still insufficien
 
   See more practical examples [here](examples/stages/):
 
-  - [Basic Example Stage](examples/stages/example_stage.py)
-  - [Stage with nested stage](examples/stages/stage_with_let_user_choose.py): Contains a [`LetUserChoose`](#211-letuserchoose) stage
-  - [Stage with nested stage2](examples/stages//stage_with_get_user_input.py): Contains a [`GetUserInput`](#212-getuserinput) stage
+  - [ExampleStage](examples/stages/example_stage.py): Contains a nested [`GetUserInput`](#212-getuserinput)
+  - [FavoriteFruits](examples/stages/stage_with_let_user_choose.py): Contains a nested [`LetUserChoose`](#211-letuserchoose) stage
+  - [EchoTen](examples/stages//stage_with_get_user_input.py): Contains a nested [`GetUserInput`](#212-getuserinput) stage
 
 ---
 
@@ -1127,6 +1127,11 @@ Presents an input field to the user. Input is captured through the next valid me
 
 Invalid input types such stickers, GIFs and file uploads are ignored. Incorrect input forms such as editing previously sent messages are also disregarded.
 
+You may also view more examples here:
+
+- [get_user_input: Complete Basic Implementation](examples/get_user_input.py)
+- [Custom Stage + get_user_input](examples/stages//stage_with_get_user_input.py)
+
 ```python
 bot: Bot = Bot()
 bot.init(token=BOT_TOKEN,
@@ -1175,6 +1180,11 @@ def some_state_in_a_stage(self: Stage, update: Update, context: CallbackContext)
 ### 2.1.3) **GetUserInfo**
 
 Similar to `GetUserInput` except that the input is a user information (string) and is stored globally in the userdata. No additional logic implementation is required.
+
+You may also view more examples here:
+
+- [get_user_info: Complete Basic Implementation](examples/get_user_info.py)
+- [get_user_info: Using a realistic data label (Email)](examples/get_user_info2.py)
 
 ```python
 bot: Bot = Bot()
