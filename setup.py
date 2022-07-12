@@ -32,7 +32,8 @@ if __name__ == "__main__":
 
     PARSER = argparse.ArgumentParser()
     PARSER.add_argument(
-        "--setup", type=str, help="Sets up project. Creates venv and install require modules.", default="", required=False)
+        "--setup", type=str, help="Sets up project. Creates venv and install dependencies. "
+        "Creates runtime directories and files.", default="", required=False)
     ARGS = PARSER.parse_args()
 
     if ARGS.setup != "":
