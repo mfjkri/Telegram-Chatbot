@@ -1,5 +1,6 @@
 temp/
 exports/
+archives/
 ctf/challenges/*
 users/*/
 
