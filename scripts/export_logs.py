@@ -1,5 +1,4 @@
 """
-
 Log lines will be in the format:
 
 TIME,  ${RELEVANT_DATA_FIELDS}  ,ACTION,CHALLENGE NUMBER,SCORE
@@ -9,16 +8,27 @@ Enter in what data fields to include below:
     for example:
 
         RELEVANT_DATA_FIELDS = {
-            "name": [str, "anonymous"],
-            "group": [str, "no-group"]
+            "name": ["name", str, "anonymous"],
+            "group": ["group", str, "no-group"]
         }
+    
+    Take note that the first element in the list is the path of the data-field
+    in user.data
+    
+    for example:
+    
+        "guardian_team": ["guardian_state:teams_str", str, ""]
+        
+        this means that the data-label guardian_team can be found at:
+        
+            `user.data.get("guardian_state",{}).get("teams_str", "")`
 """
 
 RELEVANT_DATA_FIELDS = {
-    # "data-field-label" : [constructor, default_value]
-    "name": [str, "anonymous"],
-    "guardian_team": [str, ""],
-    "group": [str, "no-group"]
+    # "data-field-label" : [path-in-user-data, constructor, default_value]
+    "name": ["username", str, "anonymous"],
+    "group": ["group", str, "no-group"],
+    "guardian_team": ["guardian_state:teams_str", str, ""]
 }
 
 """
@@ -122,7 +132,7 @@ sys.path.append("src")
 import os
 import argparse
 import re
-from typing import (Dict, Optional)
+from typing import (List, Dict, Any, Callable, Union, Optional)
 
 from utils.utils import (load_yaml_file, get_dir_or_create)
 
@@ -168,13 +178,25 @@ def get_users(chatid_specificer: str, group_specifier: str) -> Dict:
                 if user_data:
                     extracted_data_fields = {}
                     for data_field_label, default_data_field in RELEVANT_DATA_FIELDS.items():
-                        default_constructor, default_value = default_data_field
+                        data_path: str
+                        default_constructor: Callable[[*Any], Any]
+                        default_value: Any
 
-                        data_field_value = user_data.get(
-                            data_field_label, default_constructor(default_value))
+                        data_path, default_constructor, default_value = default_data_field
+
+                        data_field_value: Union[Any,
+                                                Dict[str, Any]] = user_data
+
+                        split_paths: List[str] = data_path.split(':')
+                        for i, path in enumerate(split_paths):
+                            data_field_value = data_field_value.get(
+                                path,
+                                default_constructor(default_value) if i == len(
+                                    split_paths) - 1 else {}
+                            )
 
                         extracted_data_fields.update(
-                            {data_field_label: data_field_value})
+                            {data_field_label: str(data_field_value)})
 
                     group = user_data.get("group")
 

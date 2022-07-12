@@ -1,3 +1,36 @@
+"""
+Leaderboard lines will be in the format:
+
+SCORE, ${RELEVANT_DATA_FIELDS}, CHATID
+
+Enter in what data fields to include below:
+
+    for example:
+
+        RELEVANT_DATA_FIELDS = {
+            "name": ["name", str, "anonymous"],
+            "group": ["group", str, "no-group"]
+        }
+    
+    Take note that the first element in the list is the path of the data-field
+    in user.data
+    
+    for example:
+    
+        "guardian_team": ["guardian_state:teams_str", str, ""]
+        
+        this means that the data-label guardian_team can be found at:
+        
+            `user.data.get("guardian_state",{}).get("teams_str", "")`
+"""
+
+RELEVANT_DATA_FIELDS = {
+    # "data-field-label" : [path-in-user-data, constructor, default_value]
+    "name": ["username", str, "anonymous"],
+    "group": ["group", str, "no-group"],
+    "guardian_team": ["guardian_state:teams_str", str, ""]
+}
+
 import sys
 sys.path.append("src")
 
@@ -5,7 +38,7 @@ import os
 import time
 import json
 import argparse
-from typing import (List, Dict, Union)
+from typing import (List, Dict, Any, Callable, Union)
 
 from utils.utils import load_yaml_file
 from stages.ctf import MAX_LEADERBOARD_VIEW
@@ -27,11 +60,10 @@ def update_leaderboard(max_leaderboard_view: int) -> List[List[Union[int, List[D
             user_yaml_file = os.path.join(user_directory, f"{chatid}.yaml")
 
             if os.path.isfile(user_yaml_file):
-                userdata = load_yaml_file(user_yaml_file)
+                user_data = load_yaml_file(user_yaml_file)
 
-                if userdata:
-                    ctf_state = userdata.get("ctf_state")
-                    guardian_state = userdata.get("guardian_state", {})
+                if user_data:
+                    ctf_state = user_data.get("ctf_state")
 
                     if ctf_state:
                         user_total_score = str(ctf_state["total_score"])
@@ -40,38 +72,36 @@ def update_leaderboard(max_leaderboard_view: int) -> List[List[Union[int, List[D
                             if user_total_score not in scoring_dict:
                                 scoring_dict.update({user_total_score: []})
 
-                            # In our curent version, we use username for display on leaderboard
-                            # instead of name, do change this according to your format
-                            # user_name = userdata.get("name")
-                            user_name = userdata.get("username")
+                            extracted_data_fields = {}
+                            for data_field_label, default_data_field in RELEVANT_DATA_FIELDS.items():
+                                data_path: str
+                                default_constructor: Callable[[*Any], Any]
+                                default_value: Any
 
-                            # Old userdata we used to collect
-                            # user_phonenumber = userdata.get("phone number")
-                            # user_email = userdata.get("email")
+                                data_path, default_constructor, default_value = default_data_field
 
-                            # Teams is a userdata used by stage:guardian
-                            user_teams = guardian_state.get("teams", [])
-                            user_teams = user_teams if len(
-                                user_teams) > 0 else guardian_state.get("teams.history")
+                                data_field_value: Union[Any,
+                                                        Dict[str, Any]] = user_data
 
-                            if user_teams:
-                                for idx, team in enumerate(user_teams):
-                                    user_teams[idx] = GUARDIAN_TEAMS.get(
-                                        team, "no_team_found")
-                            else:
-                                user_teams = []
+                                split_paths: List[str] = data_path.split(':')
+                                for i, path in enumerate(split_paths):
+                                    data_field_value = data_field_value.get(
+                                        path,
+                                        default_constructor(default_value) if i == len(
+                                            split_paths) - 1 else {}
+                                    )
 
-                            if user_name:
-                                scoring_dict[user_total_score].append(
-                                    {
-                                        "name": user_name,
-                                        # "phone number": user_phonenumber if user_phonenumber else "no_phonenumber_found",
-                                        # "email": user_email if user_email else "no_email_found",
-                                        "teams": '+'.join(user_teams if len(user_teams) > 0 else ["no_team_found"]),
-                                        "chatid": chatid,
-                                        "last_score_update": ctf_state.get("last_score_update")
-                                    }
-                                )
+                                extracted_data_fields.update(
+                                    {data_field_label: str(data_field_value)})
+
+                            scoring_dict[user_total_score].append(
+                                {
+                                    "name": extracted_data_fields.get("name", "name-not-valid-in-extracted-data"),
+                                    "relevant_data": extracted_data_fields,
+                                    "chatid": chatid,
+                                    "last_score_update": ctf_state.get("last_score_update")
+                                }
+                            )
 
     for total_score, users in scoring_dict.items():
         users.sort(key=lambda a: a["last_score_update"])
@@ -105,10 +135,9 @@ def update_leaderboard(max_leaderboard_view: int) -> List[List[Union[int, List[D
         [0, [
             {
                 "name": "",
-                # "phone number": "",
-                # "email": "",
-                "teams": "",
+                "relevant_data": {},
                 "chatid": "",
+                "last_score_update": "",
             }
         ]],
     ]
@@ -134,19 +163,21 @@ def update_leaderboard_webpage(scoring_list: List[List[Union[int, Dict]]],
 def update_leaderboard_file(scoring_list: List[List[Union[int, Dict]]]) -> None:
     lines_to_write = []
 
+    relevant_data_str = ','.join(RELEVANT_DATA_FIELDS.keys()).upper()
     lines_to_write.append(
-        # "Score,Name,Phone Number,Email,Guardian Team\n"
-        "Score,Name,Guardian Team, ChatID\n"
+        f"SCORE,{relevant_data_str},CHATID\n"
     )
 
     for placing_array in scoring_list:
         total_score, top_users = placing_array
 
         for user in top_users:
+            relevant_data_str = ','.join(
+                user["relevant_data"].values())
+
             line = (f"""{total_score},"""
-                    f"""{user["name"]},"""
-                    f"""{user["teams"]},"""
-                    f"""{user["chatid"]}\n""")
+                    + relevant_data_str
+                    + f""", {user["chatid"]}\n""")
             # {user["phone number"]},\
             # {user["email"]},\
 

@@ -156,6 +156,7 @@ class Guardian(Stage):
         guardian_state = {
             "teams": [],
             "teams.history": [],
+            "teams_str": "",
             "options_picked": []
         }
 
@@ -279,6 +280,7 @@ class Guardian(Stage):
 
         guardian_state.update({"teams": list(teams_picked)})
         guardian_state.update({"teams.history": list(teams_picked)})
+        guardian_state.update({"teams_str": '+'.join(teams_picked)})
         user.save_user_to_file()
 
     def display_results(self, update: Update, context: CallbackContext) -> USERSTATE:
