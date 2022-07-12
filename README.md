@@ -848,11 +848,10 @@ Below is a more in-depth description however you might find it still insufficien
 
 - A `state` is a condition of outcome that the `User` is in.
 
-  A state is identified as as a unique `integer` hence the user can only be ONE state at any given time.\
+  A state can identified as a unique `integer` hence the user can only be ONE state at any given time.\
   The actual integral value of the state has no meaning other than to signify the sequence of instantiation (order of which we defined the states).
 
-  When creating a state, we define a list of `callback handlers` to handle the next input provided by the user and decide on an outcome.
-
+  When creating a state, we define a list of `callback handlers` to handle the input provided by the user while they are in the state (USERSTATE) and decide on an outcome.
   There are two types of callback handlers:
 
   1. `CallbackQueryHandler` - called when user presses a given `InlineKeyboardButton` \

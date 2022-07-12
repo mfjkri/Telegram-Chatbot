@@ -14,16 +14,22 @@ from stage import (Stage, LetUserChoose, GetInputFromUser,
 
 class Bot(object):
     """
-    TODO Fill up class descriptor
-    This object represents the base wrapper 
+    This object represents the base wrapper for the `python-telegram-bot` library.
+
+    You will primarily interface with this class in your `main.py` and stages.
+
+    ---
 
     Parameters:
-        -
+        - None
 
         Please read the `Notes` section below.
 
+    ---
+
     Notes:
-        The initialization of this class has been moved from the dunder method \
+
+        1) The initialization of this class has been moved from the dunder method \
             `__init__` instead to a method: `Bot.init`.
 
         >>> bot = Bot()
@@ -36,31 +42,54 @@ class Bot(object):
         This is due to `Bot` being a `Singleton` class, we would want to prevent \
             multiple initialization of the class object. 
 
+
+        2) `__add_state` method is strictly a private method.
+
+        There is no need to call this method from outside this class.
+
+    ---
+
     Attributes:
-        TODO Fill up attributes descriptor
-        logger (:class:`Log`):
-        token (:obj:`str`):
+        - logger (:class:`Log`): Logging object that the bot will use.
+        - token (:obj:`str`): Telegram API bot token used to authenticate and connect as the bot. 
 
-        updater (:class:`Updater`):
-        dispatcher (:class:`Dispatcher`): 
+        - updater (:class:`Updater`): Update object from python-telegram-bot which \
+            provides a frontend to python-telegram-bot.
+        - dispatcher (:class:`Dispatcher`): Dispatcher object from python-telegram-bot \
+            that dispatches updates to its registered handlers.
 
-        stages (:class:`Dict[str, Stage]`):
-        states (:class:`List[Dict]`):
+        - command_handlers (:class:`Dict[str, CommandHandler]`): List of command handlers \
+            registered as entry-points for the ConversationHandler.
+        - fallback_handlers (:class:`Dict[str, CommandHandler]`): List of command handlers \
+            registered as fallbacks for the ConversationHandler.
 
-        first_stage (:class:`Stage`): 
-        end_stage (:class:`EndConversation`): 
+        - stages (:class:`Dict[str, Stage]`): Dict of stages registered with the bot, \
+            individual stages can be indexed using their stage_id.
+        - states (:class:`List[Dict]`): List of states registered with the bot, these states \
+            should not be indexed directly and instead should be used through a stage.
 
-        user_manager (:class:`UserManager`):
+        - first_stage (:class:`Stage`): Stage object that is the very first stage, proceeded to \
+            right after the default `/start` command.
+        - end_stage (:class:`EndConversation`): Stage object that is the very last stage, most \
+            situations this stage would be an instance of EndStage.
 
-        config (:class:`Dict[str, Any]`):  
-        bot_config (:class:`Dict[str, Any]`):  
-        admin_chatids (:class:`List[str]`):  
-        anonymous_user_passcodes (:obj:`bool`):  
-        user_passcodes (:class:`List[str]`):  
+        - user_manager (:class:`UserManager`): UserManager object to handle users (User).
+
+        - config (:class:`Dict[str, Any]`):  Dict with many configuration values.
+        - bot_config (:class:`Dict[str, Any]`):  Dict with configuration that pertains to \
+            the bot.
+        - behavior_remove_inline_markup (:obj:`bool`): Configuration value whether to remove \
+            inline_keyboard_markup on update.
+        - admin_chatids (:class:`List[str]`):  List of chatids that will have access to the \
+            AdminStage (if registered).
+        - user_passcodes (:class:`List[str]`):  List of passcodes that will grant the user \
+            access to the rest of the bot.
+        - anonymous_user_passcodes (:obj:`bool`): Configuration value whether to treat passcodes \
+            as anonymous, meaning passcodes won't be used to identify users but merely to give access.
     """
 
-    def add_state(self, stage_id: str, state_name: str,
-                  callbacks: List[Union[CallbackQueryHandler, MessageHandler]]) -> USERSTATE:
+    def __add_state(self, stage_id: str, state_name: str,
+                    callbacks: List[Union[CallbackQueryHandler, MessageHandler]]) -> USERSTATE:
         """
         Internal private function to add a state to bot's states.
 
@@ -100,11 +129,17 @@ class Bot(object):
 
         All registered stages can be found in `bot.stages` (indexed using their `stage_id`).
 
+        ---
+
         Parameters:
-            stage_id (:obj:`str`): Unique identifier of the target stage.
+            - stage_id (:obj:`str`): Unique identifier of the target stage.
+
+        ---
 
         Returns:
             (:class:`Stage`|:obj:`None`): Returns the target stage object if found, else returns None.
+
+        ---
 
         Example:
             >>> target_state: Stage  = bot.get_stage_from_id(
@@ -121,11 +156,17 @@ class Bot(object):
         Call this function from within your `custom_stage.setup()` method to register the `custom_stage`\
             as an active stage of the bot.
 
+        ---
+
         Parameters:
-            stage (:class:`Stage`): Instantiated object of type stage
+            - stage (:class:`Stage`): Instantiated object of type stage
+
+        ---
 
         Returns:
             (:obj:`None`)
+
+        ---
 
         Example:
             >>> class CustomStage(Stage):
@@ -147,7 +188,7 @@ class Bot(object):
 
         states = {}
         for state_name, callback_handlers in stage.states.items():
-            states.update({state_name: self.add_state(
+            states.update({state_name: self.__add_state(
                 stage_id=stage.stage_id,
                 state_name=stage.stage_id + state_name,
                 callbacks=callback_handlers
@@ -163,13 +204,19 @@ class Bot(object):
 
         Call this function to immediately proceed to the `end_stage`.
 
+        ---
+
         Parameters:
-            current_stage_id (:obj:`str`): Unique identifier of the caller stage.
-            update (:class:`Update`): Update passed from the caller function.
-            context (:class:`CallbackContext`): Context passed from the caller function.
+            - current_stage_id (:obj:`str`): Unique identifier of the caller stage.
+            - update (:class:`Update`): Update passed from the caller function.
+            - context (:class:`CallbackContext`): Context passed from the caller function.
+
+        ---
 
         Returns:
             (:class:`USERSTATE`): Returns a USERSTATE that is associated with the end stage (`-1`).
+
+        ---
 
         Example:
             >>> def some_callback(self, update: Update, context: CallbackContext) -> USERSTATE:
@@ -194,14 +241,20 @@ class Bot(object):
 
         Calls the `entry function` of the next stage.
 
+        ---
+
         Parameters:
-            current_stage_id (:obj:`str`): Unique identifier of the caller stage.
-            next_stage_id (:obj:`str`): Optional. Unique identifier of the target stage. Defaults to `bot.first_stage.stage_id`.
-            update (:class:`Update`): Update passed from the caller function.
-            context (:class:`CallbackContext`): Context passed from the caller function.
+            - current_stage_id (:obj:`str`): Unique identifier of the caller stage.
+            - next_stage_id (:obj:`str`): Optional. Unique identifier of the target stage. Defaults to `bot.first_stage.stage_id`.
+            - update (:class:`Update`): Update passed from the caller function.
+            - context (:class:`CallbackContext`): Context passed from the caller function.
+
+        ---
 
         Returns:
             (:class:`USERSTATE`): Returns a USERSTATE that is returned by the `entry` function of the target stage.
+
+        ---
 
         Example:
             >>> def some_callback(self, update: Update, context: CallbackContext) -> USERSTATE:
@@ -249,20 +302,28 @@ class Bot(object):
         """
         Helper function to edit or reply the message sent by bot with some text and reply_markup.
 
+        ---
+
         Parameters:
-            update (:class:`Update`): Update passed from the caller function.
-            context (:class:`CallbackContext`): Context passed from the caller function.
-            text (:obj:`str`): Text displayed in the message.
-            reply_markup (:class:`ReplyMarkup`): Optional. Reply markup with the message if any. Defaults to None.
-            parse_mode (:class:`ParseMode`): Optional. Parse mode to display the message with. Defaults to HTML.
-            reply_message (:obj:`bool`): Optional. Whether to reply or edit the message. Defaults to edit message.
+            - update (:class:`Update`): Update passed from the caller function.
+            - context (:class:`CallbackContext`): Context passed from the caller function.
+            - text (:obj:`str`): Text displayed in the message.
+            - reply_markup (:class:`ReplyMarkup`): Optional. Reply markup with the message if any. Defaults to None.
+            - parse_mode (:class:`ParseMode`): Optional. Parse mode to display the message with. Defaults to HTML.
+            - reply_message (:obj:`bool`): Optional. Whether to reply or edit the message. Defaults to edit message.
+
+        ---
 
         Returns:
             (:obj:`None`)
 
+        ---
+
         Notes:
             Some messages can only be replied to and not edited. `reply_message` will be automatically\
                 overriden in such cases.
+
+        ---
 
         Example:
             >>> def some_callback(self, update: Update, context: CallbackContext) -> USERSTATE:
@@ -311,17 +372,25 @@ class Bot(object):
         """
         In-built function to create a stage that presents the user with a series of choices.
 
+        ---
+
         Parameters:
-            stage_id (:obj:`str`): Unique identifier for the stage to be created.
-            choice_text (:obj:`str`): The text displayed when prompting user to choose.
-            choices (:class:`List[Dict[str, str]`): The list of the choices to choose from.
-            choices_per_row (:obj:`int`): Optional. How many choices to have in a row. Defaults to None.
+            - stage_id (:obj:`str`): Unique identifier for the stage to be created.
+            - choice_text (:obj:`str`): The text displayed when prompting user to choose.
+            - choices (:class:`List[Dict[str, str]`): The list of the choices to choose from.
+            - choices_per_row (:obj:`int`): Optional. How many choices to have in a row. Defaults to None.
+
+        ---
 
         Returns:
             (:class:`Stage`): Returns the stage object created.
 
+        ---
+
         Notes:
             If `choices_per_row` is `None`, then all choices will be displayed in a single row.
+
+        ---
 
         Example:
             >>> def print_fav_fruit(fruit: str, update: Update, context: CallbackContext) -> USERSTATE:
@@ -366,17 +435,23 @@ class Bot(object):
         """
         In-built function to create a stage that collects a user input.
 
+        ---
+
         Parameters:
-            stage_id (:obj:`str`): Unique identifier for the stage to be created.
-            input_text (:obj:`str`): The text displayed before prompting user to enter their input.
-            input_handler (:class:`Callable`): The callback function called with the user input.
+            - stage_id (:obj:`str`): Unique identifier for the stage to be created.
+            - input_text (:obj:`str`): The text displayed before prompting user to enter their input.
+            - input_handler (:class:`Callable`): The callback function called with the user input.
                 Callback signature:
                     ``def input_handler(user_input: str, update: Update, context: CallbackContext) -> USERSTATE``
 
-            exitable (:obj:`bool`): Optional. Whether to allow users to abort input by sending "/cancel". Defaults to False.
+            - exitable (:obj:`bool`): Optional. Whether to allow users to abort input by sending "/cancel". Defaults to False.
+
+        ---
 
         Returns:
             (:class:`Stage`): Returns the stage object created.
+
+        ---
 
         Example:
             >>> def print_fav_fruit(input_text: str, update: Update, context: CallbackContext) -> USERSTATE:
@@ -416,24 +491,30 @@ class Bot(object):
         """
         In-built function to create a stage that collects a user info (`str`).
 
+        ---
+
         Parameters:
-            stage_id (:obj:`str`): Unique identifier for the stage to be created.
-            next_stage_id (:obj:`str`): Unique identifier of the stage to proceed to after successfully completing this stage.
-            data_label (:obj:`str`): The info label of the data collected from user (from example: name).
-            input_formatter (:class:`Callable`): Optional. A callback function used to format the input given.\
+            - stage_id (:obj:`str`): Unique identifier for the stage to be created.
+            - next_stage_id (:obj:`str`): Unique identifier of the stage to proceed to after successfully completing this stage.
+            - data_label (:obj:`str`): The info label of the data collected from user (from example: name).
+            - input_formatter (:class:`Callable`): Optional. A callback function used to format the input given.\
                 Defaults to an empty callback.
                 Callback signature:
                     ``def input_formatter(user_input: Union[str, bool]) -> Union[str, bool]:``
 
-            additional_text (:obj:`str`): Optional. Additional text to display when prompting user for info. \
+            - additional_text (:obj:`str`): Optional. Additional text to display when prompting user for info. \
                 Defaults to empty string.
-            use_last_saved (:obj:`bool`): Optional. Whether to consider previously set value for the info. \
+            - use_last_saved (:obj:`bool`): Optional. Whether to consider previously set value for the info. \
                 Defaults to True.
-            allow_update (:obj:`bool`): Optional. Whether to allow users to update this info once set. \
+            - allow_update (:obj:`bool`): Optional. Whether to allow users to update this info once set. \
                 Defaults to True.
+
+        ---
 
         Returns:
             (:class:`Stage`): Returns the stage object created.
+
+        ---
 
         Notes:
             If `use_last_saved` is `True`, then users are given the choice whether to use their previously saved input\
@@ -453,6 +534,7 @@ class Bot(object):
                         else:
                             return check_input_format(user_input)
 
+        ---
 
         Example:
             >>> def format_email_input(input_str: Union[str, bool]):
@@ -500,25 +582,31 @@ class Bot(object):
         """
         Creates and sets the end stage for the bot.
 
+        ---
+
         Parameters:
-            stage_id (:obj:`str`): Optional. Stage identifier of the end stage. Defaults to "end".
-            final_callback (:class:`Callable`): Optional. A callback function called right before terminating \
+            - stage_id (:obj:`str`): Optional. Stage identifier of the end stage. Defaults to "end".
+            - final_callback (:class:`Callable`): Optional. A callback function called right before terminating \
                 conversation. Defaults to an empty callback.
                 Callback signature:
                     ``def final_callback(update: Update, context: CallbackContext) -> None:``
 
-            goodbye_message(:obj:`str`): Optional. Message to display when user reaches end of conversation. \
+            - goodbye_message(:obj:`str`): Optional. Message to display when user reaches end of conversation. \
                 Defaults to empty string.
-            reply_message(:obj:`bool`): Optional. Whether the goodbye_message (if any) should edit current message\
+            - reply_message(:obj:`bool`): Optional. Whether the goodbye_message (if any) should edit current message\
                 or as a new message.
+
+        ---
 
         Returns:
             (:obj:`str`): Returns the unique identifier of the stage created.
 
+        ---
+
         Example:
             >>> stage_id: str = bot.make_end_stage(
                     stage_id="end",
-                    goodbye_message="You have exited the conversation. \n\nUse /start to begin a new one.",
+                    goodbye_message="You have exited the conversation. Use /start to begin a new one.",
                     reply_message=True
                 )
                 print(stage_id)  # --> "end"
@@ -543,11 +631,17 @@ class Bot(object):
         """
         Sets the starting stage for the bot (stage to proceed right after User sends the / start command).
 
+        ---
+
         Parameters:
-            stage_id (:obj:`str`): Stage identifier of the starting stage.
+            - stage_id (:obj:`str`): Stage identifier of the starting stage.
+
+        ---
 
         Returns:
             (:obj:`None`)
+
+        ---
 
         Example:
             >>> bot.set_first_stage(
@@ -560,6 +654,50 @@ class Bot(object):
         self.first_stage: Stage = first_stage
 
     def conversation_entry(self, update: Update, context: CallbackContext) -> USERSTATE:
+        """
+        Default callback function for command: `/start`.
+
+        You may override this function with your own or provide a wrapper that calls this function \
+            after doing some operations. See the section Example for more info.
+
+        The default behavior is to create the `User` object if not found and store it in \
+            `context.user_data`. This user object can be later accessed by any callback handlers \
+                subsequently.
+
+                ``user: User = context.user_data.get("user")``
+
+        After creating the user object, it will proceed to the first stage: `bot.first_stage.stage_id`.
+
+        ---
+
+        Parameters:
+            - update (:class:`Update`): Update passed from the caller function.
+            - context (:class:`CallbackContext`): Context passed from the caller function.
+
+        ---
+
+        Returns:
+            (:class:`USERSTATE`): Returns a USERSTATE that is associated with the start stage (`bot.first_stage.stage_id`).
+
+        ---
+
+        Example:
+
+            You can override this default function with a wrapper:
+
+            >>> def entry_override(update: Update, context: CallbackContext) -> USERSTATE:
+                    # do something here
+                    print("overriden")
+                    return bot.conversation_entry(update, context)
+
+                bot.add_command_handler(
+                    command="start",
+                    callback=entry_override,
+                    add_as_fallback=True,
+                    override_handler=True
+                )
+        """
+
         if update.message and update.message.text:
             chatid = str(update.message.chat_id)
 
@@ -593,24 +731,32 @@ class Bot(object):
         """
         Adds a CommandHandler as an entry point to the bot.
 
+        ---
+
         Parameters:
-            command (:obj:`str`): The command trigger: `\command`. 
-            callback (:class:`Callable`): The callback function called when command is triggered.
+            - command (:obj:`str`): The command trigger: `\command`. 
+            - callback (:class:`Callable`): The callback function called when command is triggered.
                 Callback signature:
                     ``def callback(update: Update, context: CallbackContext) -> USERSTATE``
 
-            add_as_fallback (:obj:`bool`): Optional. Whether to add the CommandHandler as a fallback handler too.
-            override_handler (:obj:`bool`): Optional. Whether to override any CommandHandlers already created (will raise an \
+            - add_as_fallback (:obj:`bool`): Optional. Whether to add the CommandHandler as a fallback handler too.
+            - override_handler (:obj:`bool`): Optional. Whether to override any CommandHandlers already created (will raise an \
                 error if this not set to `True` and there is an existing CommandHandler with the same command).
+
+        ---
 
         Notes:
             `override_handler` parameter is useful for override CommandHandlers already set by the bot for example \
                 the start CommandHandler: `\start`.
 
-            The user: `User` property of `CallbackContext.user_data` is NOT GUARANTEED!
+            The user: `User` property of `CallbackContext.user_data` is NOT guaranteed.
+
+        ---
 
         Returns:
             (:obj:`None`)
+
+        ---
 
         Example:
             >>> def terminate_conversation(update: Update, context: CallbackContext) -> USERSTATE:
@@ -647,11 +793,17 @@ class Bot(object):
         """
         Starts the bot.
 
+        ---
+
         Parameters:
-            live_mode (:obj:`bool`): Whether to `drop_pending_updates` when starting to poll. Defaults to False.
+            - live_mode (:obj:`bool`): Whether to `drop_pending_updates` when starting to poll. Defaults to False.
+
+        ---
 
         Returns:
             (:obj:`None`)
+
+        ---
 
         Example:
             >>> bot.start(live_mode=True)
@@ -748,19 +900,27 @@ class Bot(object):
         """
         Initializes the Bot class.
 
+        ---
+
         Parameters:
-            token (:obj:`str`): Telegram Bot API token string.
-            logger (:class:`Log`): Logger object to use for logging purposes of the bot.
-            config (:class:`Dict[str, Any]`): Configurations values loaded from `config.yaml`.
+            - token (:obj:`str`): Telegram Bot API token string.
+            - logger (:class:`Log`): Logger object to use for logging purposes of the bot.
+            - config (:class:`Dict[str, Any]`): Configurations values loaded from `config.yaml`.
+
+        ---
 
         Returns:
             (:obj:`None`)
 
+        ---
+
         Notes:
             This method replaces the `dunder` method `__init__` as Bot is meant to be used a `singleton`.
 
-            Ensure that this method is only called `once` to avoid any issues.
+            Ensure that this method is only called `once` to prevent re-initialization.
 
+
+        ---
 
         Example:
             >>> logger : Log = Log(...)
