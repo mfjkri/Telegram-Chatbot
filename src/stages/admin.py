@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import (Dict, Union)
 
 from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, Update)
 from telegram.ext import (CallbackQueryHandler, CallbackContext)
@@ -234,34 +234,56 @@ class AdminConsole(Stage):
         )
 
     def delete_user_name(self, chatid: str, update: Update, context: CallbackContext) -> USERSTATE:
-        target_user: Optional[User] = self.user_manager.get_from_chatid(chatid)
+        target_user: Union[User,
+                           None] = self.user_manager.get_from_chatid(chatid)
 
         if target_user:
             target_user.data.update({"username": ""})
             target_user.save_user_to_file()
+        else:
+            self.log_user_not_found(
+                chatid=chatid,
+                action_reason="delete user name"
+            )
 
         return self.load_admin(update, context)
 
     def reset_user(self, chatid: str, update: Update, context: CallbackContext) -> USERSTATE:
-        target_user: Optional[User] = self.user_manager.get_from_chatid(chatid)
+        target_user: Union[User,
+                           None] = self.user_manager.get_from_chatid(chatid)
 
         if target_user:
             target_user.reset_user()
+        else:
+            self.log_user_not_found(
+                chatid=chatid,
+                action_reason="reset user"
+            )
 
         return self.load_admin(update, context)
 
     def reset_all_users(self, update: Update, context: CallbackContext) -> USERSTATE:
-        for chatid, user in self.user_manager.users.items():
+        users: Dict[str, User] = self.user_manager.get_users()
+
+        for chatid, user in users.items():
+            user: User
+
             user: User = user
             user.reset_user()
 
         return self.load_admin(update, context)
 
     def ban_user(self, chatid: str, update: Update, context: CallbackContext) -> USERSTATE:
-        target_user: Optional[User] = self.user_manager.get_from_chatid(chatid)
+        target_user: Union[User,
+                           None] = self.user_manager.get_from_chatid(chatid)
 
         if target_user:
             self.user_manager.ban_user(chatid)
+        else:
+            self.log_user_not_found(
+                chatid=chatid,
+                action_reason="ban user"
+            )
 
         return self.load_admin(update, context)
 
@@ -269,3 +291,7 @@ class AdminConsole(Stage):
         self.user_manager.unban_user(chatid)
 
         return self.load_admin(update, context)
+
+    def log_user_not_found(self, chatid: str, action_reason: str) -> None:
+        self.bot.logger.warning("ADMIN_TARGET_USER_NOT_FOUND",
+                                f"The target user: {chatid} was not found while trying to {action_reason}.")

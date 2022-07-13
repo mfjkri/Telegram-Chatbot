@@ -702,7 +702,7 @@ class Bot(object):
             chatid = str(update.message.chat_id)
 
             cached_user: User = context.user_data.get("user")
-            user: User = cached_user or self.user_manager.new(chatid)
+            user: User = cached_user or self.user_manager.new_user(chatid)
 
             if user:
                 context.user_data.clear()
@@ -932,8 +932,8 @@ class Bot(object):
                 )
         """
 
-        self.logger = logger
-        self.token = token
+        self.logger: Log = logger
+        self.token: str = token
 
         updater = Updater(token)
         dispatcher = updater.dispatcher

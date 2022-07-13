@@ -99,7 +99,7 @@ class User():
 
 
 class UserManager(object):
-    def new(self, chatid: str) -> User:
+    def new_user(self, chatid: str) -> User:
         # self.update_banned_list()
         if chatid not in self.users:
             self.logger.info("CREATING_USER_CLASS",
@@ -115,6 +115,9 @@ class UserManager(object):
             self.logger.info("USING_CACHED_USER_CLASS",
                              f"Using cached UserClass for User:{chatid}.")
             return self.users.get(chatid)
+
+    def get_users(self) -> Dict[str, User]:
+        return self.users
 
     def get_from_chatid(self, chatid: str) -> Optional[User]:
         return self.users.get(chatid)
@@ -163,7 +166,7 @@ class UserManager(object):
     def init(self, logger: Log, log_user_logs_to_app_logs: bool = False) -> None:
         self.application_logfilehandler = logger.file_handlers[0]
         self.logger = logger
-        self.users = {}
+        self.users: Dict[str, User] = {}
         self.data_fields = {}
         self.banned_users = []
         self.log_user_logs_to_app_logs = log_user_logs_to_app_logs
@@ -173,7 +176,7 @@ class UserManager(object):
     def load_users_from_file(self):
         for chatid in os.listdir(users_directory):
             if os.path.isdir(os.path.join(users_directory, chatid)):
-                self.new(chatid)
+                self.new_user(chatid)
 
     def __new__(cls, *_):
         if not hasattr(cls, "instance"):

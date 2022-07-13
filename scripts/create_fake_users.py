@@ -81,7 +81,7 @@ class Emulator:
 
         for name in names:
             chatid = name  # self.generate_chatid()
-            user = self.user_manager.new(chatid)
+            user: User = self.user_manager.new_user(chatid)
 
             user.update_user_data("name", name)
             user.update_user_data("username", name)

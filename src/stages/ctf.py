@@ -5,7 +5,7 @@ import datetime
 import re
 import functools
 import operator
-from typing import List
+from typing import (List, Dict)
 
 from telegram import (InlineKeyboardButton,
                       InlineKeyboardMarkup, Update)
@@ -701,7 +701,11 @@ class Ctf(Stage):
             dict_scoring_list = {}
             scoring_list = []
 
-            for _, user in self.user_manager.users.items():
+            users: Dict[str, User] = self.user_manager.get_users()
+
+            for chatid, user in users.items():
+                user: User
+
                 ctf_state = user.data.get("ctf_state")
                 user_total_score = str(ctf_state["total_score"])
                 user_name = user.data.get("username")
