@@ -253,7 +253,7 @@ class Example(Stage):
 
         if answer == "2":
             example_state["score"] = 10
-            user.save_user_to_file()
+            user.save_to_file()
 
             self.bot.edit_or_reply_message(
                 update, context,
@@ -271,6 +271,6 @@ class Example(Stage):
         example_state = user.data.get("example_state")
 
         example_state["color"] = color
-        user.save_user_to_file()
+        user.save_to_file()
 
         return self.load_menu(update, context)

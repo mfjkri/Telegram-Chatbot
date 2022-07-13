@@ -107,7 +107,7 @@ class Emulator:
     def set_score(self, name: str, score: int) -> None:
         fake_user: User = self.fake_users.get(name)
         fake_user.data.get("ctf_state").update({"total_score": score})
-        fake_user.save_user_to_file()
+        fake_user.save_to_file()
 
     def add_score(self, name: str, score: int) -> int:
         fake_user: User = self.fake_users.get(name)
@@ -115,7 +115,7 @@ class Emulator:
             {"total_score": fake_user.data.get(
                 "ctf_state").get("total_score") + score}
         )
-        fake_user.save_user_to_file()
+        fake_user.save_to_file()
 
         return fake_user.data.get("ctf_state").get("total_score")
 
@@ -160,7 +160,7 @@ class Emulator:
         hint_deduction = challenge_info["hints"][hint_number]["deduction"]
         challenge_info["total_hints_deduction"] += hint_deduction
 
-        fake_user.save_user_to_file()
+        fake_user.save_to_file()
         self.create_log_line(
             name,
             self.fast_forward_time(name, multiplier=3),

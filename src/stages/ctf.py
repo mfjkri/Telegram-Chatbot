@@ -331,7 +331,7 @@ class Ctf(Stage):
             # Updating and saving players data
             challenge["time_based"].update(
                 {"start_time": datetime.datetime.now()})
-            user.save_user_to_file()
+            user.save_to_file()
 
         self.display_challenge(update, context, challenge_number)
 
@@ -357,7 +357,7 @@ class Ctf(Stage):
         hint.update({"used": True})
         challenge.update(
             {"total_hints_deduction": challenge["total_hints_deduction"] + hint["deduction"]})
-        user.save_user_to_file()
+        user.save_to_file()
 
         self.display_challenge(update, context, challenge_number)
 
@@ -645,7 +645,7 @@ class Ctf(Stage):
             ctf_state["total_score"] += challenge_points
             ctf_state.update({"last_score_update": datetime.datetime.now()})
 
-            user.save_user_to_file()
+            user.save_to_file()
             self.update_leaderboard()
 
             user.logger.info(f"USER_CTF_CORRECT_ANSWER_{challenge_number}",
@@ -665,7 +665,7 @@ class Ctf(Stage):
             )
             return self.CHALLENGE_SUCCESS
         else:
-            user.save_user_to_file()
+            user.save_to_file()
             user.logger.info(f"USER_CTF_WRONG_ANSWER_{challenge_number}",
                              f"""User:{user.chatid} @{answer}@ got the answer WRONG for Challenge {challenge_number}""")
 

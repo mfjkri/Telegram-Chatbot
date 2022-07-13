@@ -239,7 +239,7 @@ class AdminConsole(Stage):
 
         if target_user:
             target_user.data.update({"username": ""})
-            target_user.save_user_to_file()
+            target_user.save_to_file()
         else:
             self.log_user_not_found(
                 chatid=chatid,

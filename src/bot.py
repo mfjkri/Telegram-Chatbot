@@ -58,9 +58,9 @@ class Bot(object):
         - dispatcher (:class:`Dispatcher`): Dispatcher object from python-telegram-bot \
             that dispatches updates to its registered handlers.
 
-        - command_handlers (:class:`Dict[str, CommandHandler]`): List of command handlers \
+        - command_handlers (:class:`Dict[str, CommandHandler]`): Dict of command handlers \
             registered as entry-points for the ConversationHandler.
-        - fallback_handlers (:class:`Dict[str, CommandHandler]`): List of command handlers \
+        - fallback_handlers (:class:`Dict[str, CommandHandler]`): Dict of command handlers \
             registered as fallbacks for the ConversationHandler.
 
         - stages (:class:`Dict[str, Stage]`): Dict of stages registered with the bot, \
@@ -95,13 +95,19 @@ class Bot(object):
 
         This function is normally called from `@bot.register_stage`.
 
+        ---
+
         Parameters:
-            stage_id (:obj:`str`): Unique identifier of the stage that the state is in.
-            state_name (:obj:`str`): Non-unique identifier of the state, only used for debugging.
-            callbacks (:class:`List`): List of callback handlers that are active during the state.
+            - stage_id (:obj:`str`): Unique identifier of the stage that the state is in.
+            - state_name (:obj:`str`): Non-unique identifier of the state, only used for debugging.
+            - callbacks (:class:`List`): List of callback handlers that are active during the state.
+
+        ---
 
         Returns:
             (:class:`USERSTATE`): Returns a USERSTATE that is associated with the created state.
+
+        ---
 
         Example:
             >>> bot.add_state(
@@ -915,16 +921,17 @@ class Bot(object):
         ---
 
         Notes:
-            This method replaces the `dunder` method `__init__` as Bot is meant to be used a `singleton`.
+            This method replaces the `dunder` method `__init__` as Bot is meant to be used a `Singleton`.
 
             Ensure that this method is only called `once` to prevent re-initialization.
-
 
         ---
 
         Example:
             >>> logger : Log = Log(...)
                 config : Dict[str, Any] = utils.load_yaml_file(os.path.join("config.yaml"))
+                # ...
+                bot = Bot()
                 bot.init(
                     token="...",
                     logger=logger,

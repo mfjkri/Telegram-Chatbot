@@ -180,7 +180,7 @@ class Guardian(Stage):
         guardian_state = user.data.get("guardian_state")
 
         guardian_state["options_picked"].append(option_selected)
-        user.save_user_to_file()
+        user.save_to_file()
 
         if question_number < TOTAL_QUESTIONS - 1:
             if not self.bot.behavior_remove_inline_markup:
@@ -222,7 +222,7 @@ class Guardian(Stage):
             if len(guardian_state.get("teams", [])) == 0:
                 guardian_state.update(
                     {"teams": list(guardian_state.get("teams.history"))})
-                user.save_user_to_file()
+                user.save_to_file()
 
             keyboard.append(InlineKeyboardButton(
                 "Skip", callback_data="guardian_skip"))
@@ -244,7 +244,7 @@ class Guardian(Stage):
 
         guardian_state["options_picked"] = []
         guardian_state["teams"] = []
-        user.save_user_to_file()
+        user.save_to_file()
 
         return self.bot.proceed_next_stage(
             current_stage_id=self.stage_id,
@@ -281,7 +281,7 @@ class Guardian(Stage):
         guardian_state.update({"teams": list(teams_picked)})
         guardian_state.update({"teams.history": list(teams_picked)})
         guardian_state.update({"teams_str": '+'.join(teams_picked)})
-        user.save_user_to_file()
+        user.save_to_file()
 
     def display_results(self, update: Update, context: CallbackContext) -> USERSTATE:
         query = update.callback_query
