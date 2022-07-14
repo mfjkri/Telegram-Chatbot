@@ -14,9 +14,47 @@ from user import (UserManager, User)
 
 
 class Stage(ABC):
+    """
+    This object represents a base stage.
+
+    All other stages should inherit from this class.
+
+    ---
+
+    Notes:
+        This stage has some `default` behaviors which are recommended to be invoked by the sub-class \
+            to ensure uniformity that is expected from all stages.
+
+            Default behavior can be conformed to by calling the base-class methods at the end of the \
+                subclass methods.
+
+                >>> def some_method(self, *args) -> ...:
+                        # do stuff
+                        return super().some_method(*args)
+
+        If you find that these default behaviors are too confusing or makes the code less readable due to \
+            important aspects being abstracted away or undefined behaviors, you can override it yourself.
+
+        Just ensure that the overall behavior of the stage inheriting from this abstract class is still \
+            maintained and consistent as Bot relies on this to handle stages properly.
+
+    ---
+
+    Parameters:
+        - None
+
+    ---
+
+    Attributes (`base attributes`):
+        - bot (:class:`Bot`): 
+        - user_manager (:class:`UserManager`):
+        - stage_id (:obj:`str`): 
+        - next_stage_id (:obj:`str`): 
+
+        - states (:class:`Dict`): 
+    """
     @abstractmethod
     def __init__(self, stage_id: str, next_stage_id: str, bot):
-        """"""
         from bot import Bot
 
         self.bot: Bot = bot
@@ -29,40 +67,224 @@ class Stage(ABC):
 
     @abstractmethod
     def setup(self) -> None:
-        """"""
-        self.init_users_data()
+        """
+        Sets up and register the stage to the Bot.
 
-        self.states = {
-            # "STATE_NAME" : [
-            #     CallbackQueryHandler(
-            #         callback, pattern=f"^$"),
-            #     CallbackQueryHandler(
-            #         callback, pattern=f"^$"),
-            #     ...
-            # ],
-            # "STATE_NAME_2" : [
-            #     MessageHandler(Filters.all, callback)
-            # ],
-            # ...
-        }
-        self.bot.register_stage(self)
-        # USERSTATES
-        # (self.STATE_NAME, self.STATE_NAME_2,) = self.unpacked_states
+        Post-init function (should be called after init).
+
+        ---
+
+        Parameters:
+            - None
+
+        ---
+
+        Returns:
+            (:obj:`None`)
+
+        --- 
+
+        Notes:
+            You can include any relevant attributes or properties as part of the \
+                arguments for this function.
+
+            This method `HAS NO default behavior`:
+                Do not call this method.
+
+            This method can be broken down into 4 parts:
+
+                1) Init users data:
+                    >>> self.init_users_data()
+
+                2) Define stage's states:
+
+                    >>> self.states = {
+                        # "STATE_NAME" : [
+                        #     CallbackQueryHandler(
+                        #         callback, pattern=f"^$"),
+                        #     CallbackQueryHandler(
+                        #         callback, pattern=f"^$"),
+                        #     ...
+                        # ],
+                        # "STATE_NAME_2" : [
+                        #     MessageHandler(Filters.all, callback)
+                        # ],
+                        # ...
+                    }
+
+                3) Register stage:
+
+                    >>> self.bot.register_stage(self)
+                        # USERSTATES
+                        # (self.STATE_NAME, self.STATE_NAME_2,) = self.unpacked_states
+
+                4) Create any other nested stages here
+
+                    For example, we can nest an in-built GetUserInput here.
+
+                    >>> self.INPUT_SOME_STAGE: Stage = self.bot.get_user_input(
+                            stage_id="input_some_stage",
+                            input_text="Some input:",
+                            input_handler=...
+                        )
+
+        ---
+
+        Example:
+            >>> some_stage: SomeStage = SomeStage(
+                    stage_id=...
+                    next_stage_id=...,
+                    bot=bot
+                )
+                some_stage.setup()
+        """
+
+        raise Exception(
+            "This method contains no default behavior. Please do not call it")
 
     @abstractmethod
     def init_users_data(self) -> None:
-        """"""
+        """
+        Initialize user data that is used by this stage.
+
+        This data fields will be added to UserManager.data_fields as part of the global data state.
+
+        ---
+
+        Parameters:
+            - None
+
+        ---
+
+        Returns:
+            (:obj:`None`)
+
+        --- 
+
+        Notes:
+
+            1) If your Stage has user data:
+
+                It is recommended to bundle all of the data for a Stage into a single collection.
+
+                For example:
+
+                >>> class SomeStage(Stage):
+                        def init_users_data(self) -> None:
+                            some_state = {
+                                "name": "",
+                                "score": 0,
+                                "hidden": False
+                            }
+                            self.user_manager.add_data_field("some_state", some_state)
+                            return super().init_users_data()
+
+                You can set default values for the each data field.
+
+                In our above example, we set default value of "name" to be an empty string, default value of "score" \
+                    to be 0 and default value of "hidden" to be False.
+
+                Notice that we still called the super class method. Read (2) below to find out why.
+
+
+            2) Else:
+
+            This function `HAS a default behavior`:
+
+                By default, this method set a hidden attribute `_users_data_initialized` to be `True`.
+
+                This is neccesassary to as registered Stage without this attribute set, would raise an error when \
+                    the Bot is started.
+
+                You can call this method from a subclass by doing:
+
+                >>> class SomeStage(Stage):
+                        def init_users_data(self) -> None:
+                            return super().init_users_data()
+
+
+            ---
+
+            Call this method in the setup function. Failure to do so will raise an error when Bot is started,
+        """
         # self.user_manager.add_data_field("DATA_FIELD", "")
         self._users_data_initialized = True
 
     @abstractmethod
     def stage_entry(self, update: Update, context: CallbackContext) -> USERSTATE:
-        """"""
-        # return self.load_something(update, context)
+        """
+        Entry function that is called when this stage is active.
+
+        Method called when proceeding to this stage from another stage / stage.
+
+        ---
+
+        Parameters:
+            - update (:class:`Update`): Update passed from the caller function.
+            - context (:class:`CallbackContext`): Context passed from the caller function.
+
+        ---
+
+        Returns:
+            (:class:`USERSTATE`): Returns a USERSTATE that is part of this stage.
+
+        --- 
+
+        Notes:
+            This method `HAS NO default behavior`:
+                Do not call this method.
+
+            This method is generally broken down into 2 parts:
+
+                1) Any preprocessing for the stage:
+
+                    This includes any type of processing or logic that is needed \
+                        to be done when the stage is loaded / proceeded to.
+
+                2) Load some sort of menu for the stage:
+
+                    The USERSTATE is determined by this load_menu method.
+
+                    >>> return self.load_menu(update, context)
+        """
+
+        raise Exception(
+            "This method contains no default behavior. Please do not call it")
 
     @abstractmethod
     def stage_exit(self, update: Update, context: CallbackContext) -> USERSTATE:
-        """"""
+        """
+        Exit function that is called when leaving the stage.
+
+        Method to determine the exit pathway of this stage.
+
+        ---
+
+        Parameters:
+            - update (:class:`Update`): Update passed from the caller function.
+            - context (:class:`CallbackContext`): Context passed from the caller function.
+
+        ---
+
+        Returns:
+            (:class:`USERSTATE`): Returns a USERSTATE that is after this stage.
+
+        --- 
+
+        Notes:
+
+            This function `HAS a default behavior`:
+
+                By default, this method will proceed to the next_stage that is registered to it \
+                    on init.
+
+                You can call this method from a subclass by doing:
+
+                >>> class SomeStage(Stage):
+                        def stage_exit(self, update: Update, context: CallbackContext) -> USERSTATE:
+                            return super().stage_exit(update, context)
+        """
+
         query = update.callback_query
         if query:
             query.answer()
@@ -75,6 +297,15 @@ class Stage(ABC):
 
     @property
     def unpacked_states(self) -> Tuple[USERSTATE, ...]:
+        """
+        Returns a Tuple of `USERSTATE` for the states that is registered to the stage.
+
+        >>> self.stageA: USERSTATE
+            self.stageB: USERSTATE
+            # ...
+            self.stageA, self.stageB, ... = self.unpacked_states
+        """
+
         assert self.stage_id in self.bot.stages, "Unable to unpack states. "\
             """
             Stage has not yet been registered in bot.
