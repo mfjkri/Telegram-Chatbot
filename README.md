@@ -849,6 +849,19 @@ Below is a more in-depth description however you might find it still insufficien
   1. `CallbackQueryHandler` - called when user presses a given `InlineKeyboardButton` \
      This handler is specific to the button meaning that the `pattern` of the CallbackQueryHandler must match the `callback_data` of the InlineKeyboardButton.
 
+     Each `CallbackQueryHandler` has a `CallbackQuery` which needs to be answered by the handler callback:
+
+     ```python
+     def callback(update: Update, context: CallbackContext) -> USERSTATE:
+       query = update.callback_query
+       if query:
+           query.answer()
+     ```
+
+     It is good practice to always check if there is a CallbackQuery that can be answered and answer it.
+
+     Only time you can omit this check is if you are sure that the callback handler cannot be called by a CallbackQueryHandler update.
+
   2. `MessageHandler` - called when user sends a message \
      This handler is non-specific and will be called for every message the user sends. Proper steps must be taken to to filter repeated user input (debounce check etc..).
 
