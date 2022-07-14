@@ -8,6 +8,11 @@ from user import User
 from stage import Stage
 
 
+# ---------------------------------- CONFIG ---------------------------------- #
+# You can edit ADMIN CHATIDS in config.yaml
+#
+# Refer to README.md: Section 1.2 for more information
+
 # --------------------------------- FEATURES --------------------------------- #
 # - Delete Me
 # - Delete Username

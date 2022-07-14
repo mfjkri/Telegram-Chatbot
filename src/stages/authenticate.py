@@ -8,6 +8,12 @@ from user import User
 from utils import utils
 from stage import Stage
 
+# ---------------------------------- CONFIG ---------------------------------- #
+# You can add or remove USER PASSCODES in config.yaml.
+#
+# Refer to README.md: Section 1.2 for more information.
+#
+# You should use the script: generate_passcodes whenever possible.
 
 # --------------------------------- FEATURES --------------------------------- #
 # - Only allow authorized users to use Bot
