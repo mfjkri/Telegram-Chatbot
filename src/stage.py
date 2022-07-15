@@ -328,6 +328,7 @@ class Stage(ABC):
 
         return tuple(list(self.states.values()))
 
+
 # ---------------------------------------------------------------------------- #
 # ------------------------------ In-built stages ----------------------------- #
 
@@ -452,9 +453,9 @@ class GetInfoFromUser(Stage):
               use_last_saved: bool,
               allow_update: bool) -> None:
 
-        self.data_label = data_label
         self.init_users_data()
 
+        self.data_label = data_label
         self.input_formatter = input_formatter
         self.additional_text = additional_text
         self.use_last_saved = use_last_saved
@@ -641,7 +642,9 @@ class EndConversation(Stage):
         self.final_callback = final_callback
         self.goodbye_message = goodbye_message
         self.reply_message = reply_message
-        return super().setup()
+
+        self.init_users_data()
+        self.bot.register_stage(self)
 
     def init_users_data(self) -> None:
         return super().init_users_data()
