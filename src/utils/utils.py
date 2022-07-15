@@ -26,7 +26,7 @@ def get_dir_or_create(dir_path: str) -> str:
     return os.path.join(dir_path)
 
 
-def load_yaml_file(file_path: str, log=DEFAULT_LOG) -> Union[Any, bool]:
+def load_yaml_file(file_path: str, log=DEFAULT_LOG) -> Union[Any, None]:
     if not os.path.isfile(file_path):
         raise Exception(f"No file found at {file_path}")
     with open(file_path, 'r') as stream:
@@ -35,7 +35,7 @@ def load_yaml_file(file_path: str, log=DEFAULT_LOG) -> Union[Any, bool]:
             config = yaml.safe_load(stream)
         except yaml.YAMLError as exception:
             log.error(False, exception)
-            config = False
+            config = None
         return config
 
 

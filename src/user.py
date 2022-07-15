@@ -2,6 +2,8 @@ import sys
 import os
 import copy
 import logging
+
+from types import NoneType
 from typing import (List, Dict, Any, Union)
 
 from utils import utils
@@ -44,11 +46,11 @@ class User():
 
         - chatid (:obj:`str`): Unique chatid of the user account (in relation to the bot).
         - data (:class:`Dict[str, Any]`): Dict of userdata, typically data is bundled into states.
-        - is_banned: (:obj:`bool`): Whether the User is a banned user. 
+        - is_banned: (:obj:`bool`): Whether the User is a banned user.
 
         - answered_callback_queries: (:class:`List[str]`): List of CallbackQuery that have been answered.
 
-        - directory (:obj:`str`): Path to User files in the users directory. 
+        - directory (:obj:`str`): Path to User files in the users directory.
         - log_file (:obj:`str`): Path to log file in the User directory.
         - yaml_file (:obj:`str`): Path to data file in the User directory.
 
@@ -100,7 +102,7 @@ class User():
         Returns:
             (:obj:`None`)
 
-        --- 
+        ---
 
         Notes:
             It is better to call @User.reset_user if you wish to reset user's data as \
@@ -136,7 +138,7 @@ class User():
         Returns:
             (:obj:`None`)
 
-        --- 
+        ---
 
         Notes:
             If loading of data was unsuccessful either due to file missing or unable to read file \
@@ -153,7 +155,14 @@ class User():
         user_data = utils.load_yaml_file(
             user_yaml_file, self.logger) if user_yaml_file_exists else None
 
-        if not (user_yaml_file_exists and user_data):
+        if user_yaml_file_exists and user_data is not None:
+            # Update their saved data in case of format changes
+            self.data = self.__update_user_data_from_file(user_data)
+            self.logger.info("LOADED_USER_FROM_FILE",
+                             f"Loaded User:{self.chatid} from file.")
+
+            return user_yaml_file
+        else:
             if not user_yaml_file_exists:
                 self.logger.error(
                     "USERDATA_MISSING", f"User:{self.chatid} userdata is missing. Creating a new one...")
@@ -163,13 +172,6 @@ class User():
 
             # Create new user since their old data could not be found / loaded
             return self.__set_to_default_user_data()
-        else:
-            # Update their saved data in case of format changes
-            self.data = self.__update_user_data_from_file(user_data)
-            self.logger.info("LOADED_USER_FROM_FILE",
-                             f"Loaded User:{self.chatid} from file.")
-
-            return user_yaml_file
 
     def save_to_file(self) -> None:
         """
@@ -187,7 +189,7 @@ class User():
         Returns:
             (:obj:`None`)
 
-        --- 
+        ---
 
         Notes:
             Currently if data fails to be saved to file, only an error message is shown.
@@ -223,7 +225,7 @@ class User():
         Returns:
             (:obj:`None`)
 
-        --- 
+        ---
 
         Notes:
             This method should only be used to modify changes that are directly under `user.data`:
@@ -231,7 +233,7 @@ class User():
             For example:
 
                 >>> user.data = {
-                        "name": "", 
+                        "name": "",
                         "group": "",
                         #
                         "ctf_state": {
@@ -249,7 +251,7 @@ class User():
 
                 2) Modify `total_score` by changing its value directly:
                     >>> user.data["ctf_state"]["total_score"] = NEW_VALUE
-                        #OR
+                        # OR
                         user.data["ctf_state"].update({
                             "total_score":NEW_VALUE
                         })
@@ -294,7 +296,7 @@ class User():
         Returns:
             (:obj:`None`)
 
-        --- 
+        ---
 
         Example:
             >>> user: User = ....
@@ -332,7 +334,7 @@ class UserManager():
             )
 
         This is due to `UserManager` being a `Singleton` class, we would want to prevent \
-            multiple initialization of the class object. 
+            multiple initialization of the class object.
 
     ---
 
@@ -364,7 +366,7 @@ class UserManager():
         Returns:
             (:class:`User`): Returns the User object created or an existing User object with provided chatid.
 
-        --- 
+        ---
 
         Notes:
             If a User object associated with the given chatid already exists, then it will not create \
@@ -407,16 +409,18 @@ class UserManager():
         ---
 
         Returns:
-            (:class:`User`|:obj:`None`): Returns the User object if found, else return None. 
+            (:class:`User`|:obj:`None`): Returns the User object if found, else return None.
 
         ---
 
         Example:
             >>> user_manager.new_user(chatid="CHATID")
                 # ...
-                target_user0: Union[User, None] = user_manager.get_from_chatid(chatid="CHATID")
+                target_user0: Union[User, None] = user_manager.get_from_chatid(
+                    chatid="CHATID")
                 # target_user0 --> User
-                target_user1: Union[User, None] = user_manager.get_from_chatid(chatid="CHATID1")
+                target_user1: Union[User, None] = user_manager.get_from_chatid(
+                    chatid="CHATID1")
                 # target_user1 --> None
         """
 
@@ -448,14 +452,14 @@ class UserManager():
                 #
                 for chatid, user in users.items():
                     user: User
-                    #...
+                    # ...
         """
 
         return self.users
 
     def ban_user(self, chatid: str) -> None:
         """
-        Bans a User. 
+        Bans a User.
 
         This will add the user chatid to the banned_list.
 
@@ -477,7 +481,8 @@ class UserManager():
         Example:
             >>> user_manager.new_user(chatid="CHATID")
                 # ...
-                user: Union[User, None] = user_manager.get_from_chatid(chatid="CHATID")
+                user: Union[User, None] = user_manager.get_from_chatid(
+                    chatid="CHATID")
                 if user:
                     user_manager.ban_user(user.chatid)
         """
@@ -495,7 +500,7 @@ class UserManager():
 
     def unban_user(self, chatid: str) -> None:
         """
-        Unbans a User. 
+        Unbans a User.
 
         This will remove the user chatid from the banned_list.
 
@@ -523,7 +528,8 @@ class UserManager():
             >>> user_manager.new_user(chatid="CHATID")
                 user_manager.ban_user(chatid="CHATID")
                 # ...
-                user: Union[User, None] = user_manager.get_from_chatid(chatid="CHATID")
+                user: Union[User, None] = user_manager.get_from_chatid(
+                    chatid="CHATID")
                 if user:
                     user_manager.unban_user(user.chatid)
         """
@@ -559,13 +565,21 @@ class UserManager():
 
         banned_users = utils.load_yaml_file(
             banned_users_yaml_file, self.logger) if os.path.isfile(banned_users_yaml_file) else False
-        if banned_users:
+        if not isinstance(banned_users, Union[NoneType, bool]):
+            if not banned_users:
+                assert True, "hello"
             self.banned_users = banned_users
 
             for chatid in banned_users:
                 user: User = self.get_from_chatid(chatid)
                 if user:
                     user.is_banned = True
+        else:
+            self.logger.warning("BAN_LIST_CORRUPTED_OR_MISSING",
+                                "Creating and overwriting to an empty list.")
+            self.banned_users = []
+            utils.dump_to_yaml_file(
+                self.banned_users, banned_users_yaml_file, self.logger)
 
     def add_data_field(self, key: str, value: Any):
         """
@@ -599,7 +613,8 @@ class UserManager():
                             "example_list": []
                         }
                         #
-                        self.user_manager.add_data_field("stage_state", stage_state)
+                        self.user_manager.add_data_field(
+                            "stage_state", stage_state)
 
         ---
 
@@ -667,7 +682,8 @@ class UserManager():
 
         Example:
             >>> logger : Log = Log(...)
-                config : Dict[str, Any] = utils.load_yaml_file(os.path.join("config.yaml"))
+                config : Dict[str, Any] = utils.load_yaml_file(
+                    os.path.join("config.yaml"))
                 # ...
                 user_manager = UserManager()
                 user_manager.init(

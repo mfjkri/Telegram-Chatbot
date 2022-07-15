@@ -41,8 +41,6 @@ import argparse
 from typing import (List, Dict, Any, Callable, Union)
 
 from utils.utils import load_yaml_file
-from stages.ctf import MAX_LEADERBOARD_VIEW
-from stages.guardian import GUARDIAN_TEAMS
 
 users_directory = os.path.join("users")
 leaderboard_export_file = os.path.join("exports", "exported_leaderboard.csv")
@@ -62,7 +60,7 @@ def update_leaderboard(max_leaderboard_view: int) -> List[List[Union[int, List[D
             if os.path.isfile(user_yaml_file):
                 user_data = load_yaml_file(user_yaml_file)
 
-                if user_data:
+                if user_data is not None:
                     ctf_state = user_data.get("ctf_state")
 
                     if ctf_state:

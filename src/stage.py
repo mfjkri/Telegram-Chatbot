@@ -455,9 +455,9 @@ class GetInfoFromUser(Stage):
               use_last_saved: bool,
               allow_update: bool) -> None:
 
+        self.data_label = data_label
         self.init_users_data()
 
-        self.data_label = data_label
         self.input_formatter = input_formatter
         self.additional_text = additional_text
         self.use_last_saved = use_last_saved

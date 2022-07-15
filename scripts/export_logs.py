@@ -175,7 +175,7 @@ def get_users(chatid_specificer: str, group_specifier: str) -> Dict:
                 user_logs = None
                 user_data = load_yaml_file(user_data_yaml)
 
-                if user_data:
+                if user_data is not None:
                     extracted_data_fields = {}
                     for data_field_label, default_data_field in RELEVANT_DATA_FIELDS.items():
                         data_path: str
