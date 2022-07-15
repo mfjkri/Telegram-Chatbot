@@ -340,7 +340,8 @@ class LetUserChoose(Stage):
     def setup(self,
               choice_text: str,
               choices: List[Dict[str, str]],
-              choices_per_row: Optional[int]) -> None:
+              choices_per_row: Optional[int],
+              answer_callback_query: Optional[bool]) -> None:
 
         self.init_users_data()
 
@@ -351,8 +352,9 @@ class LetUserChoose(Stage):
         for idx, choice in enumerate(choices):
             def callback_wrapper(update: Update, context: CallbackContext,
                                  choice: Dict[str, Union[str, Callable[[Update, CallbackContext], USERSTATE]]] = choice) -> USERSTATE:
-                query = update.callback_query
-                query.answer()
+                if answer_callback_query:
+                    query = update.callback_query
+                    query.answer()
                 return choice["callback"](update, context)
 
             if choices_per_row and idx % choices_per_row == 0:

@@ -374,7 +374,8 @@ class Bot(object):
                         stage_id: str,
                         choice_text: str,
                         choices: List[Dict[str, str]],
-                        choices_per_row: Optional[int] = None) -> Stage:
+                        choices_per_row: Optional[int] = None,
+                        answer_callback_query: Optional[bool] = True) -> Stage:
         """
         In-built function to create a stage that presents the user with a series of choices.
 
@@ -385,7 +386,8 @@ class Bot(object):
             - choice_text (:obj:`str`): The text displayed when prompting user to choose.
             - choices (:class:`List[Dict[str, str]`): The list of the choices to choose from.
             - choices_per_row (:obj:`int`): Optional. How many choices to have in a row. Defaults to None.
-
+            - answer_callback_query (:obj:`bool`): Optional. Whether to answer the CallbackQuery automatically for each choice. \
+                Defaults to True.
         ---
 
         Returns:
@@ -395,6 +397,14 @@ class Bot(object):
 
         Notes:
             If `choices_per_row` is `None`, then all choices will be displayed in a single row.
+
+            If you set `answer_callback_query` to be `False`, then remember to answer the CallbackQuery for each option.
+            You can answer the CallbackQuery by doing:
+
+                >>> def option_callback(update: Update, context: CallbackContext) -> USERSTATE:
+                        query = update.callback_query
+                        query.answer()
+                        # ...
 
         ---
 
@@ -429,7 +439,8 @@ class Bot(object):
         stage.setup(
             choice_text=choice_text,
             choices=choices,
-            choices_per_row=choices_per_row)
+            choices_per_row=choices_per_row,
+            answer_callback_query=answer_callback_query)
 
         return stage
 
