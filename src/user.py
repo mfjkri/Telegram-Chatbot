@@ -3,7 +3,6 @@ import os
 import copy
 import logging
 
-from types import NoneType
 from typing import (List, Dict, Any, Union)
 
 from utils import utils
@@ -566,9 +565,7 @@ class UserManager():
 
         banned_users = utils.load_yaml_file(
             banned_users_yaml_file, self.logger) if os.path.isfile(banned_users_yaml_file) else False
-        if not isinstance(banned_users, Union[NoneType, bool]):
-            if not banned_users:
-                assert True, "hello"
+        if banned_users or isinstance(banned_users, List):
             self.banned_users = banned_users
 
             for chatid in banned_users:
