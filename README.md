@@ -14,14 +14,15 @@
      - [get_user_input](#212-getuserinput)
      - [get_user_info](#213-getuserinfo)
    - [2.2 Custom stages](#22-creating-a-custom-stage)
+3. [Misc]()
 
-&nbsp;
+<br />
 
 # 1) QUICKSTART REFERENCE
 
 ## 1.1) Setting up
 
-&nbsp;
+<br />
 
 ### 1.1.1) `setup.py`:
 
@@ -40,7 +41,7 @@ Please enter your python keyword:
 
 If setup fails, please refer to [1.1.2) Building manually](#112-building-manually) and follow the steps for where the setup failed.
 
-&nbsp;
+<br />
 
 ### 1.1.2) Building manually:
 
@@ -108,11 +109,11 @@ If you are running any other OS such as **MacOS**, you will have to build the pr
    LOG_USER_TO_APP_LOGS: false
    ```
 
-&nbsp;
+<br />
 
 ---
 
-&nbsp;
+<br />
 
 ## 1.2) Configuring config.yaml
 
@@ -274,11 +275,11 @@ LOG_USER_TO_APP_LOGS: false
 
   For more information about **logging** go to [3) Logging](#2-states--stages).
 
-&nbsp;
+<br />
 
 ---
 
-&nbsp;
+<br />
 
 ## 1.3) Adding CTF Challenges
 
@@ -294,7 +295,7 @@ The number preceeding the challenge name determines the **order** of display of 
 
 ![challenge_order](docs/img/ctf-menu-view.png)
 
-&nbsp;\
+<br />\
 **Each** challenge directory is expected to contain a `challenge.yaml` file of the following format:
 
 ![challenge_yaml](docs/img/challenge-yaml.png)
@@ -495,11 +496,11 @@ files: []
   files: []
   ```
 
-&nbsp;
+<br />
 
 ---
 
-&nbsp;
+<br />
 
 ## 1.4) Running the Chatbot
 
@@ -549,11 +550,11 @@ files: []
    $ .\venv\Scripts\python.exe .\main.py
    ```
 
-&nbsp;
+<br />
 
 ---
 
-&nbsp;
+<br />
 
 ## 1.5) Using helper scripts
 
@@ -581,7 +582,7 @@ Scripts that are ran after a session include:
 - [`notify_winners`](scripts/notify_winners.py)
 - [`export_logs`](scripts/export_logs.py)
 
-&nbsp;
+<br />
 
 Below is a brief description of what each script does and how to use them.
 
@@ -825,7 +826,7 @@ Below is a brief description of what each script does and how to use them.
 
 ---
 
-&nbsp;
+<br />
 
 # 2) STATES & STAGES
 
@@ -1044,11 +1045,11 @@ Below is a more in-depth description however you might find it still insufficien
 
 ---
 
-&nbsp;
+<br />
 
 ## 2.1) Inbuilt stages
 
-&nbsp;
+<br />
 
 ### 2.1.1) **LetUserChoose**
 
@@ -1123,7 +1124,7 @@ def some_state_in_a_stage(self: Stage, update: Update, context: CallbackContext)
     )
 ```
 
-&nbsp;
+<br />
 
 ### 2.1.2) **GetUserInput**
 
@@ -1179,7 +1180,7 @@ def some_state_in_a_stage(self: Stage, update: Update, context: CallbackContext)
     )
 ```
 
-&nbsp;
+<br />
 
 ### 2.1.3) **GetUserInfo**
 
@@ -1240,11 +1241,11 @@ def some_state_in_a_stage(self: Stage, update: Update, context: CallbackContext)
 
 ---
 
-&nbsp;
+<br />
 
 ## 2.2) Creating a custom stage
 
-&nbsp;
+<br />
 
 ### Prequisites:
 
@@ -1265,7 +1266,7 @@ The relevant examples are: [ConversationBot](https://github.com/python-telegram-
 In our application, `USERSTATE` is a created data-type with an integral value to signify the state of the CallbackHandler.\
 `GENDER, PHOTO, LOCATION, BIO ` (found in [ConversationBot](https://github.com/python-telegram-bot/python-telegram-bot/blob/master/examples/conversationbot.py) are examples of USERSTATE in our application.
 
-&nbsp;
+<br />
 
 ### Custom stage (`Example`):
 
@@ -1275,7 +1276,7 @@ In our application, `USERSTATE` is a created data-type with an integral value to
 
 ```
 
-&nbsp;
+<br />
 
 ### Using custom stage:
 
@@ -1366,3 +1367,21 @@ def setup():
 if __name__ == "__main__":
     main()
 ```
+
+# 3) Misc:
+
+## 3.1) CallbackQueryHandler:
+
+<br />
+
+Something here
+
+---
+
+<br />
+
+## 3.2) CallbackQuery:
+
+<br />
+
+Another here
