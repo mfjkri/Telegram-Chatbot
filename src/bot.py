@@ -347,21 +347,25 @@ class Bot(object):
 
         user: User = context.user_data.get("user")
 
-        if update.callback_query and not reply_message:
-            update.callback_query.message.edit_text(
-                text=text,
-                reply_markup=reply_markup,
-                parse_mode=parse_mode,
-                disable_web_page_preview=True
-            )
-        elif update.message:
-            update.message.reply_text(
-                text=text,
-                reply_markup=reply_markup,
-                parse_mode=parse_mode,
-                disable_web_page_preview=True
-            )
-        else:
+        try:
+            if update.callback_query and not reply_message:
+                update.callback_query.message.edit_text(
+                    text=text,
+                    reply_markup=reply_markup,
+                    parse_mode=parse_mode,
+                    disable_web_page_preview=True
+                )
+            elif update.message:
+                update.message.reply_text(
+                    text=text,
+                    reply_markup=reply_markup,
+                    parse_mode=parse_mode,
+                    disable_web_page_preview=True
+                )
+            else:
+                raise Exception(
+                    "Unknown message type, defaulting to normal message (implemenetating below)")
+        except:
             if user:
                 context.bot.send_message(user.chatid, text,
                                          reply_markup=reply_markup,
@@ -459,6 +463,7 @@ class Bot(object):
             - input_text (:obj:`str`): The text displayed before prompting user to enter their input.
             - input_handler (:class:`Callable`): The callback function called with the user input.
                 Callback signature:
+
                     ``def input_handler(user_input: str, update: Update, context: CallbackContext) -> USERSTATE``
 
             - exitable (:obj:`bool`): Optional. Whether to allow users to abort input by sending "/cancel". Defaults to False.
@@ -517,6 +522,7 @@ class Bot(object):
             - input_formatter (:class:`Callable`): Optional. A callback function used to format the input given.\
                 Defaults to an empty callback.
                 Callback signature:
+
                     ``def input_formatter(user_input: Union[str, bool]) -> Union[str, bool]:``
 
             - additional_text (:obj:`str`): Optional. Additional text to display when prompting user for info. \
@@ -606,6 +612,7 @@ class Bot(object):
             - final_callback (:class:`Callable`): Optional. A callback function called right before terminating \
                 conversation. Defaults to an empty callback.
                 Callback signature:
+
                     ``def final_callback(update: Update, context: CallbackContext) -> None:``
 
             - goodbye_message(:obj:`str`): Optional. Message to display when user reaches end of conversation. \
@@ -754,6 +761,7 @@ class Bot(object):
             - command (:obj:`str`): The command trigger: `\command`. 
             - callback (:class:`Callable`): The callback function called when command is triggered.
                 Callback signature:
+
                     ``def callback(update: Update, context: CallbackContext) -> USERSTATE``
 
             - add_as_fallback (:obj:`bool`): Optional. Whether to add the CommandHandler as a fallback handler too.
