@@ -218,7 +218,8 @@ class User():
         ---
 
         Parameters:
-            - None
+            - data_label (:obj:`str`): Key that points to the value being updated to user data.
+            - data_value (:class:`Any`): The new value.
 
         ---
 
@@ -581,7 +582,7 @@ class UserManager():
             utils.dump_to_yaml_file(
                 self.banned_users, banned_users_yaml_file, self.logger)
 
-    def add_data_field(self, key: str, value: Any):
+    def add_data_field(self, data_label: str, value: Any):
         """
         Adds a data field to User.data which a given default value.
 
@@ -590,7 +591,8 @@ class UserManager():
         ---
 
         Parameters:
-            - chatid (:obj:`str`): Unique chatid of the user account (in relation to the bot).
+            - data_label (:obj:`str`): Key that points to the value being added to user data.
+            - value (:class:`Any`): The value that the data_label points to in user data.
 
         ---
 
@@ -616,13 +618,23 @@ class UserManager():
                         self.user_manager.add_data_field(
                             "stage_state", stage_state)
 
+            You can retrieve the initialized data later in `User.data`:
+
+            >>> class SomeStage(Stage):
+                    def some_handler_callback(self, update: Update, context: CallbackContext) -> USERSTATE:
+                        user: User = context.user_data.get("user")
+                        #
+                        stage_stage = user.data.get("stage_state")
+                        print(stage_stage)
+                        print(stage_stage["some_attribute"])
+
         ---
 
         Example:
             Refer to Notes section.
         """
 
-        self.data_fields.update({key: copy.deepcopy(value)})
+        self.data_fields.update({data_label: copy.deepcopy(value)})
 
     def load_users_from_file(self):
         """

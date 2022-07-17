@@ -88,8 +88,8 @@ class Stage(ABC):
             You can include any relevant attributes or properties as part of the \
                 arguments for this function.
 
-            This method `HAS NO default behavior`:
-                Do not call this method.
+            This abstract method `HAS NO default behavior`:
+                Do not call the abstract version of this method.
 
             This method can be broken down into 4 parts:
 
@@ -110,7 +110,7 @@ class Stage(ABC):
                         #     MessageHandler(Filters.all, callback)
                         # ],
                         # ...
-                    }
+                        }
 
                 3) Register stage:
 
@@ -193,7 +193,7 @@ class Stage(ABC):
 
                 By default, this method set a hidden attribute `_users_data_initialized` to be `True`.
 
-                This is neccesassary to as registered Stage without this attribute set, would raise an error when \
+                This is neccessary as a registered Stage without this attribute set, would raise an error when \
                     the Bot is started.
 
                 You can call this method from a subclass by doing:
@@ -215,7 +215,7 @@ class Stage(ABC):
         """
         Entry function that is called when this stage is active.
 
-        Method called when proceeding to this stage from another stage / stage.
+        Method called when proceeding to this stage from another stage / state.
 
         ---
 
@@ -231,8 +231,8 @@ class Stage(ABC):
         --- 
 
         Notes:
-            This method `HAS NO default behavior`:
-                Do not call this method.
+            This abstract method `HAS NO default behavior`:
+                Do not call the abstract version of this method.
 
             This method is generally broken down into 2 parts:
 
