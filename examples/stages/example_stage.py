@@ -128,41 +128,6 @@ class Example(Stage):
         return super().init_users_data()
 
     def stage_entry(self, update: Update, context: CallbackContext) -> USERSTATE:
-        """
-        This is the function called when another stage/state is proceeding to it:
-
-            in some other stage or state
-
-            return self.bot.proceed_next_stage(
-                current_stage_id = some_other_stage_id,
-                next_stage_id = THIS_STAGE_ID,
-                update = update, context = context
-            )
-
-
-        The two parameters @update and @context is always assured to exist.
-        update will contain information about the trigger leading to this stage
-        context will be a "shared" dict passed between all callbacks
-            you can find the user class in this
-
-                user: User = context.user_data.get("user")
-
-
-        For safety, always check in the entry function whether the previous action
-        was an InlineKeyboardButton which will have a CallbackQuery that needs to be answered
-        Hence this few lines of code should always be at the top of your stages entry function:
-
-            query = update.callback_query
-            if query:
-                query.answer()
-
-
-        Normally what hapens after depends on your stage but the most common example,
-        is to just call some loader function to display your stage menu.
-
-            return self.load_menu(update, context)
-        """
-
         query = update.callback_query
         if query:
             query.answer()
@@ -170,29 +135,6 @@ class Example(Stage):
         return self.load_menu(update, context)
 
     def stage_exit(self, update: Update, context: CallbackContext) -> USERSTATE:
-        """
-        This is a function called internally (within this stage).
-        It will never be called from outside this stage by default.
-
-        This function is not required but is recommended to be used.
-        This ensures that your stage only has only "exit".
-
-        However if your stage design does require there to be multiple exits,
-        then you can handle it accordingly and leave this function like this.
-
-        Exiting the stage from within it:
-
-            in some callback function:
-
-            def process_user_input(self, update : Update, context : CallbackContext) -> USERSTATE:
-                query = update.callback_query
-                query.answer()
-
-                # --- 
-
-                return self.exit_example(update,context)
-        """
-
         return super().stage_exit(update, context)
 
     def load_menu(self, update: Update, context: CallbackContext) -> USERSTATE:
