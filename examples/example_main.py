@@ -2,12 +2,6 @@
 import sys
 sys.path.append("src")
 
-# Our custom stage is at ${rootDir}/examples/stages/example_stage.py
-# To be able to import it, we must append dir:${rootDir}/examples/ to path
-# For an actual main.py at ${rootDir}/main.py, there is no need to do this
-sys.path.append("examples")
-from stages.example_stage import Example
-
 import logging
 import os
 import shutil
@@ -20,6 +14,7 @@ from utils.log import Log
 
 from stages.admin import AdminConsole
 from stages.authenticate import Authenticate
+from stages.example_stage import Example
 
 LOG_FILE = os.path.join("logs", f"example_main.log")
 
