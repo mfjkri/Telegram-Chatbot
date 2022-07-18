@@ -1268,19 +1268,29 @@ In our application, `USERSTATE` is a created data-type with an integral value to
 
 <br />
 
+### Basic stage (`BasicStage`):
+
+- Basic menu demonstration
+
+[examples/stages/basic_stage.py](examples/stages/basic_stage.py)
+
+<br />
+
 ### Custom stage (`Example`):
 
-[src/stages/example_stage.py](src/stages/)
+- Menu with more features
+- Persistent data
+- Uses user input
 
-```python
-
-```
+[examples/stages/example_stage.py](examples/stages/example_stage.py)
 
 <br />
 
 ### Using custom stage:
 
 [main.py](main.py)
+
+Note: For the purposes of this code example, we will take it that the custom stage python file is under `src/stages/`.
 
 ```python
 #!/usr/bin/env python3
@@ -1306,8 +1316,6 @@ assert CONFIG, "Failed to load config.yaml. Fatal error, please remedy."\
 LIVE_MODE = CONFIG["RUNTIME"]["LIVE_MODE"]
 FRESH_START = CONFIG["RUNTIME"]["FRESH_START"] if not LIVE_MODE else False
 BOT_TOKEN = CONFIG["BOT_TOKENS"]["LIVE"] if LIVE_MODE else CONFIG["BOT_TOKENS"]["TEST"]
-
-
 
 
 def main():
@@ -1368,15 +1376,15 @@ if __name__ == "__main__":
     main()
 ```
 
+<br />
+
 # 3) Misc:
 
 ## 3.1) CallbackQueryHandler:
 
 <br />
 
-Something here
-
----
+- ***
 
 <br />
 
@@ -1384,4 +1392,4 @@ Something here
 
 <br />
 
-Another here
+-
