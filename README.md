@@ -14,7 +14,7 @@
      - [get_user_input](#212-getuserinput)
      - [get_user_info](#213-getuserinfo)
    - [2.2 Custom stages](#22-creating-a-custom-stage)
-3. [Misc]()
+3. [CallbackQuery](#3-callbackquery)
 
 <br />
 
@@ -1378,18 +1378,81 @@ if __name__ == "__main__":
 
 <br />
 
-# 3) Misc:
+# 3) CallbackQuery:
 
-## 3.1) CallbackQueryHandler:
+Any `CallbackQueryHandler` will have a `CallbackQuery` attribute as part of its `Update`.
+
+Ensure that you answer it the query. If you are unsure whether the action before it contains a callbackquery,
+
+```python
+def callback_handler(update: Update, context: CallbackContext) -> USERSTATE:
+  query: CallbackQuery = update.callback_query
+  if query:
+    query.answer()
+```
+
+The `@CallbackQuery.answer` method has been over-ridden. You can see the implementation details in [bot.py](src/bot.py) as part of the `@Bot.init` method.
+
+The new method now accepts two new parameters:
+
+- keep_message: `any string (empty string too)` or `True` or `False`
+- do_nothing: `True` or `False`
+
+If `do_nothing` is `True`, then all changes below are ignored and nothing happens.
+
+If `keep_message` is `True`, then the previous message remains unchanged but any `reply_markup` is removed (for example any `InlineKeybaordButtonMarkup`).
+
+If `keep_message` is `False`, then the previous message is replaced with a placeholder text `"💭 Loading..."` and any `reply_markup` is also removed.
+
+If `keep_message` is a `non-empty string`, then the previous message is replaced with the non-empty string and any `reply_markup` is also removed.
+
+If `keep_message` is an `empty string`, then the previous message is deleted completely.
+
+Example of usage:
+
+1. Have the default "💭 Loading..." transition on update:
+
+   ```python
+   def callback_handler(update: Update, context: CallbackContext) -> USERSTATE:
+     query: CallbackQuery = update.callback_query
+     if query:
+       query.answer()
+   ```
+
+2. Delete any previous message:
+
+   ```python
+   def callback_handler(update: Update, context: CallbackContext) -> USERSTATE:
+     query: CallbackQuery = update.callback_query
+     if query:
+       query.answer(keep_message="")
+   ```
+
+3. Have a custom transition message on update:
+
+   ```python
+   def callback_handler(update: Update, context: CallbackContext) -> USERSTATE:
+     query: CallbackQuery = update.callback_query
+     if query:
+       query.answer(keep_message="Custom loading message here")
+   ```
+
+4. No transition, just remove any `reply_markup`:
+
+   ```python
+   def callback_handler(update: Update, context: CallbackContext) -> USERSTATE:
+     query: CallbackQuery = update.callback_query
+     if query:
+       query.answer(keep_message=True)
+   ```
+
+5. No change at all:
+
+   ```python
+   def callback_handler(update: Update, context: CallbackContext) -> USERSTATE:
+     query: CallbackQuery = update.callback_query
+     if query:
+       query.answer(do_nothing=True)
+   ```
 
 <br />
-
-- ***
-
-<br />
-
-## 3.2) CallbackQuery:
-
-<br />
-
--
