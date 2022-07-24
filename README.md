@@ -1456,3 +1456,5 @@ Example of usage:
    ```
 
 <br />
+
+If you need a more relevant example, you can refer to [`let_user_choose4`](examples/let_user_choose4.py).
