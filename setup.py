@@ -24,7 +24,9 @@ def check_cwd() -> bool:
 
 if __name__ == "__main__":
 
-    is_windows, is_linux = "win32" in sys.platform, "linux" in sys.platform
+    is_windows = "win32" in sys.platform
+    is_linux = "linux" in sys.platform
+    is_darwin = "darwin" in sys.platform
 
     log = logging.getLogger("CSA_Telegram_Bot setup")
     log.setLevel(10)
@@ -122,11 +124,11 @@ if __name__ == "__main__":
     # ------------------------------------- - ------------------------------------ #
 
     # -------------------------- Installing dependencies ------------------------- #
-    if is_linux or is_windows:
+    if is_linux or is_windows or is_darwin:
         log.info(
             f"Installing dependencies from requirements.txt into venv now...")
 
-        if is_linux:
+        if is_linux or is_darwin:
             subprocess.run([
                 os.path.join("venv", "bin", python_keyword),
                 "-m", "pip", "install", "-r", "requirements.txt"])
@@ -136,7 +138,7 @@ if __name__ == "__main__":
                 os.path.join("venv", "Scripts", f"{python_keyword}.exe"),
                 "-m", "pip", "install", "-r", r".\requirements.txt"], shell=True)
 
-    elif "darwin" in sys.sys.platform:
+    else:
         log.error(
             "setup.py currently does not support installing of dependencies. Please do this manually.")
     # ------------------------------------- - ------------------------------------ #
